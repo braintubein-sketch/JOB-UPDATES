@@ -37,7 +37,7 @@ const Navbar = () => {
     ];
 
     return (
-        <nav className={`sticky top-0 z-50 transition-all duration-300 ${scrolled ? 'glass py-2' : 'bg-transparent py-4'}`}>
+        <nav className={`sticky top-0 z-50 transition-all duration-300 ${scrolled ? 'nav-glass py-2' : 'bg-transparent py-4'}`}>
             <div className="container mx-auto px-4 flex items-center justify-between">
                 <Link href="/" className="flex items-center gap-2">
                     <img src="/logo.png" alt="Job Updates India" className="h-10 md:h-12 w-auto object-contain" />
@@ -88,57 +88,6 @@ const Navbar = () => {
                     </div>
                 </div>
             )}
-
-            <style jsx>{`
-        nav {
-          display: flex;
-          flex-direction: column;
-        }
-        .container {
-          display: flex;
-          align-items: center;
-          justify-content: space-between;
-          width: 100%;
-          max-width: 1200px;
-          margin: 0 auto;
-        }
-        .flex { display: flex; }
-        .items-center { align-items: center; }
-        .justify-between { justify-content: space-between; }
-        .gap-2 { gap: 0.5rem; }
-        .gap-4 { gap: 1rem; }
-        .gap-8 { gap: 2rem; }
-        .hidden { display: none; }
-        @media (min-width: 768px) {
-          .md\:flex { display: flex; }
-          .md\:hidden { display: none; }
-        }
-        .text-xl { font-size: 1.25rem; }
-        .font-bold { font-weight: 700; }
-        .text-primary { color: var(--primary); }
-        .bg-primary { background-color: var(--primary); }
-        .p-1\.5 { padding: 0.375rem; }
-        .rounded-lg { border-radius: 0.5rem; }
-        .text-white { color: white; }
-        .w-6 { width: 1.5rem; }
-        .h-6 { height: 1.5rem; }
-        .text-sm { font-size: 0.875rem; }
-        .font-medium { font-weight: 500; }
-        .hover\:text-primary:hover { color: var(--primary); }
-        .transition-colors { transition: color 0.2s, background-color 0.2s; }
-        .sticky { position: sticky; }
-        .top-0 { top: 0; }
-        .z-50 { z-index: 50; }
-        .py-2 { padding-top: 0.5rem; padding-bottom: 0.5rem; }
-        .py-4 { padding-top: 1rem; padding-bottom: 1rem; }
-        .border-l { border-left-width: 1px; }
-        .pl-6 { padding-left: 1.5rem; }
-        .border-border { border-color: var(--border); }
-        .rounded-full { border-radius: 9999px; }
-        .p-2 { padding: 0.5rem; }
-        .hover\:bg-border:hover { background-color: var(--border); }
-        .md\:hidden { display: flex; }
-      `}</style>
         </nav>
     );
 };

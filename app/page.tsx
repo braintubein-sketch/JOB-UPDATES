@@ -47,7 +47,7 @@ export default function Home() {
   return (
     <div className="flex flex-col gap-12 pb-20">
       {/* Hero Section */}
-      <section className="relative py-20 bg-gradient-to-b from-primary/10 to-transparent">
+      <section className="relative py-20" style={{ backgroundImage: 'linear-gradient(to bottom, var(--primary) 0%, transparent 10%)' }}>
         <div className="container mx-auto px-4 text-center">
           <h1 className="text-4xl md:text-6xl font-extrabold mb-6 tracking-tight">
             Official Indian <span className="text-primary">Job Updates</span>
@@ -148,33 +148,6 @@ export default function Home() {
         </div>
       </div>
 
-      <style jsx>{`
-        .bg-gradient-to-b {
-          background-image: linear-gradient(to bottom, var(--primary), transparent);
-          background-size: 100% 10%;
-          background-repeat: no-repeat;
-        }
-        .max-w-2xl { max-width: 42rem; }
-        .max-w-3xl { max-width: 48rem; }
-        .mx-auto { margin-left: auto; margin-right: auto; }
-        .text-center { text-align: center; }
-        .text-4xl { font-size: 2.25rem; }
-        @media (min-width: 768px) {
-          .md\:text-6xl { font-size: 3.75rem; }
-        }
-        .leading-relaxed { line-height: 1.625; }
-        .mb-2 { margin-bottom: 0.5rem; }
-        .mb-6 { margin-bottom: 1.5rem; }
-        .mb-10 { margin-bottom: 2.5rem; }
-        .pb-20 { padding-bottom: 5rem; }
-        .py-20 { padding-top: 5rem; padding-bottom: 5rem; }
-        .flex-wrap { flex-wrap: wrap; }
-        .justify-center { justify-content: center; }
-        .lg\:col-span-2 { grid-column: span 2 / span 2; }
-        .rounded-2xl { border-radius: 1rem; }
-        .rounded-xl { border-radius: 0.75rem; }
-        .lg\:grid-cols-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
-      `}</style>
     </div>
   );
 }

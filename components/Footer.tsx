@@ -88,26 +88,6 @@ const Footer = () => {
                 </div>
             </div>
 
-            <style jsx>{`
-        footer { margin-top: auto; }
-        .grid { display: grid; }
-        .grid-cols-1 { grid-template-columns: repeat(1, minmax(0, 1fr)); }
-        @media (min-width: 768px) {
-          .md\:grid-cols-4 { grid-template-columns: repeat(4, minmax(0, 1fr)); }
-        }
-        .gap-12 { gap: 3rem; }
-        .mb-6 { margin-bottom: 1.5rem; }
-        .mb-12 { margin-bottom: 3rem; }
-        .space-y-4 > * + * { margin-top: 1rem; }
-        .text-secondary { color: var(--secondary); }
-        .text-xs { font-size: 0.75rem; }
-        .leading-relaxed { line-height: 1.625; }
-        .pt-16 { padding-top: 4rem; }
-        .pb-8 { padding-bottom: 2rem; }
-        .pt-8 { padding-top: 2rem; }
-        .col-span-1 { grid-column: span 1 / span 1; }
-        .bg-card-bg { background-color: var(--card-bg); }
-      `}</style>
         </footer>
     );
 };

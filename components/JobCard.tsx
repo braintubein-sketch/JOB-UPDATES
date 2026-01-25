@@ -63,30 +63,6 @@ const JobCard = ({ job }: JobCardProps) => {
                 <span className="text-xs font-semibold text-primary">View Details</span>
                 <ChevronRight size={16} className="text-primary transform group-hover:translateX(4px) transition-transform" />
             </div>
-
-            <style jsx>{`
-        .job-card {
-          background: var(--card-bg);
-          border: 1px solid var(--border);
-          border-radius: 12px;
-          padding: 1.5rem;
-          display: flex;
-          flex-direction: column;
-          height: 100%;
-          transition: all 0.3s ease;
-        }
-        .job-card:hover {
-          transform: translateY(-4px);
-          box-shadow: var(--shadow-lg);
-          border-color: var(--primary);
-        }
-        .line-clamp-2 {
-          display: -webkit-box;
-          -webkit-line-clamp: 2;
-          -webkit-box-orient: vertical;
-          overflow: hidden;
-        }
-      `}</style>
         </Link>
     );
 };
