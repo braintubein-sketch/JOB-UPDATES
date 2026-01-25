@@ -1,5 +1,50 @@
 [
     {
+        "timestamp": "2026-01-25T14:00:27.821225",
+        "action": "sync",
+        "message": "Success",
+        "counts": {
+            "jobs": 0,
+            "results": 0,
+            "admits": 0,
+            "exams": 0
+        }
+    },
+    {
+        "timestamp": "2026-01-25T13:59:16.794761",
+        "action": "error",
+        "message": "Database parse failure. Sync aborted.",
+        "counts": null
+    },
+    {
+        "timestamp": "2026-01-25T13:57:47.836519",
+        "action": "error",
+        "message": "Database parse failure. Sync aborted.",
+        "counts": null
+    },
+    {
+        "timestamp": "2026-01-25T13:56:12.139869",
+        "action": "sync",
+        "message": "Official data and sitemap fetch completed.",
+        "counts": {
+            "jobs": 0,
+            "results": 0,
+            "admits": 0,
+            "exams": 0
+        }
+    },
+    {
+        "timestamp": "2026-01-25T13:55:22.590424",
+        "action": "sync",
+        "message": "Official data and sitemap fetch completed.",
+        "counts": {
+            "jobs": 0,
+            "results": 0,
+            "admits": 0,
+            "exams": 0
+        }
+    },
+    {
         "timestamp": "2026-01-25T13:51:23.968102",
         "action": "sync",
         "message": "Official data and sitemap fetch completed.",

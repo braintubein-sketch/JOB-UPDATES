@@ -17,11 +17,11 @@ DATA_FILE = "js/data.js"
 
 def load_json(path, default):
     if os.path.exists(path):
-        with open(path, "r", encoding="utf-8") as f:
-            try:
+        try:
+            with open(path, "r", encoding="utf-8") as f:
                 return json.load(f)
-            except:
-                return default
+        except:
+            return default
     return default
 
 def save_json(path, data):
@@ -43,28 +43,49 @@ def get_current_db():
     if not os.path.exists(DATA_FILE):
         return [], [], [], []
     
-    with open(DATA_FILE, "r", encoding="utf-8") as f:
-        content = f.read()
+    try:
+        with open(DATA_FILE, "r", encoding="utf-8") as f:
+            content = f.read()
+    except Exception as e:
+        print(f"Error reading {DATA_FILE}: {e}")
+        return None, None, None, None
 
-    def extract_list(pattern):
+    def extract_list(var_name):
+        # Precise non-greedy regex
+        pattern = rf"const {var_name}\s*=\s*(\[.*?\]);"
         match = re.search(pattern, content, re.DOTALL)
-        if not match: return []
-        js_str = match.group(1)
-        json_str = js_str.replace("'", '"')
-        json_str = re.sub(r"(\w+):", r'"\1":', json_str)
-        json_str = re.sub(r",\s*\]", "]", json_str)
-        json_str = re.sub(r",\s*}", "}", json_str)
-        try:
-            return json.loads(json_str)
-        except:
+        if not match:
             return []
+        
+        json_str = match.group(1)
+        
+        # Cleanup (Comment out for now to ensure URL safety or use advanced regex)
+        # We only remove comments that start at the beginning of a line or space
+        # to avoid breaking URLs like https://
+        cleaned = re.sub(r'^\s*//.*$', '', json_str, flags=re.MULTILINE)
+        
+        try:
+            return json.loads(cleaned, strict=False)
+        except Exception as e:
+            # If that fails, it might be due to trailing commas or single quotes
+            try:
+                # 1. Strip trailing commas
+                cleaned = re.sub(r",\s*([\]}])", r"\1", cleaned)
+                # 2. Convert single quotes to double quotes
+                cleaned = cleaned.replace("'", '"')
+                return json.loads(cleaned, strict=False)
+            except Exception as e2:
+                print(f"CRITICAL: Failed to parse {var_name}.")
+                print(f"Original Error: {e}")
+                print(f"Repair Error: {e2}")
+                return None
 
-    return (
-        extract_list(r"const jobsData = (\[.*?\]);"),
-        extract_list(r"const examsData = (\[.*?\]);"),
-        extract_list(r"const resultsData = (\[.*?\]);"),
-        extract_list(r"const admitCardsData = (\[.*?\]);")
-    )
+    jobs = extract_list("jobsData")
+    exams = extract_list("examsData")
+    results = extract_list("resultsData")
+    admits = extract_list("admitCardsData")
+
+    return jobs, exams, results, admits
 
 def fetch_structured_data(endpoints):
     new_jobs, new_results, new_admits, new_exams = [], [], [], []
@@ -73,14 +94,12 @@ def fetch_structured_data(endpoints):
         url = source.get("url")
         print(f"Fetching from Official Endpoint: {source.get('name')}...")
         try:
-            # RSS Parsing
             feed = feedparser.parse(url)
             for entry in feed.entries:
                 link = entry.get("link", "#")
                 
-                # Security: Only Official Domains allowed
-                # Validates link points only to trusted gov/official domains
-                official_domains = [".gov.in", ".nic.in", ".ac.in", "upsc.gov.in", "ssc.gov.in", "ibps.in", ".org.in"]
+                # Security Filter
+                official_domains = [".gov.in", ".nic.in", ".ac.in", "upsc.gov.in", "ssc.gov.in", "ibps.in", ".org.in", "india.gov.in", "navy.mil", "army.mil"]
                 if not any(domain in link.lower() for domain in official_domains):
                     continue
 
@@ -88,19 +107,24 @@ def fetch_structured_data(endpoints):
                 title_lower = title.lower()
                 date = entry.get("published", datetime.now().strftime("%d %b %Y"))
                 
-                # Structured Job Fields
+                # Organization Mapping
+                org = "Various"
+                for o in ["UPSC", "SSC", "IBPS", "SBI", "Army", "Navy", "Railway"]:
+                    if o.lower() in title_lower:
+                        org = o
+                        break
+                
                 job_data = {
                     "title": title,
-                    "organization": source.get("name", "Official Dept"),
-                    "type": source.get("type", "govt"),
+                    "organization": org,
+                    "type": "govt" if any(kw in (title_lower + link.lower()) for kw in ["govt", "sarkari", "gov.in"]) else "private",
                     "location": "All India",
                     "qualification": "See Notification",
-                    "lastDate": "Check Portal",
+                    "lastDate": "Check Official Portal",
                     "applyLink": link,
-                    "pdfLink": link 
+                    "urgent": any(kw in title_lower for kw in ["urgent", "last date", "deadline"])
                 }
 
-                # Auto-Categorization based on Endpoint metadata/title
                 if any(kw in title_lower for kw in ["admit card", "call letter", "hall ticket"]):
                     new_admits.append({"title": title, "date": date, "link": link, "icon": "fas fa-id-card"})
                 elif any(kw in title_lower for kw in ["result", "score", "merit list"]):
@@ -110,7 +134,7 @@ def fetch_structured_data(endpoints):
                 else:
                     new_jobs.append(job_data)
         except Exception as e:
-            log_event("error", f"Fetch failed for {url}: {str(e)}")
+            print(f"Error fetching from {url}: {e}")
 
     return new_jobs, new_results, new_admits, new_exams
 
@@ -121,24 +145,23 @@ def generate_sitemap(jobs):
     static_pages = [
         "", "/govt-jobs.html", "/private-jobs.html", "/freshers-jobs.html", 
         "/results.html", "/admit-cards.html", "/exams.html", "/about.html", 
-        "/contact.html", "/disclaimer.html", "/privacy.html"
+        "/contact.html", "/disclaimer.html", "/privacy.html", "/terms.html"
     ]
     
-    sitemap_content = '<?xml version="1.0" encoding="UTF-8"?>\n'
-    sitemap_content += '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n'
+    sitemap = '<?xml version="1.0" encoding="UTF-8"?>\n'
+    sitemap += '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n'
     
-    # Static Pages
     for page in static_pages:
-        sitemap_content += f'    <url>\n        <loc>{base_url}{page}</loc>\n        <lastmod>{today}</lastmod>\n        <priority>{"1.0" if page == "" else "0.8"}</priority>\n    </url>\n'
+        sitemap += f'    <url>\n        <loc>{base_url}{page}</loc>\n        <lastmod>{today}</lastmod>\n        <priority>{"1.0" if page == "" else "0.8"}</priority>\n    </url>\n'
     
-    # Dynamic Job Pages
-    for job in jobs[:50]: # SEO for latest 50 jobs
-        sitemap_content += f'    <url>\n        <loc>{base_url}/job-details.html?id={job["id"]}</loc>\n        <lastmod>{today}</lastmod>\n        <priority>0.7</priority>\n    </url>\n'
+    for job in jobs[:60]: 
+        job_id = job.get("id")
+        if job_id:
+            sitemap += f'    <url>\n        <loc>{base_url}/job-details.html?id={job_id}</loc>\n        <lastmod>{today}</lastmod>\n        <priority>0.7</priority>\n    </url>\n'
         
-    sitemap_content += "</urlset>"
-    
+    sitemap += "</urlset>"
     with open("sitemap.xml", "w", encoding="utf-8") as f:
-        f.write(sitemap_content)
+        f.write(sitemap)
 
 def main():
     config = load_json(CONFIG_FILE, {"auto_fetch_enabled": True, "official_endpoints": []})
@@ -147,9 +170,13 @@ def main():
 
     jobs, exams, results, admits = get_current_db()
     
-    # Deduplication Fingerprints
+    if any(x is None for x in [jobs, exams, results, admits]):
+        print("ABORT: One or more data categories were corrupt. Stopping to prevent data loss.")
+        return
+
+    # Fingerprints for uniqueness
     def get_fp(item):
-        return f"{item.get('title')}-{item.get('applyLink', item.get('link'))}".lower().strip()
+        return f"{item.get('title')}-{item.get('applyLink', item.get('link', ''))}".lower().strip()
 
     existing_fps = set(get_fp(i) for i in (jobs + exams + results + admits))
     
@@ -157,27 +184,25 @@ def main():
     
     counts = {"jobs": 0, "results": 0, "admits": 0, "exams": 0}
 
-    # Atomically Add New Entries
-    def sync_items(fetched_list, db_list, count_key, has_id=False):
-        for item in fetched_list:
+    def sync(fetched, db, key, has_id=False):
+        for item in fetched:
             if get_fp(item) not in existing_fps:
                 if has_id:
-                    # Maintain correct ID sequence
-                    item["id"] = max([j.get('id', 0) for j in jobs] + [0]) + 1
-                db_list.insert(0, item)
+                    item["id"] = max([j.get('id', 0) for j in jobs] + [99]) + 1
+                db.insert(0, item)
                 existing_fps.add(get_fp(item))
-                counts[count_key] += 1
+                counts[key] += 1
 
-    sync_items(f_jobs, jobs, "jobs", True)
-    sync_items(f_results, results, "results")
-    sync_items(f_admits, admits, "admits")
-    sync_items(f_exams, exams, "exams")
+    sync(f_jobs, jobs, "jobs", True)
+    sync(f_results, results, "results")
+    sync(f_admits, admits, "admits")
+    sync(f_exams, exams, "exams")
 
-    # Limit Data size for performance
-    jobs, results, admits, exams = jobs[:100], results[:30], admits[:30], exams[:30]
+    # Limit history
+    jobs, results, admits, exams = jobs[:100], results[:40], admits[:40], exams[:40]
     
-    # Write to Data Store
-    output = f"""// Official Data Hub - Updated {datetime.now().strftime("%Y-%m-%d")}
+    # Save database
+    db_content = f"""// Official Data Hub - Updated {datetime.now().strftime("%Y-%m-%d")}
 const jobsData = {json.dumps(jobs, indent=4)};
 const examsData = {json.dumps(exams, indent=4)};
 const resultsData = {json.dumps(results, indent=4)};
@@ -185,13 +210,11 @@ const admitCardsData = {json.dumps(admits, indent=4)};
 const allJobsData = [...jobsData];"""
 
     with open(DATA_FILE, "w", encoding="utf-8") as f:
-        f.write(output)
+        f.write(db_content)
         
-    # Generate SEO Sitemap
     generate_sitemap(jobs)
-        
-    log_event("sync", "Official data and sitemap fetch completed.", counts)
-    print(f"Task Finished. Fetched {counts['jobs']} new jobs and updated sitemap.")
+    log_event("sync", "Success", counts)
+    print(f"Sync complete. Added {sum(counts.values())} new items.")
 
 if __name__ == "__main__":
     main()
