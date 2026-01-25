@@ -29,6 +29,20 @@ const jobsData = [
         "urgent": true
     },
     {
+        "id": 13,
+        "title": "RBI Grade B Officer Recruitment 2026 - 291 Vacancies",
+        "organization": "RBI",
+        "type": "govt",
+        "location": "All India",
+        "qualification": "Any Graduate (60% Marks)",
+        "experience": "Fresher",
+        "lastDate": "15 Aug 2026",
+        "vacancies": "291",
+        "salary": "\u20b91,08,000 (Gross)",
+        "applyLink": "https://opportunities.rbi.org.in",
+        "urgent": true
+    },
+    {
         "id": 3,
         "title": "RRB Group D Mega Recruitment 2026 (1.2 Lakh Vacancies)",
         "organization": "Railway",
@@ -40,6 +54,20 @@ const jobsData = [
         "vacancies": "127390",
         "salary": "Level 1 Pay Matrix",
         "applyLink": "https://rrbapply.gov.in",
+        "urgent": true
+    },
+    {
+        "id": 14,
+        "title": "Intelligence Bureau (IB) ACIO Grade-II/Tech 2026",
+        "organization": "IB",
+        "type": "govt",
+        "location": "All India",
+        "qualification": "B.E/B.Tech (GATE Score)",
+        "experience": "Fresher",
+        "lastDate": "12 Jan 2026",
+        "vacancies": "226",
+        "salary": "\u20b944,900 - 1,42,400",
+        "applyLink": "https://mha.gov.in",
         "urgent": true
     },
     {
@@ -57,6 +85,20 @@ const jobsData = [
         "urgent": true
     },
     {
+        "id": 15,
+        "title": "Amazon AWS Cloud Practitioner Intern - 2026 Batch",
+        "organization": "Amazon",
+        "type": "private",
+        "location": "Remote / Hyderabad",
+        "qualification": "Currently Pursuing B.E/B.Tech",
+        "experience": "2026 Batch Graduates",
+        "lastDate": "Apply Soon",
+        "vacancies": "200+",
+        "salary": "\u20b960,000/month",
+        "applyLink": "https://amazon.jobs",
+        "urgent": false
+    },
+    {
         "id": 5,
         "title": "Indian Army Agniveer Rally 2026 - All Categories (GD, Clerk, Tech)",
         "organization": "Defence",
@@ -69,6 +111,20 @@ const jobsData = [
         "salary": "\u20b930,000 - 40,000",
         "applyLink": "https://joinindianarmy.nic.in",
         "urgent": true
+    },
+    {
+        "id": 16,
+        "title": "NABARD Specialist Officers Recruitment 2026",
+        "organization": "NABARD",
+        "type": "govt",
+        "location": "Mumbai / PAN India",
+        "qualification": "B.E/B.Tech/CA/MBA",
+        "experience": "0-3 Years",
+        "lastDate": "10 Mar 2026",
+        "vacancies": "102",
+        "salary": "\u20b982,000+",
+        "applyLink": "https://nabard.org",
+        "urgent": false
     },
     {
         "id": 6,
@@ -111,6 +167,20 @@ const jobsData = [
         "salary": "\u20b982,000+",
         "applyLink": "https://isro.gov.in",
         "urgent": false
+    },
+    {
+        "id": 17,
+        "title": "LIC ADO Recruitment 2026 - 9,000+ Vacancies",
+        "organization": "LIC",
+        "type": "govt",
+        "location": "All India Offices",
+        "qualification": "Any Graduate",
+        "experience": "Fresher / Ex-Agent",
+        "lastDate": "12 Apr 2026",
+        "vacancies": "9394",
+        "salary": "\u20b951,000+",
+        "applyLink": "https://licindia.in",
+        "urgent": true
     },
     {
         "id": 9,
@@ -167,6 +237,20 @@ const jobsData = [
         "salary": "\u20b91.9 - 3.5 LPA",
         "applyLink": "https://nextstep.tcs.com",
         "urgent": true
+    },
+    {
+        "id": 18,
+        "title": "Infosys Power Programmer Recruitment 2026",
+        "organization": "Infosys",
+        "type": "private",
+        "location": "PAN India",
+        "qualification": "B.E/B.Tech (CS/IT Preferred)",
+        "experience": "Fresher",
+        "lastDate": "Check Portal",
+        "vacancies": "2000+",
+        "salary": "\u20b99.0 - 12.0 LPA",
+        "applyLink": "https://www.infosys.com/careers",
+        "urgent": false
     }
 ];
 const examsData = [
@@ -181,6 +265,12 @@ const examsData = [
         "date": "24 May 2026",
         "icon": "fas fa-calendar-alt",
         "link": "https://upsc.gov.in"
+    },
+    {
+        "title": "RBI Grade B Phase 1 Schedule 2026",
+        "date": "04 Sep 2026",
+        "icon": "fas fa-calendar-alt",
+        "link": "https://rbi.org.in"
     },
     {
         "title": "IBPS PO CRP XIV Main Exam Schedule",
@@ -216,6 +306,12 @@ const resultsData = [
     }
 ];
 const admitCardsData = [
+    {
+        "title": "Railway ALP Admit Card 2026",
+        "date": "25 Jan 2026",
+        "icon": "fas fa-id-card",
+        "link": "https://rrbapply.gov.in"
+    },
     {
         "title": "SSC CPO 2025 Paper 2 Admit Card",
         "date": "25 Jan 2026",
