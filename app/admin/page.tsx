@@ -6,6 +6,8 @@ import {
     TrendingUp, AlertCircle, Database
 } from 'lucide-react';
 
+import ManualFetchButton from '@/components/admin/ManualFetchButton';
+
 export const dynamic = 'force-dynamic';
 
 export default async function AdminDashboard() {
@@ -35,9 +37,10 @@ export default async function AdminDashboard() {
                     <h1 className="text-4xl font-bold mb-2">Admin Dashboard</h1>
                     <p className="text-slate-500">Managing {total} verified recruitment entries.</p>
                 </div>
-                <div className="flex gap-4">
+                <div className="flex flex-wrap gap-4">
                     <StatBox icon={<Database />} label="Total" value={total} />
                     <StatBox icon={<AlertCircle />} label="Pending" value={pending} />
+                    <ManualFetchButton />
                     <Link href="/admin/jobs/new" className="btn-premium btn-primary flex items-center h-full">
                         <Plus size={20} /> Add Job
                     </Link>
@@ -76,8 +79,8 @@ export default async function AdminDashboard() {
                                     </td>
                                     <td className="p-4">
                                         <span className={`px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider ${job.status === 'APPROVED' ? 'bg-green-100 text-green-700' :
-                                                job.status === 'PENDING' ? 'bg-amber-100 text-amber-700' :
-                                                    'bg-gray-100 text-gray-700'
+                                            job.status === 'PENDING' ? 'bg-amber-100 text-amber-700' :
+                                                'bg-gray-100 text-gray-700'
                                             }`}>
                                             {job.status}
                                         </span>

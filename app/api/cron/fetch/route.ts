@@ -1,4 +1,6 @@
 import { NextResponse } from 'next/server';
+import { getServerSession } from 'next-auth';
+import { authOptions } from '@/lib/auth';
 import { automateContentFetch } from '@/lib/automation/fetcher';
 
 export const dynamic = 'force-dynamic';
@@ -7,9 +9,15 @@ export const maxDuration = 60;
 export async function GET(request: Request) {
     const { searchParams } = new URL(request.url);
     const key = searchParams.get('key');
+    const session = await getServerSession(authOptions);
 
-    // Secure the endpoint in production
-    if (process.env.NODE_ENV === 'production' && key !== process.env.CRON_SECRET) {
+    // Allow execution if:
+    // 1. Correct CRON_SECRET is provided (for Cron-Job.org)
+    // 2. User is logged in as Admin (for Dashboard button)
+    const isCronAuthorized = process.env.CRON_SECRET && key === process.env.CRON_SECRET;
+    const isAdminAuthorized = session?.user;
+
+    if (!isCronAuthorized && !isAdminAuthorized) {
         return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
