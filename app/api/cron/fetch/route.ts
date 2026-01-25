@@ -1,39 +1,39 @@
 import { NextResponse } from 'next/server';
-import { getServerSession } from 'next-auth';
-import { authOptions } from '@/lib/auth';
 import { automateContentFetch } from '@/lib/automation/fetcher';
 
 export const dynamic = 'force-dynamic';
 export const maxDuration = 60;
 
 export async function GET(request: Request) {
-    const { searchParams } = new URL(request.url);
-    const key = searchParams.get('key');
-    const session = await getServerSession(authOptions);
-
-    // Allow execution if:
-    // 1. Correct CRON_SECRET is provided (for Cron-Job.org)
-    // 2. User is logged in as Admin (for Dashboard button)
-    const isCronAuthorized = process.env.CRON_SECRET && key === process.env.CRON_SECRET;
-    const isAdminAuthorized = session?.user;
-
-    const authHeader = request.headers.get('authorization');
-    const isVercelCronAuthorized = authHeader?.startsWith('Bearer ') && authHeader.includes('vercel-cron');
-
-    // Secure the endpoint in production
-    // We allow if:
-    // 1. Key matches CRON_SECRET (External triggers like Cron-Job.org)
-    // 2. Admin is logged in (Manual button from dashboard)
-    // 3. Authorization header contains 'Bearer vercel-cron' (for Vercel's native cron jobs)
-    if (!isCronAuthorized && !isAdminAuthorized && !isVercelCronAuthorized) {
-        return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-    }
-
     try {
-        await automateContentFetch();
-        return NextResponse.json({ success: true, timestamp: new Date().toISOString() });
+        const { searchParams } = new URL(request.url);
+        const key = searchParams.get('key');
+
+        // Check authorization
+        // 1. CRON_SECRET key in query params
+        // 2. Vercel Cron header
+        const authHeader = request.headers.get('authorization');
+        const isVercelCron = authHeader?.includes('vercel-cron');
+        const isCronAuthorized = process.env.CRON_SECRET && key === process.env.CRON_SECRET;
+
+        if (!isCronAuthorized && !isVercelCron) {
+            return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+        }
+
+        console.log('Starting automation...');
+        const result = await automateContentFetch();
+
+        return NextResponse.json({
+            success: true,
+            timestamp: new Date().toISOString(),
+            ...result
+        });
     } catch (error: any) {
         console.error('Cron job error:', error);
-        return NextResponse.json({ success: false, error: error.message }, { status: 500 });
+        return NextResponse.json({
+            success: false,
+            error: error.message || 'Unknown error',
+            stack: process.env.NODE_ENV === 'development' ? error.stack : undefined
+        }, { status: 500 });
     }
 }
