@@ -1,5 +1,16 @@
 [
     {
+        "timestamp": "2026-01-25T13:47:38.498268",
+        "action": "sync",
+        "message": "Official data fetch completed.",
+        "counts": {
+            "jobs": 0,
+            "results": 0,
+            "admits": 0,
+            "exams": 0
+        }
+    },
+    {
         "timestamp": "2026-01-25T13:43:08.856990",
         "action": "batch_update",
         "message": "Official source browsing completed.",

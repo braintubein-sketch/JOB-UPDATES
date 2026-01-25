@@ -1,27 +1,21 @@
 {
-    "auto_browsing_enabled": true,
-    "manual_review_required": false,
-    "trusted_sources": [
+    "auto_fetch_enabled": true,
+    "official_endpoints": [
         {
-            "name": "UPSC",
+            "name": "UPSC Official",
             "url": "https://upsc.gov.in/whats-new/rss.xml",
             "type": "govt"
         },
         {
-            "name": "SSC",
+            "name": "SSC Official",
             "url": "https://ssc.gov.in/api/v1/notices/rss",
             "type": "govt"
         },
         {
-            "name": "IndGovtJobs",
+            "name": "IndGovtJobs Official",
             "url": "https://www.indgovtjobs.in/feeds/posts/default?alt=rss",
-            "type": "govt"
-        },
-        {
-            "name": "SarkariResult",
-            "url": "https://www.fresherslive.com/sarkari-result/rss",
             "type": "govt"
         }
     ],
-    "last_successful_run": "2026-01-25T13:43:08.853349"
+    "review_before_publish": false
 }

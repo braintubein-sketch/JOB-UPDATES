@@ -6,7 +6,7 @@ on:
   workflow_dispatch:
 
 jobs:
-  sync-official-jobs:
+  sync-official-data:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Code
@@ -18,9 +18,9 @@ jobs:
           python-version: '3.x'
 
       - name: Install Dependencies
-        run: pip install feedparser beautifulsoup4 requests
+        run: pip install feedparser requests
 
-      - name: Run Official Scraper
+      - name: Fetch Official Updates
         run: python scraper.py
 
       - name: Commit & Push Updates
