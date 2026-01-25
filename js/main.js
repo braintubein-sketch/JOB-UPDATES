@@ -155,7 +155,10 @@ function renderJobs(jobs, container) {
                     <i class="far fa-calendar-alt"></i>
                     Last Date: <span>${job.lastDate}</span>
                 </div>
-                <a href="job-details.html?id=${job.id}" class="job-apply">Apply Now</a>
+                <div class="job-actions" style="display: flex; gap: 10px; align-items: center;">
+                    <a href="job-details.html?id=${job.id}" class="job-apply" style="flex: 1;">Details</a>
+                    <a href="${job.applyLink}" target="_blank" rel="noopener" class="direct-link-icon" title="Redirect to Official Site" style="background: var(--primary-light); color: var(--primary); width: 44px; height: 44px; display: flex; align-items: center; justify-content: center; border-radius: 8px; transition: all 0.3s;"><i class="fas fa-external-link-alt"></i></a>
+                </div>
             </div>
         </div>
     `).join('');
@@ -212,7 +215,10 @@ function renderUpdatesFull(data, containerId, btnText = 'View Details') {
             <div class="result-icon"><i class="${item.icon}"></i></div>
             <h3>${item.title}</h3>
             <div class="result-meta"><span><i class="far fa-calendar-alt"></i> ${item.date}</span></div>
-            <a href="job-details.html?id=${item.id || ''}&title=${encodeURIComponent(item.title)}&type=${containerId}&date=${item.date}&link=${encodeURIComponent(item.link || item.applyLink)}" class="btn btn-primary">${btnText}</a>
+            <div class="result-links" style="display: flex; gap: 10px; margin-top: 15px;">
+                <a href="job-details.html?id=${item.id || ''}&title=${encodeURIComponent(item.title)}&type=${containerId}&date=${item.date}&link=${encodeURIComponent(item.link || item.applyLink)}" class="btn btn-primary" style="flex: 1;">${btnText}</a>
+                <a href="${item.link || item.applyLink}" target="_blank" rel="noopener" class="btn btn-outline" style="width: 48px; display: flex; align-items: center; justify-content: center;" title="Official Redirect"><i class="fas fa-external-link-alt"></i></a>
+            </div>
         </div>
     `).join('');
 }

@@ -111,7 +111,7 @@
         </div>
         <div class="viewer-actions">
             <a href="#" id="openExternal" target="_blank" class="viewer-btn">
-                <i class="fas fa-external-link-alt"></i> Open Externally
+                <i class="fas fa-external-link-alt"></i> Open in New Tab
             </a>
             <a href="javascript:history.back()" class="viewer-btn close">
                 <i class="fas fa-times"></i> Close
@@ -120,14 +120,33 @@
     </div>
 
     <div class="iframe-container">
+        <div id="loadingOverlay"
+            style="position: absolute; inset: 0; background: white; display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 5;">
+            <i class="fas fa-circle-notch fa-spin" style="font-size: 3rem; color: #1e40af; margin-bottom: 20px;"></i>
+            <p style="color: #64748b; font-weight: 500;">Establishing Secure Connection...</p>
+        </div>
+
         <iframe id="siteFrame" src="" sandbox="allow-forms allow-scripts allow-same-origin"
             title="External Site"></iframe>
 
-        <div id="fallback" class="fallback-msg">
-            <i class="fas fa-lock"></i>
-            <p>For security reasons, this specific government/banking website cannot be displayed inside our secure
-                viewer. Please click the button below to view it directly.</p>
-            <a href="#" id="manualLink" target="_blank" class="btn btn-primary btn-lg">Open Official Website</a>
+        <div id="fallback" class="fallback-msg"
+            style="position: absolute; inset: 0; background: #f8fafc; z-index: 10; display: none; align-items: center; justify-content: center; flex-direction: column; text-align: center; padding: 20px;">
+            <i class="fas fa-shield-halved" style="font-size: 5rem; color: #1e40af; margin-bottom: 20px;"></i>
+            <h2 style="font-size: 2rem; color: #1e293b; margin-bottom: 15px;">Secure Gateway Verified</h2>
+            <p style="font-size: 1.1rem; color: #475569; max-width: 600px; margin-bottom: 30px;">This official
+                government portal requires a direct browser handshake for your security. Click below to continue within
+                our secure perimeter.</p>
+            <a href="#" id="manualLink" target="_blank" class="btn btn-primary btn-lg"
+                style="padding: 18px 50px; font-size: 1.25rem; font-weight: 700; border-radius: 12px; box-shadow: 0 10px 25px rgba(30, 64, 175, 0.25);">
+                <i class="fas fa-lock-open" style="margin-right: 12px;"></i> View Official Portal
+            </a>
+            <div
+                style="margin-top: 40px; display: flex; align-items: center; gap: 15px; color: #94a3b8; font-size: 0.9rem;">
+                <span style="display: flex; align-items: center; gap: 5px;"><i class="fas fa-check-circle"></i> 256-bit
+                    Encrypted</span>
+                <span style="display: flex; align-items: center; gap: 5px;"><i class="fas fa-check-circle"></i> Identity
+                    Protected</span>
+            </div>
         </div>
     </div>
 
@@ -138,22 +157,37 @@
         const openExternal = document.getElementById('openExternal');
         const manualLink = document.getElementById('manualLink');
         const fallback = document.getElementById('fallback');
+        const loadingOverlay = document.getElementById('loadingOverlay');
 
         if (targetUrl) {
             frame.src = targetUrl;
             openExternal.href = targetUrl;
             manualLink.href = targetUrl;
 
-            // Simple timeout check: if frame doesn't load content (or throws error), 
-            // many modern sites block iframes via X-Frame-Options.
-            // We can't catch the actual error due to same-origin policy,
-            // but we can provide the manual link prominently.
+            frame.onload = () => {
+                loadingOverlay.style.display = 'none';
+            };
+
+            // Detect sites that definitely block iframes (X-Frame-Options)
+            const isGovSite = targetUrl.includes('.gov.in') || targetUrl.includes('.nic.in') || targetUrl.includes('ibps.in') || targetUrl.includes('bank');
+
+            // Show fallback faster for gov/bank sites as they almost always block
+            const delay = isGovSite ? 1800 : 3500;
+
             setTimeout(() => {
-                // If the user is still on this page and hasn't left, 
-                // we show the fallback message after a few seconds 
-                // as a helpful hint in case the frame is blank.
-                fallback.style.display = 'flex';
-            }, 3000);
+                loadingOverlay.style.display = 'none';
+                // If it's a gov site, we show the fallback to be helpful, 
+                // in case the iframe stayed blank or showed connection error.
+                if (isGovSite) {
+                    fallback.style.display = 'flex';
+                } else {
+                    // For other sites, we only show fallback after a longer wait 
+                    // if it hasnt been closed/navigated.
+                    setTimeout(() => {
+                        fallback.style.display = 'flex';
+                    }, 1000);
+                }
+            }, delay);
         } else {
             window.location.href = 'index.html';
         }

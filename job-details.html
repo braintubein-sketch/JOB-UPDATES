@@ -171,9 +171,12 @@
 
                     <div class="details-actions">
                         <a href="view-site.html?url=${encodeURIComponent(job.applyLink || job.link)}" class="btn btn-primary btn-lg">
-                            <i class="fas fa-eye"></i> View Official Page
+                            <i class="fas fa-eye"></i> View in Secure Viewer
                         </a>
-                        <a href="index.html" class="btn btn-outline">Back to Home</a>
+                        <a href="${job.applyLink || job.link}" target="_blank" rel="noopener" class="btn btn-outline btn-lg">
+                            <i class="fas fa-external-link-alt"></i> Direct Official Link
+                        </a>
+                        <a href="index.html" class="btn btn-ghost">Back to Home</a>
                     </div>
                 </div>
             `;
