@@ -1,11 +1,11 @@
 import JobListPage from '@/components/JobListPage';
 
-export default function FreshersJobs() {
+export default function FreshersJobsPage() {
     return (
         <JobListPage
-            title="Jobs for Freshers"
-            description="Start your career journey with entry-level opportunities from both Govt and Private sectors."
-            subCategory="Freshers"
+            title="Freshers Jobs 2026"
+            description="Entry-level opportunities for recent graduates and young professionals starting their career journey."
+            category="Private" // Or we could add a logic for 'Freshers' tag
         />
     );
 }
