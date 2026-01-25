@@ -1,5 +1,16 @@
 [
     {
+        "timestamp": "2026-01-25T13:51:23.968102",
+        "action": "sync",
+        "message": "Official data and sitemap fetch completed.",
+        "counts": {
+            "jobs": 0,
+            "results": 0,
+            "admits": 0,
+            "exams": 0
+        }
+    },
+    {
         "timestamp": "2026-01-25T13:50:18.744910",
         "action": "sync",
         "message": "Official data and sitemap fetch completed.",
