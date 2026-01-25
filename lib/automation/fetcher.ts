@@ -1,42 +1,54 @@
-import axios from 'axios';
 import RSSParser from 'rss-parser';
 import dbConnect from '../mongodb/dbConnect';
-import { Job, SiteUpdate } from '../../models/Job';
+import { Job } from '../../models/Job';
+import { generateSlug } from '../utils';
 
 const parser = new RSSParser();
 
 export async function automateContentFetch() {
     await dbConnect();
-    console.log('--- STARTING AUTOMATION CYCLE ---');
+    console.log('--- STARTING MONGODB AUTOMATION CYCLE ---');
 
     const sources = [
         { url: 'https://www.ncs.gov.in/Pages/RSS.aspx', type: 'JOB', category: 'Govt' },
-        // In a real scenario, we'd add more official RSS links or API endpoints
+        // Add more RSS feeds here
     ];
 
     for (const source of sources) {
         try {
+            // Note: In a browser/Vercel serverless environment, some RSS feeds might block requests
+            // We wrap this in a try-catch to ensure one failure doesn't stop the whole process
             const feed = await parser.parseURL(source.url);
 
             for (const item of feed.items) {
                 if (!item.title || !item.link) continue;
 
-                const slug = item.title.toLowerCase().replace(/[^a-z0-9]+/g, '-');
+                // Create a unique slug
+                const slug = generateSlug(item.title);
 
                 // Prevent Duplicates
                 const existingJob = await Job.findOne({ slug });
                 if (existingJob) continue;
 
-                // Smart Parsing (Simulated as we only use RSS content)
+                // Auto-determine category if not set
+                let finalCategory = source.category;
+                if (item.title.toLowerCase().includes('result')) finalCategory = 'Result';
+                if (item.title.toLowerCase().includes('admit card') || item.title.toLowerCase().includes('hall ticket')) finalCategory = 'Admit Card';
+
+                // Save to MongoDB
                 await Job.create({
                     title: item.title,
                     slug: slug,
-                    organization: 'National Career Service',
-                    category: source.category,
+                    organization: 'National Career Service', // This is a placeholder, real parsing would extract this
+                    category: finalCategory,
                     source: item.link,
                     description: item.contentSnippet || item.content,
                     status: 'APPROVED',
-                    importantDates: { posted: item.pubDate },
+                    isFeatured: false,
+                    state: 'All India', // Default, would need NLP to extract state
+                    createdAt: new Date(),
+                    updatedAt: new Date(),
+                    expiresAt: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000) // Default 30 days expiry
                 });
 
                 console.log(`+ New Job Added: ${item.title}`);
