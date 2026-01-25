@@ -40,12 +40,7 @@ const Navbar = () => {
         <nav className={`sticky top-0 z-50 transition-all duration-300 ${scrolled ? 'glass py-2' : 'bg-transparent py-4'}`}>
             <div className="container mx-auto px-4 flex items-center justify-between">
                 <Link href="/" className="flex items-center gap-2">
-                    <div className="bg-primary p-1.5 rounded-lg">
-                        <Briefcase className="w-6 h-6 text-white" />
-                    </div>
-                    <span className="text-xl font-bold tracking-tight">
-                        Job<span className="text-primary">Updates</span>
-                    </span>
+                    <img src="/logo.png" alt="Job Updates India" className="h-10 md:h-12 w-auto object-contain" />
                 </Link>
 
                 {/* Desktop Nav */}

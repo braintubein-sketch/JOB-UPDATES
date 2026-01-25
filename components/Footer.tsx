@@ -39,12 +39,7 @@ const Footer = () => {
                     {/* Brand */}
                     <div className="col-span-1 md:col-span-1">
                         <Link href="/" className="flex items-center gap-2 mb-6">
-                            <div className="bg-primary p-1.5 rounded-lg">
-                                <Briefcase className="w-6 h-6 text-white" />
-                            </div>
-                            <span className="text-xl font-bold tracking-tight">
-                                Job<span className="text-primary">Updates</span>
-                            </span>
+                            <img src="/logo.png" alt="Job Updates India" className="h-10 w-auto object-contain" />
                         </Link>
                         <p className="text-secondary text-sm leading-relaxed mb-6">
                             Your trusted destination for official job updates, results, and admit cards. We only fetch data from government and verified official sources.
