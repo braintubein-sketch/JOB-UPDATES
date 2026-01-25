@@ -1,0 +1,13 @@
+[
+    {
+        "timestamp": "2026-01-25T13:43:08.856990",
+        "action": "batch_update",
+        "message": "Official source browsing completed.",
+        "counts": {
+            "jobs": 25,
+            "results": 0,
+            "admits": 0,
+            "exams": 0
+        }
+    }
+]
