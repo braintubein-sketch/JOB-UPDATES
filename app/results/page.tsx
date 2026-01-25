@@ -1,11 +1,38 @@
-import JobListPage from '@/components/JobListPage';
+import dbConnect from '@/lib/mongodb/dbConnect';
+import { Job } from '@/models/Job';
+import JobCard from '@/components/JobCard';
 
-export default function ResultsPage() {
+export const dynamic = 'force-dynamic';
+
+export default async function ResultsPage() {
+    let jobs: any[] = [];
+
+    try {
+        await dbConnect();
+        jobs = await Job.find({ status: 'APPROVED', category: 'Result' }).sort({ createdAt: -1 }).limit(50).lean();
+    } catch (error) {
+        console.error('Results page error:', error);
+    }
+
     return (
-        <JobListPage
-            title="Official Results"
-            description="Verified exam results, merit lists, and selection notifications from official boards."
-            category="Result"
-        />
+        <div className="section-premium">
+            <div className="container-premium">
+                <div className="mb-12">
+                    <h1 className="text-4xl font-bold mb-2">Official Results</h1>
+                    <p className="text-slate-500 text-lg">Verified exam results, merit lists, and selection notifications.</p>
+                </div>
+
+                <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    {jobs.map((job: any) => (
+                        <JobCard key={job._id.toString()} job={{ ...job, id: job._id.toString() }} />
+                    ))}
+                    {jobs.length === 0 && (
+                        <div className="col-span-3 card-premium py-16 text-center border-dashed border-2">
+                            <p className="text-slate-500">No results available. Check back soon!</p>
+                        </div>
+                    )}
+                </div>
+            </div>
+        </div>
     );
 }
