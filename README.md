@@ -1,52 +1,36 @@
-# JOB UPDATES
+This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
 
-A modern, premium job portal website for Government and Private job notifications in India.
+## Getting Started
 
-## 🌐 Live Demo
-[View Website](https://YOUR_USERNAME.github.io/job-updates/)
+First, run the development server:
 
-## ✨ Features
+```bash
+npm run dev
+# or
+yarn dev
+# or
+pnpm dev
+# or
+bun dev
+```
 
-- **Daily Job Alerts** - Government & Private jobs
-- **Dark/Light Mode** - Toggle theme with smooth transitions
-- **Mobile Responsive** - Works on all devices
-- **Glassmorphism Design** - Premium modern UI
-- **Anti-gravity Animations** - Floating card effects
-- **Job Filters** - Filter by qualification, location, category
-- **SEO Optimized** - Meta tags and semantic HTML
+Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
-## 📄 Pages
+You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
 
-- Homepage with hero, categories, and updates
-- Government Jobs listing
-- Private Jobs listing
-- Freshers Jobs
-- Exam Results
-- Admit Cards
-- Upcoming Exams
-- About Us
-- Contact
+This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
 
-## 🎨 Tech Stack
+## Learn More
 
-- HTML5
-- CSS3 (Vanilla CSS with CSS Variables)
-- JavaScript (Vanilla JS)
-- Font Awesome Icons
-- Google Fonts (Inter, Outfit)
+To learn more about Next.js, take a look at the following resources:
 
-## 🚀 Deployment
+- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
+- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
 
-This site is deployed on GitHub Pages.
+You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
 
-## 📱 Screenshots
+## Deploy on Vercel
 
-Coming soon...
+The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
 
-## 📝 License
-
-This project is open source and available under the [MIT License](LICENSE).
-
----
-
-Made with ❤️ for job seekers in India
+Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
