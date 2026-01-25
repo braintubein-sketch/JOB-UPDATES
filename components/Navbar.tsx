@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { Menu, X, Search, Moon, Sun, ShieldCheck } from 'lucide-react';
+import { Menu, X, Search, Moon, Sun, Briefcase, ChevronDown } from 'lucide-react';
 
 const Navbar = () => {
     const [isOpen, setIsOpen] = useState(false);
@@ -37,44 +37,49 @@ const Navbar = () => {
     ];
 
     return (
-        <nav className={`glass-header transition-all duration-500 ${scrolled ? 'py-2 shadow-md' : 'py-4'}`}>
+        <nav className={`fixed w-full z-[100] transition-all duration-500 ${scrolled ? 'py-4 glass shadow-premium' : 'py-8'}`}>
             <div className="container flex items-center justify-between">
                 <Link href="/" className="flex items-center gap-3 group">
-                    <img src="/logo.png" alt="Job Updates India" className="h-10 md:h- 12 w-auto object-contain transition-transform group-hover:scale-105" />
-                    <div className="hidden lg:block border-l border-border-hard pl-3">
-                        <span className="text-[10px] font-black uppercase tracking-[0.2em] text-secondary leading-none">Verified</span>
-                        <div className="text-[10px] font-bold text-accent">Source Portal</div>
+                    <div className="w-12 h-12 rounded-2xl bg-primary flex items-center justify-center shadow-glow group-hover:scale-110 transition-transform">
+                        <Briefcase className="text-white" size={24} />
+                    </div>
+                    <div className="flex flex-col">
+                        <span className="text-xl font-black tracking-tight leading-none">Job<span className="text-primary">Updates</span></span>
+                        <span className="text-[10px] uppercase font-black tracking-widest text-text-muted mt-1 opacity-60">Verified Portal</span>
                     </div>
                 </Link>
 
                 {/* Desktop Nav */}
                 <div className="hidden lg:flex items-center gap-10">
-                    {navLinks.map((link) => (
-                        <Link
-                            key={link.name}
-                            href={link.href}
-                            className="text-sm font-bold text-secondary hover:text-primary transition-colors tracking-wide"
-                        >
-                            {link.name}
-                        </Link>
-                    ))}
+                    <div className="flex items-center gap-8 pr-10 border-r border-border-light">
+                        {navLinks.map((link) => (
+                            <Link
+                                key={link.name}
+                                href={link.href}
+                                className="text-sm font-bold text-text-muted hover:text-primary transition-colors tracking-wide relative group"
+                            >
+                                {link.name}
+                                <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-primary transition-all group-hover:w-full"></span>
+                            </Link>
+                        ))}
+                    </div>
 
-                    <div className="flex items-center gap-6 border-l border-border-hard pl-8 ml-2">
-                        <button onClick={toggleTheme} className="w-10 h-10 rounded-xl bg-primary/5 flex items-center justify-center text-primary hover:bg-primary/10 transition-colors">
+                    <div className="flex items-center gap-6">
+                        <button onClick={toggleTheme} className="w-10 h-10 rounded-full border border-border-light flex items-center justify-center hover:bg-white transition-all shadow-soft">
                             {theme === 'light' ? <Moon size={18} /> : <Sun size={18} />}
                         </button>
-                        <Link href="/latest-jobs" className="btn-premium btn-primary py-2.5 px-6 text-sm">
-                            Search Jobs
+                        <Link href="/latest-jobs" className="btn-luxury btn-lux-primary py-2.5 px-6 text-sm">
+                            Quick Search
                         </Link>
                     </div>
                 </div>
 
-                {/* Mobile Toggle */}
+                {/* Mobile Menu Toggle */}
                 <div className="lg:hidden flex items-center gap-4">
-                    <button onClick={toggleTheme} className="p-2 text-secondary">
-                        {theme === 'light' ? <Moon size={20} /> : <Sun size={20} />}
+                    <button onClick={toggleTheme} className="p-2 text-text-muted">
+                        {theme === 'light' ? <Moon size={22} /> : <Sun size={22} />}
                     </button>
-                    <button onClick={() => setIsOpen(!isOpen)} className="p-3 bg-primary/5 rounded-xl text-primary">
+                    <button onClick={() => setIsOpen(!isOpen)} className="w-12 h-12 rounded-2xl bg-surface border border-border-light flex items-center justify-center text-primary shadow-soft">
                         {isOpen ? <X size={24} /> : <Menu size={24} />}
                     </button>
                 </div>
@@ -82,20 +87,17 @@ const Navbar = () => {
 
             {/* Mobile Nav Overlay */}
             {isOpen && (
-                <div className="lg:hidden fixed inset-0 z-[200] bg-white animate-fade-in p-8 flex flex-col">
-                    <div className="flex justify-between items-center mb-12">
-                        <img src="/logo.png" alt="Logo" className="h-10" />
-                        <button onClick={() => setIsOpen(false)} className="p-3 bg-primary/5 rounded-full text-primary">
-                            <X size={24} />
-                        </button>
-                    </div>
+                <div className="lg:hidden fixed inset-0 z-[200] bg-surface animate-fade-in p-8 flex flex-col justify-center">
+                    <button onClick={() => setIsOpen(false)} className="absolute top-8 right-8 p-3 bg-primary/10 rounded-full text-primary">
+                        <X size={28} />
+                    </button>
 
-                    <div className="flex flex-col gap-6">
+                    <div className="flex flex-col gap-8 text-center">
                         {navLinks.map((link) => (
                             <Link
                                 key={link.name}
                                 href={link.href}
-                                className="text-3xl font-extrabold tracking-tight"
+                                className="text-4xl font-black tracking-tight hover:text-primary transition-colors"
                                 onClick={() => setIsOpen(false)}
                             >
                                 {link.name}
@@ -103,9 +105,9 @@ const Navbar = () => {
                         ))}
                     </div>
 
-                    <div className="mt-auto pt-12 border-t border-border-soft">
-                        <Link href="/latest-jobs" className="btn-premium btn-primary w-full justify-center py-4 text-lg">
-                            Get Notifications
+                    <div className="mt-20 border-t border-border-light pt-10">
+                        <Link href="/latest-jobs" className="btn-luxury btn-lux-primary w-full justify-center py-5 text-xl">
+                            Search Vacancies
                         </Link>
                     </div>
                 </div>
