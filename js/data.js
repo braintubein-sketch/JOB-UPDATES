@@ -1,4 +1,4 @@
-// Auto-Generated Data Hub - 2026-01-25 13:36
+// Real-time Job Data Hub - Verified 2026
 const jobsData = [
     {
         "title": "Police Jobs 2026: Latest Constable, SI, Inspector Jobs \u2013 43001 Vacancies",
