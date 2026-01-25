@@ -8,7 +8,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     const jobs = await prisma.job.findMany({
         where: { status: 'APPROVED' },
         select: { slug: true, updatedAt: true },
-    });
+    }).catch(() => []);
 
     const jobEntries = jobs.map((job: { slug: string; updatedAt: Date }) => ({
         url: `${baseUrl}/jobs/${job.slug}`,

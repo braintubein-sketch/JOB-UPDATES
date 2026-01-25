@@ -1,6 +1,8 @@
 import { NextResponse } from 'next/server';
 import { fetchUpdates } from '@/lib/fetcher';
 
+export const dynamic = 'force-dynamic';
+
 export async function GET(request: Request) {
     // Simple auth check for cron (use CRON_SECRET in production)
     const authHeader = request.headers.get('authorization');
