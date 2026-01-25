@@ -2,12 +2,14 @@ import { prisma } from '@/lib/prisma';
 import JobCard from '@/components/JobCard';
 import { Search, Filter } from 'lucide-react';
 
+export const dynamic = 'force-dynamic';
+
 export default async function LatestJobsPage() {
     const jobs = await prisma.job.findMany({
         where: { status: 'APPROVED' },
         orderBy: { createdAt: 'desc' },
         take: 20,
-    });
+    }).catch(() => []);
 
     // Fallback to mock data if DB is empty for demo
     const displayJobs = jobs.length > 0 ? jobs : [
@@ -19,7 +21,6 @@ export default async function LatestJobsPage() {
             id: '2', slug: 'ssc-cgl', title: 'SSC CGL 2026 Notification', organization: 'SSC',
             qualification: 'Graduate', category: 'Govt', createdAt: new Date().toISOString()
         },
-        // ... more
     ];
 
     return (
@@ -46,12 +47,6 @@ export default async function LatestJobsPage() {
                     <JobCard key={job.id} job={job} />
                 ))}
             </div>
-
-            {displayJobs.length === 0 && (
-                <div className="text-center py-20 bg-card-bg rounded-2xl border border-dashed border-border">
-                    <p className="text-secondary italic">No jobs found matching your criteria.</p>
-                </div>
-            )}
         </div>
     );
 }

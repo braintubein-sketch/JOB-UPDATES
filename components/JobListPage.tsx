@@ -2,6 +2,8 @@ import { prisma } from '@/lib/prisma';
 import JobCard from '@/components/JobCard';
 import { Search, Filter } from 'lucide-react';
 
+export const dynamic = 'force-dynamic';
+
 interface JobListPageProps {
     title: string;
     description: string;
@@ -20,7 +22,7 @@ export default async function JobListPage({ title, description, category, subCat
         where,
         orderBy: { createdAt: 'desc' },
         take: 30,
-    });
+    }).catch(() => []);
 
     return (
         <div className="container py-12">

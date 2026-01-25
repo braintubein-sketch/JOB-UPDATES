@@ -2,14 +2,15 @@ import { prisma } from '@/lib/prisma';
 import Link from 'next/link';
 import { Check, X, Edit, Eye } from 'lucide-react';
 
+export const dynamic = 'force-dynamic';
+
 export default async function AdminDashboard() {
     const pendingJobs = await prisma.job.findMany({
         where: { status: 'PENDING' },
         orderBy: { createdAt: 'desc' },
-    });
+    }).catch(() => []);
 
-    const totalJobs = await prisma.job.count();
-    const approvedJobs = await prisma.job.count({ where: { status: 'APPROVED' } });
+    const totalJobs = await prisma.job.count().catch(() => 0);
 
     return (
         <div className="container py-12">
@@ -67,7 +68,7 @@ export default async function AdminDashboard() {
                         {pendingJobs.length === 0 && (
                             <tr>
                                 <td colSpan={4} className="px-6 py-12 text-center text-secondary italic">
-                                    No pending jobs to approve.
+                                    Database not connected or no pending jobs.
                                 </td>
                             </tr>
                         )}
