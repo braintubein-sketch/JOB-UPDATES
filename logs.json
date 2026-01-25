@@ -1,5 +1,16 @@
 [
     {
+        "timestamp": "2026-01-25T14:12:35.038427",
+        "action": "sync",
+        "message": "Success",
+        "counts": {
+            "jobs": 0,
+            "results": 0,
+            "admits": 0,
+            "exams": 0
+        }
+    },
+    {
         "timestamp": "2026-01-25T14:10:56.077244",
         "action": "sync",
         "message": "Success",
