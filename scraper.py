@@ -114,6 +114,32 @@ def fetch_structured_data(endpoints):
 
     return new_jobs, new_results, new_admits, new_exams
 
+def generate_sitemap(jobs):
+    base_url = "https://jobupdate.site"
+    today = datetime.now().strftime("%Y-%m-%d")
+    
+    static_pages = [
+        "", "/govt-jobs.html", "/private-jobs.html", "/freshers-jobs.html", 
+        "/results.html", "/admit-cards.html", "/exams.html", "/about.html", 
+        "/contact.html", "/disclaimer.html", "/privacy.html"
+    ]
+    
+    sitemap_content = '<?xml version="1.0" encoding="UTF-8"?>\n'
+    sitemap_content += '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n'
+    
+    # Static Pages
+    for page in static_pages:
+        sitemap_content += f'    <url>\n        <loc>{base_url}{page}</loc>\n        <lastmod>{today}</lastmod>\n        <priority>{"1.0" if page == "" else "0.8"}</priority>\n    </url>\n'
+    
+    # Dynamic Job Pages
+    for job in jobs[:50]: # SEO for latest 50 jobs
+        sitemap_content += f'    <url>\n        <loc>{base_url}/job-details.html?id={job["id"]}</loc>\n        <lastmod>{today}</lastmod>\n        <priority>0.7</priority>\n    </url>\n'
+        
+    sitemap_content += "</urlset>"
+    
+    with open("sitemap.xml", "w", encoding="utf-8") as f:
+        f.write(sitemap_content)
+
 def main():
     config = load_json(CONFIG_FILE, {"auto_fetch_enabled": True, "official_endpoints": []})
     if not config.get("auto_fetch_enabled", True):
@@ -136,7 +162,8 @@ def main():
         for item in fetched_list:
             if get_fp(item) not in existing_fps:
                 if has_id:
-                    item["id"] = len(jobs) + counts["jobs"] + 1
+                    # Maintain correct ID sequence
+                    item["id"] = max([j.get('id', 0) for j in jobs] + [0]) + 1
                 db_list.insert(0, item)
                 existing_fps.add(get_fp(item))
                 counts[count_key] += 1
@@ -151,7 +178,6 @@ def main():
     
     # Write to Data Store
     output = f"""// Official Data Hub - Updated {datetime.now().strftime("%Y-%m-%d")}
-// This file is auto-managed by the Official API Backend.
 const jobsData = {json.dumps(jobs, indent=4)};
 const examsData = {json.dumps(exams, indent=4)};
 const resultsData = {json.dumps(results, indent=4)};
@@ -161,8 +187,11 @@ const allJobsData = [...jobsData];"""
     with open(DATA_FILE, "w", encoding="utf-8") as f:
         f.write(output)
         
-    log_event("sync", "Official data fetch completed.", counts)
-    print(f"Task Finished. Fetched {counts['jobs']} new jobs.")
+    # Generate SEO Sitemap
+    generate_sitemap(jobs)
+        
+    log_event("sync", "Official data and sitemap fetch completed.", counts)
+    print(f"Task Finished. Fetched {counts['jobs']} new jobs and updated sitemap.")
 
 if __name__ == "__main__":
     main()
