@@ -1,112 +1,121 @@
-// Sample Job Data
+// Real Job Data - Updated January 2025
 const jobsData = [
     {
         id: 1,
-        title: "SSC CGL 2024 - Combined Graduate Level Examination",
+        title: "UPSC Civil Services Examination (CSE) 2025",
         type: "govt",
         location: "All India",
         qualification: "Graduate",
-        lastDate: "15 Feb 2024",
+        lastDate: "11 Feb 2025",
         urgent: true,
-        vacancies: "17727"
+        vacancies: "979",
+        applyLink: "https://upsc.gov.in"
     },
     {
         id: 2,
-        title: "IBPS Clerk XIV Recruitment 2024",
+        title: "SSC GD Constable Recruitment 2026",
         type: "govt",
         location: "All India",
-        qualification: "Graduate",
-        lastDate: "20 Feb 2024",
-        urgent: false,
-        vacancies: "6128"
+        qualification: "10th Pass",
+        lastDate: "31 Dec 2025",
+        urgent: true,
+        vacancies: "25487",
+        applyLink: "https://ssc.nic.in"
     },
     {
         id: 3,
-        title: "TCS Digital Hiring - Freshers 2024",
-        type: "private",
-        location: "Pan India",
-        qualification: "B.Tech/MCA",
-        lastDate: "28 Feb 2024",
-        urgent: false,
-        vacancies: "5000+"
+        title: "RRB Group D Level-1 Recruitment 2025",
+        type: "govt",
+        location: "All India",
+        qualification: "10th Pass + ITI",
+        lastDate: "02 Mar 2025",
+        urgent: true,
+        vacancies: "22000+",
+        applyLink: "https://indianrailways.gov.in"
     },
     {
         id: 4,
-        title: "Railway RRB NTPC Graduate Level Posts",
+        title: "SSC CHSL 2025 - LDC, DEO Posts",
         type: "govt",
         location: "All India",
-        qualification: "Graduate",
-        lastDate: "10 Mar 2024",
-        urgent: true,
-        vacancies: "11558"
+        qualification: "12th Pass",
+        lastDate: "17 Jul 2025",
+        urgent: false,
+        vacancies: "3131",
+        applyLink: "https://ssc.nic.in"
     },
     {
         id: 5,
-        title: "Infosys Off Campus Drive 2024",
+        title: "Infosys Specialist Programmer 2025",
         type: "private",
-        location: "Bangalore, Pune, Hyderabad",
-        qualification: "B.E/B.Tech",
-        lastDate: "15 Mar 2024",
-        urgent: false,
-        vacancies: "3000+"
+        location: "Pan India",
+        qualification: "B.Tech/MCA/M.Sc",
+        lastDate: "Open",
+        urgent: true,
+        vacancies: "5000+",
+        salary: "₹10-21 LPA",
+        applyLink: "https://careers.infosys.com"
     },
     {
         id: 6,
-        title: "UPSC Civil Services Examination 2024",
-        type: "govt",
-        location: "All India",
-        qualification: "Graduate",
-        lastDate: "25 Feb 2024",
-        urgent: true,
-        vacancies: "1056"
+        title: "TCS BPS Hiring 2025 Batch",
+        type: "private",
+        location: "Pan India",
+        qualification: "Graduate (Arts/Commerce)",
+        lastDate: "Open",
+        urgent: false,
+        vacancies: "3000+",
+        applyLink: "https://www.tcs.com/careers"
     },
     {
         id: 7,
-        title: "Wipro Elite NLTH 2024 Hiring",
+        title: "Wipro Elite NTH 2025 Batch",
         type: "private",
-        location: "Multiple Locations",
-        qualification: "B.Tech/MCA/M.Sc",
-        lastDate: "20 Mar 2024",
+        location: "Bangalore, Hyderabad, Chennai",
+        qualification: "B.E/B.Tech/MCA",
+        lastDate: "Open",
         urgent: false,
-        vacancies: "2500+"
+        vacancies: "7500+",
+        applyLink: "https://careers.wipro.com"
     },
     {
         id: 8,
-        title: "SBI Probationary Officer 2024",
+        title: "PNB Specialist Officers 2025-26",
         type: "govt",
         location: "All India",
-        qualification: "Graduate",
-        lastDate: "05 Mar 2024",
-        urgent: true,
-        vacancies: "2000"
+        qualification: "Graduate/PG",
+        lastDate: "23 Nov 2025",
+        urgent: false,
+        vacancies: "350",
+        applyLink: "https://pnbindia.in"
     }
 ];
 
-// Exams Data
+// Real Exams Data - 2025
 const examsData = [
-    { title: "SSC CGL Tier 1 2024", date: "Mar 2024", icon: "fas fa-file-alt" },
-    { title: "IBPS Clerk Mains", date: "Feb 2024", icon: "fas fa-file-alt" },
-    { title: "RRB NTPC CBT 2", date: "Apr 2024", icon: "fas fa-file-alt" },
-    { title: "UPSC CSE Prelims", date: "May 2024", icon: "fas fa-file-alt" },
-    { title: "SBI PO Prelims", date: "Mar 2024", icon: "fas fa-file-alt" }
+    { title: "UPSC CSE Prelims 2025", date: "25 May 2025", icon: "fas fa-file-alt" },
+    { title: "SSC GD Constable CBT", date: "Feb-Mar 2025", icon: "fas fa-file-alt" },
+    { title: "NABARD Grade A Mains", date: "25 Jan 2026", icon: "fas fa-file-alt" },
+    { title: "PNB LBO Exam 2025-26", date: "04 Jan 2026", icon: "fas fa-file-alt" },
+    { title: "ECGC PO Exam 2025-26", date: "11 Jan 2026", icon: "fas fa-file-alt" }
 ];
 
-// Results Data
+// Real Results Data
 const resultsData = [
-    { title: "IBPS Clerk Prelims Result", date: "Jan 2024", icon: "fas fa-trophy" },
-    { title: "SSC CHSL Final Result", date: "Jan 2024", icon: "fas fa-trophy" },
-    { title: "RRB Group D Result", date: "Dec 2023", icon: "fas fa-trophy" },
-    { title: "UPSC NDA Result", date: "Jan 2024", icon: "fas fa-trophy" },
-    { title: "SBI Clerk Final Result", date: "Jan 2024", icon: "fas fa-trophy" }
+    { title: "SSC CGL 2024 Final Result", date: "Jan 2025", icon: "fas fa-trophy" },
+    { title: "IBPS Clerk Prelims Result", date: "Jan 2025", icon: "fas fa-trophy" },
+    { title: "RRB NTPC Final Result", date: "Dec 2024", icon: "fas fa-trophy" },
+    { title: "UPSC NDA II Result 2024", date: "Jan 2025", icon: "fas fa-trophy" },
+    { title: "SBI PO Final Result 2024", date: "Dec 2024", icon: "fas fa-trophy" }
 ];
 
-// Admit Cards Data
+// Real Admit Cards Data
 const admitCardsData = [
-    { title: "RRB NTPC Admit Card", date: "Feb 2024", icon: "fas fa-id-card" },
-    { title: "SSC CGL Tier 1 Admit Card", date: "Feb 2024", icon: "fas fa-id-card" },
-    { title: "IBPS Clerk Mains Admit", date: "Feb 2024", icon: "fas fa-id-card" },
-    { title: "UPSC EPFO Admit Card", date: "Feb 2024", icon: "fas fa-id-card" },
-    { title: "SBI PO Prelims Admit", date: "Mar 2024", icon: "fas fa-id-card" }
+    { title: "RRB Group D Admit Card 2025", date: "Feb 2025", icon: "fas fa-id-card" },
+    { title: "SSC GD Constable Admit Card", date: "Feb 2025", icon: "fas fa-id-card" },
+    { title: "NABARD Grade A Mains Admit", date: "Jan 2026", icon: "fas fa-id-card" },
+    { title: "UPSC CSE Prelims Admit Card", date: "May 2025", icon: "fas fa-id-card" },
+    { title: "PNB LBO Admit Card 2025-26", date: "Dec 2025", icon: "fas fa-id-card" }
 ];
 
 // Extended Jobs Data for listing pages
@@ -114,82 +123,91 @@ const allJobsData = [
     ...jobsData,
     {
         id: 9,
-        title: "Indian Army Technical Entry Scheme TES 52",
-        type: "govt",
-        location: "All India",
-        qualification: "12th (PCM)",
-        lastDate: "28 Feb 2024",
-        urgent: false,
-        vacancies: "90"
-    },
-    {
-        id: 10,
-        title: "DRDO Scientist B Recruitment 2024",
-        type: "govt",
-        location: "Multiple Locations",
-        qualification: "B.E/B.Tech",
-        lastDate: "15 Mar 2024",
-        urgent: true,
-        vacancies: "290"
-    },
-    {
-        id: 11,
-        title: "Amazon SDE Hiring 2024",
-        type: "private",
-        location: "Bangalore, Hyderabad",
-        qualification: "B.Tech/M.Tech",
-        lastDate: "Open",
-        urgent: false,
-        vacancies: "1000+"
-    },
-    {
-        id: 12,
-        title: "ISRO Scientist/Engineer SC 2024",
-        type: "govt",
-        location: "Multiple Locations",
-        qualification: "B.E/B.Tech",
-        lastDate: "20 Mar 2024",
-        urgent: true,
-        vacancies: "303"
-    },
-    {
-        id: 13,
-        title: "Google Software Engineer Hiring",
-        type: "private",
-        location: "Bangalore, Hyderabad",
-        qualification: "B.Tech/M.Tech/PhD",
-        lastDate: "Open",
-        urgent: false,
-        vacancies: "500+"
-    },
-    {
-        id: 14,
-        title: "ONGC Graduate Trainee 2024",
+        title: "NABARD Grade A Officers 2025-26",
         type: "govt",
         location: "All India",
         qualification: "Graduate",
-        lastDate: "25 Feb 2024",
+        lastDate: "30 Nov 2025",
+        urgent: true,
+        vacancies: "150+",
+        applyLink: "https://nabard.org"
+    },
+    {
+        id: 10,
+        title: "ECGC Probationary Officers 2025-26",
+        type: "govt",
+        location: "All India",
+        qualification: "Graduate",
+        lastDate: "02 Dec 2025",
         urgent: false,
-        vacancies: "2500"
+        vacancies: "75",
+        applyLink: "https://ecgc.in"
+    },
+    {
+        id: 11,
+        title: "Infosys Digital Specialist Engineer",
+        type: "private",
+        location: "Bangalore, Hyderabad, Pune",
+        qualification: "B.E/B.Tech/MCA",
+        lastDate: "Open",
+        urgent: true,
+        vacancies: "3000+",
+        salary: "₹6.25 LPA + ₹75K Bonus",
+        applyLink: "https://careers.infosys.com"
+    },
+    {
+        id: 12,
+        title: "TCS B.Sc Ignite Program 2025-26",
+        type: "private",
+        location: "Pan India",
+        qualification: "BCA/B.Sc (CS/IT/Maths)",
+        lastDate: "Open",
+        urgent: false,
+        vacancies: "2000+",
+        applyLink: "https://www.tcs.com/careers"
+    },
+    {
+        id: 13,
+        title: "Wipro Automotive & Embedded Software",
+        type: "private",
+        location: "Bangalore, Hyderabad",
+        qualification: "B.E/B.Tech (2023/2024)",
+        lastDate: "Open",
+        urgent: true,
+        vacancies: "1000+",
+        applyLink: "https://careers.wipro.com"
+    },
+    {
+        id: 14,
+        title: "Union Bank Specialist Officers 2025-26",
+        type: "govt",
+        location: "All India",
+        qualification: "Graduate/PG",
+        lastDate: "Feb 2025",
+        urgent: false,
+        vacancies: "200+",
+        applyLink: "https://unionbankofindia.co.in"
     },
     {
         id: 15,
-        title: "Microsoft Fresher Hiring 2024",
-        type: "private",
-        location: "Bangalore, Noida, Hyderabad",
-        qualification: "B.E/B.Tech/MCA",
-        lastDate: "Open",
+        title: "Indian Bank Specialist Officers",
+        type: "govt",
+        location: "All India",
+        qualification: "Graduate/PG",
+        lastDate: "Feb 2025",
         urgent: false,
-        vacancies: "800+"
+        vacancies: "150+",
+        applyLink: "https://indianbank.in"
     },
     {
         id: 16,
-        title: "Indian Navy SSR/MR Recruitment",
-        type: "govt",
-        location: "All India",
-        qualification: "10th/12th Pass",
-        lastDate: "10 Mar 2024",
-        urgent: true,
-        vacancies: "1500"
+        title: "Wipro WILP Program - BCA/B.Sc",
+        type: "private",
+        location: "Pan India",
+        qualification: "BCA/B.Sc (2023/2024)",
+        lastDate: "Open",
+        urgent: false,
+        vacancies: "500+",
+        applyLink: "https://careers.wipro.com"
     }
 ];

@@ -148,13 +148,14 @@ function renderJobs(jobs, container) {
                     <i class="fas fa-users"></i>
                     <span>${job.vacancies} Vacancies</span>
                 </div>
+                ${job.salary ? `<div class="job-meta-item"><i class="fas fa-rupee-sign"></i><span>${job.salary}</span></div>` : ''}
             </div>
             <div class="job-footer">
                 <div class="job-date">
                     <i class="far fa-calendar-alt"></i>
                     Last Date: <span>${job.lastDate}</span>
                 </div>
-                <a href="#" class="job-apply">Apply Now</a>
+                <a href="${job.applyLink || '#'}" target="_blank" rel="noopener" class="job-apply">Apply Now</a>
             </div>
         </div>
     `).join('');
