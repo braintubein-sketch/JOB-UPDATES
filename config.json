@@ -12,9 +12,29 @@
             "type": "govt"
         },
         {
-            "name": "IndGovtJobs Official",
+            "name": "IndGovtJobs (Govt)",
             "url": "https://www.indgovtjobs.in/feeds/posts/default?alt=rss",
             "type": "govt"
+        },
+        {
+            "name": "Freshersworld (Private)",
+            "url": "https://p.freshersworld.com/alljobs_rss.xml",
+            "type": "private"
+        },
+        {
+            "name": "Free Job Alert",
+            "url": "https://www.freejobalert.com/feeds/rss",
+            "type": "govt"
+        },
+        {
+            "name": "LinkedIn Hub",
+            "url": "https://www.indgovtjobs.in/feeds/posts/default/-/Private%20Jobs?alt=rss",
+            "type": "private"
+        },
+        {
+            "name": "FreshersLive",
+            "url": "https://www.fresherslive.com/all-job-alert/rss",
+            "type": "freshers"
         }
     ],
     "review_before_publish": false

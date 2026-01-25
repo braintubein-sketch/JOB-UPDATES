@@ -107,9 +107,12 @@ def fetch_structured_data(endpoints):
                 title_lower = title.lower()
                 date = entry.get("published", datetime.now().strftime("%d %b %Y"))
                 
+                # Determine Content Category and Type
+                source_type = source.get("type", "govt")
+                
                 # Organization Mapping
-                org = "Various"
-                for o in ["UPSC", "SSC", "IBPS", "SBI", "Army", "Navy", "Railway"]:
+                org = source.get("name", "Various").split(" (")[0]
+                for o in ["UPSC", "SSC", "IBPS", "SBI", "Army", "Navy", "Railway", "TCS", "Infosys", "Wipro", "Google", "Amazon", "Microsoft", "ISRO", "DRDO"]:
                     if o.lower() in title_lower:
                         org = o
                         break
@@ -117,19 +120,19 @@ def fetch_structured_data(endpoints):
                 job_data = {
                     "title": title,
                     "organization": org,
-                    "type": "govt" if any(kw in (title_lower + link.lower()) for kw in ["govt", "sarkari", "gov.in"]) else "private",
+                    "type": source_type,
                     "location": "All India",
-                    "qualification": "See Notification",
+                    "qualification": "Graduate / 10th / 12th" if any(kw in title_lower for kw in ["graduate", "degree", "10", "12"]) else "See Notification",
                     "lastDate": "Check Official Portal",
                     "applyLink": link,
-                    "urgent": any(kw in title_lower for kw in ["urgent", "last date", "deadline"])
+                    "urgent": any(kw in title_lower for kw in ["urgent", "last date", "deadline", "fast"])
                 }
 
                 if any(kw in title_lower for kw in ["admit card", "call letter", "hall ticket"]):
                     new_admits.append({"title": title, "date": date, "link": link, "icon": "fas fa-id-card"})
                 elif any(kw in title_lower for kw in ["result", "score", "merit list"]):
                     new_results.append({"title": title, "date": date, "link": link, "icon": "fas fa-trophy"})
-                elif any(kw in title_lower for kw in ["exam date", "schedule"]):
+                elif any(kw in title_lower for kw in ["exam date", "schedule", "calendar"]):
                     new_exams.append({"title": title, "date": date, "link": link, "icon": "fas fa-calendar-alt"})
                 else:
                     new_jobs.append(job_data)
