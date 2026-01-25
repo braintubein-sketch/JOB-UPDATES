@@ -1,153 +1,99 @@
+'use client';
+
+import { ArrowRight, Search, Zap, Bell, ShieldCheck, TrendingUp } from 'lucide-react';
 import Link from 'next/link';
-import { Search, TrendingUp, Calendar, ArrowRight, ChevronRight, GraduationCap, Building2, MapPin, Clock } from 'lucide-react';
-import JobCard from '@/components/JobCard';
 
-// Mock data for initial UI
-const MOCK_JOBS = [
-  {
-    id: '1',
-    slug: 'upsc-civil-services-2026',
-    title: 'UPSC Civil Services Examination 2026 Notification',
-    organization: 'Union Public Service Commission',
-    qualification: 'Graduate',
-    category: 'Govt',
-    state: 'All India',
-    createdAt: new Date().toISOString(),
-  },
-  {
-    id: '2',
-    slug: 'ssc-cgl-tier-1-results',
-    title: 'SSC CGL Tier 1 Examination Results Declared',
-    organization: 'Staff Selection Commission',
-    qualification: 'N/A',
-    category: 'Result',
-    createdAt: new Date().toISOString(),
-  },
-  {
-    id: '3',
-    slug: 'sbi-clerk-admit-card-2026',
-    title: 'SBI Clerk Prelims Admit Card Out - Download Now',
-    organization: 'State Bank of India',
-    qualification: 'Graduate',
-    category: 'Admit Card',
-    createdAt: new Date().toISOString(),
-  },
-  {
-    id: '4',
-    slug: 'tcs-off-campus-hiring-2026',
-    title: 'TCS Off Campus Hiring for Freshers - Batch 2025/26',
-    organization: 'TATA Consultancy Services',
-    qualification: 'B.E/B.Tech/MCA',
-    category: 'Private',
-    createdAt: new Date().toISOString(),
-  },
-];
-
-export default function Home() {
+export default function HomePage() {
   return (
-    <div className="flex flex-col gap-12 pb-20">
-      {/* Hero Section */}
-      <section className="relative py-20" style={{ backgroundImage: 'linear-gradient(to bottom, var(--primary) 0%, transparent 10%)' }}>
-        <div className="container mx-auto px-4 text-center">
-          <h1 className="text-4xl md:text-6xl font-extrabold mb-6 tracking-tight">
-            Official Indian <span className="text-primary">Job Updates</span>
-          </h1>
-          <p className="text-secondary text-lg md:text-xl max-w-2xl mx-auto mb-10 leading-relaxed">
-            Fast, Accurate & Official. Get the latest government and private sector job notifications, results, and admit cards first.
-          </p>
+    <div className="flex flex-col w-full overflow-hidden">
 
-          <div className="max-w-3xl mx-auto glass p-2 rounded-2xl flex flex-col md:flex-row gap-2">
-            <div className="flex-1 flex items-center px-4 gap-3 bg-card-bg rounded-xl border border-border">
-              <Search className="text-secondary" size={20} />
-              <input
-                type="text"
-                placeholder="Search by post, org, or qualification..."
-                className="w-full py-4 bg-transparent outline-none text-foreground"
-              />
-            </div>
-            <button className="btn btn-primary px-8 py-4 rounded-xl text-lg">
-              Find Jobs
-            </button>
+      {/* --- HERO SECTION --- */}
+      <section className="relative section-py overflow-hidden">
+        {/* Decorative Background Elements */}
+        <div className="absolute top-0 right-0 w-1/3 h-1/3 bg-primary/5 rounded-full blur-[120px] -mr-20 -mt-20"></div>
+        <div className="absolute bottom-0 left-0 w-1/4 h-1/4 bg-accent/5 rounded-full blur-[100px] -ml-20 -mb-20"></div>
+
+        <div className="container relative text-center">
+          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-accent/20 bg-accent-soft mb-8 animate-fade-in">
+            <Zap size={16} className="text-secondary" />
+            <span className="text-xs font-bold uppercase tracking-widest leading-none">Instant Job Alerts 2026</span>
           </div>
 
-          <div className="mt-8 flex flex-wrap justify-center gap-6 text-sm font-medium text-secondary">
-            <span className="flex items-center gap-1"><span className="w-2 h-2 bg-green-500 rounded-full"></span> 450+ New Updates Today</span>
-            <span className="flex items-center gap-1"><span className="w-2 h-2 bg-blue-500 rounded-full"></span> Official Sources Only</span>
-            <span className="flex items-center gap-1"><span className="w-2 h-2 bg-accent rounded-full"></span> Verfied Information</span>
+          <h1 className="hero-title animate-fade-in" style={{ animationDelay: '0.1s' }}>
+            Your Reliable Career <br />
+            <span className="gradient-text">Gateway to India.</span>
+          </h1>
+
+          <p className="max-w-3xl mx-auto text-secondary text-lg md:text-xl mb-12 animate-fade-in" style={{ animationDelay: '0.2s' }}>
+            We fetch official recruitment notifications across 28 states directly from verified government portals, so you never miss an opportunity again.
+          </p>
+
+          <div className="flex flex-col sm:flex-row justify-center items-center gap-4 animate-fade-in" style={{ animationDelay: '0.3s' }}>
+            <Link href="/latest-jobs" className="btn-premium btn-primary w-full sm:w-auto">
+              Explore All Jobs <ArrowRight size={18} />
+            </Link>
+            <Link href="/govt-jobs" className="btn-premium btn-outline w-full sm:w-auto">
+              Govt. Recruitment
+            </Link>
           </div>
         </div>
       </section>
 
-      {/* Main Content Grid */}
-      <div className="container mx-auto px-4 grid grid-cols-1 lg:grid-cols-3 gap-12">
-
-        {/* Left Column: Latest Updates */}
-        <div className="lg:col-span-2">
-          <div className="flex justify-between items-end mb-8">
-            <h2 className="section-title">Latest Job Updates</h2>
-            <Link href="/latest-jobs" className="text-primary font-semibold flex items-center gap-1 mb-8 hover:underline">
-              View All <ArrowRight size={16} />
-            </Link>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {MOCK_JOBS.map((job) => (
-              <JobCard key={job.id} job={job} />
+      {/* --- QUICK CATEGORIES --- */}
+      <section className="pb-20">
+        <div className="container">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+            {[
+              { label: 'UPSC / IAS', icon: <ShieldCheck className="text-primary" /> },
+              { label: 'SSC / CGL', icon: <TrendingUp className="text-primary" /> },
+              { label: 'Banking', icon: <Zap className="text-primary" /> },
+              { label: 'Railways', icon: <Bell className="text-primary" /> },
+            ].map((cat, i) => (
+              <div key={i} className="premium-card text-center p-6 flex flex-col items-center group cursor-pointer">
+                <div className="w-12 h-12 rounded-2xl bg-primary/5 flex items-center justify-center mb-4 transition-transform group-hover:scale-110">
+                  {cat.icon}
+                </div>
+                <span className="font-bold text-sm tracking-wide">{cat.label}</span>
+              </div>
             ))}
           </div>
         </div>
+      </section>
 
-        {/* Right Column: Sidebar */}
-        <div className="space-y-10">
-          {/* Last Date Today */}
-          <div className="glass p-6 rounded-2xl border border-border">
-            <h3 className="text-lg font-bold mb-6 flex items-center gap-2">
-              <Calendar className="text-accent" size={20} />
-              Last Date Today
-            </h3>
-            <div className="space-y-4">
-              {[1, 2, 3].map((i) => (
-                <Link key={i} href="#" className="flex gap-4 group p-2 rounded-lg hover:bg-border/50 transition-colors">
-                  <div className="w-12 h-12 bg-accent/10 rounded flex items-center justify-center text-accent font-bold">
-                    {25 + i}
-                  </div>
-                  <div>
-                    <h4 className="text-sm font-bold group-hover:text-primary leading-tight">RBI Grade B Officer Application {i}</h4>
-                    <p className="text-xs text-secondary mt-1">Reserve Bank of India</p>
-                  </div>
-                </Link>
-              ))}
-            </div>
-            <Link href="#" className="block text-center mt-6 text-sm font-bold text-primary">View All Deadlines</Link>
+      {/* --- TRUST BANNER --- */}
+      <section className="bg-fg-main text-white py-16 mb-20 overflow-hidden relative">
+        <div className="absolute top-0 left-0 w-full h-full bg-[radial-gradient(circle_at_50%_50%,rgba(18,62,156,0.3),transparent)]"></div>
+        <div className="container relative flex flex-col md:flex-row items-center justify-between gap-8">
+          <div className="text-center md:text-left">
+            <h3 className="text-3xl font-bold mb-2">100% Official Sources Only</h3>
+            <p className="text-gray-400">No rumors. No third-party spam. Only verified links.</p>
           </div>
-
-          {/* Important Notifications */}
-          <div className="bg-primary p-6 rounded-2xl text-white shadow-lg">
-            <h3 className="text-lg font-bold mb-4 flex items-center gap-2">
-              <TrendingUp size={20} />
-              Trending Now
-            </h3>
-            <ul className="space-y-4 text-sm opacity-90">
-              <li className="flex gap-2"><ArrowRight size={14} className="mt-1" /> RRB NTPC Exam City Link Active</li>
-              <li className="flex gap-2"><ArrowRight size={14} className="mt-1" /> CISF Head Constable Exam Postponed</li>
-              <li className="flex gap-2"><ArrowRight size={14} className="mt-1" /> Navy SSR/MR 01/2026 Notification Out</li>
-            </ul>
-          </div>
-
-          {/* Quick Links */}
-          <div className="space-y-4">
-            <h3 className="text-lg font-bold">Quick Links</h3>
-            <div className="grid grid-cols-2 gap-3">
-              {['Results', 'Admit Cards', 'Answer Key', 'Syllabus', 'Admission', 'State Jobs'].map((link) => (
-                <Link key={link} href={`/${link.toLowerCase().replace(' ', '-')}`} className="btn btn-outline text-xs justify-between">
-                  {link} <ChevronRight size={14} />
-                </Link>
-              ))}
-            </div>
+          <div className="flex gap-8 items-center grayscale opacity-60">
+            {/* Placeholders for Gov Logos - in real use these would be SVG/images */}
+            <span className="text-2xl font-black italic">UPSC</span>
+            <span className="text-2xl font-black italic">SSC</span>
+            <span className="text-2xl font-black italic">IBPS</span>
+            <span className="text-2xl font-black italic">RRB</span>
           </div>
         </div>
-      </div>
+      </section>
 
+      {/* --- LATEST UPDATES PLACEHOLDER --- */}
+      <section className="container pb-20">
+        <div className="flex items-center justify-between mb-12">
+          <h2 className="text-4xl font-extrabold tracking-tight">Recent <span className="text-primary">Recruitments</span></h2>
+          <Link href="/latest-jobs" className="text-primary font-bold hover:underline flex items-center gap-1">
+            View All <ArrowRight size={16} />
+          </Link>
+        </div>
+
+        <div className="text-center py-24 rounded-3xl border-2 border-dashed border-border-hard bg-white/50">
+          <p className="text-secondary italic">Connecting safely to secure official database...</p>
+          <Link href="/api/cron/fetch" className="btn-premium btn-outline mt-6">
+            Initial Fetch Data
+          </Link>
+        </div>
+      </section>
     </div>
   );
 }
