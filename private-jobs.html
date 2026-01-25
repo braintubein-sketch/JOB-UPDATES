@@ -6,14 +6,18 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description"
         content="Latest Private Jobs 2024. Find IT Jobs, Software Developer, MNC Jobs. Apply for TCS, Infosys, Wipro, Amazon, Google hiring.">
-    <title>Private Jobs 2024 - IT & MNC Jobs | JOB UPDATES</title>`n    <link rel="icon" type="image/svg+xml" href="favicon.svg">`n    <link rel="apple-touch-icon" href="logo.svg">`n    <meta name="theme-color" content="#1e40af">
+    <title>Private Jobs 2024 - IT & MNC Jobs | JOB UPDATES</title>`n
+    <link rel="icon" type="image/svg+xml" href="favicon.svg">`n
+    <link rel="apple-touch-icon" href="logo.svg">`n
+    <meta name="theme-color" content="#1e40af">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link
         href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Outfit:wght@400;500;600;700;800&display=swap"
         rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-    <link rel="stylesheet" href="css/style.css">`n    <link rel="stylesheet" href="css/mobile.css">
+    <link rel="stylesheet" href="css/style.css">`n
+    <link rel="stylesheet" href="css/mobile.css">
 </head>
 
 <body>
@@ -177,24 +181,7 @@
     <script>
         document.addEventListener('DOMContentLoaded', () => {
             const privateJobs = allJobsData.filter(job => job.type === 'private');
-            const container = document.getElementById('jobsGrid');
-            if (container && privateJobs.length) {
-                container.innerHTML = privateJobs.map(job => `
-                    <div class="job-card">
-                        <div class="job-header"><span class="job-badge private">Private</span></div>
-                        <h3 class="job-title">${job.title}</h3>
-                        <div class="job-meta">
-                            <div class="job-meta-item"><i class="fas fa-map-marker-alt"></i><span>${job.location}</span></div>
-                            <div class="job-meta-item"><i class="fas fa-graduation-cap"></i><span>${job.qualification}</span></div>
-                            <div class="job-meta-item"><i class="fas fa-users"></i><span>${job.vacancies} Openings</span></div>
-                        </div>
-                        <div class="job-footer">
-                            <div class="job-date"><i class="far fa-calendar-alt"></i> Last Date: <span>${job.lastDate}</span></div>
-                            <a href="#" class="job-apply">Apply Now</a>
-                        </div>
-                    </div>
-                `).join('');
-            }
+            renderJobs(privateJobs, document.getElementById('jobsGrid'));
         });
     </script>
 </body>

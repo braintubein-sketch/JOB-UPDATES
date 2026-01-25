@@ -199,6 +199,23 @@ function renderUpdates(data, containerId) {
     `).join('');
 }
 
+// Render Full Updates Grid (for results, admit cards, exams pages)
+function renderUpdatesFull(data, containerId, btnText = 'View Details') {
+    const container = document.getElementById(containerId);
+    if (!container) return;
+
+    container.innerHTML = data.map(item => `
+        <div class="result-card glass-card">
+            ${item.new ? '<div class="result-badge new">New</div>' : ''}
+            <div class="result-icon"><i class="${item.icon}"></i></div>
+            <h3>${item.title}</h3>
+            <p>${item.date}</p>
+            <div class="result-meta"><span><i class="far fa-calendar-alt"></i> ${item.date}</span></div>
+            <a href="${item.link || '#'}" target="_blank" rel="noopener" class="btn btn-primary">${btnText}</a>
+        </div>
+    `).join('');
+}
+
 // Filter Form Submission
 const filterForm = document.getElementById('jobFilterForm');
 filterForm?.addEventListener('submit', (e) => {

@@ -219,27 +219,7 @@
     <script>
         document.addEventListener('DOMContentLoaded', () => {
             const govtJobs = allJobsData.filter(job => job.type === 'govt');
-            const container = document.getElementById('jobsGrid');
-            if (container && govtJobs.length) {
-                container.innerHTML = govtJobs.map(job => `
-                    <div class="job-card">
-                        <div class="job-header">
-                            <span class="job-badge govt">Government</span>
-                            ${job.urgent ? '<span class="job-badge urgent">Urgent</span>' : ''}
-                        </div>
-                        <h3 class="job-title">${job.title}</h3>
-                        <div class="job-meta">
-                            <div class="job-meta-item"><i class="fas fa-map-marker-alt"></i><span>${job.location}</span></div>
-                            <div class="job-meta-item"><i class="fas fa-graduation-cap"></i><span>${job.qualification}</span></div>
-                            <div class="job-meta-item"><i class="fas fa-users"></i><span>${job.vacancies} Vacancies</span></div>
-                        </div>
-                        <div class="job-footer">
-                            <div class="job-date"><i class="far fa-calendar-alt"></i> Last Date: <span>${job.lastDate}</span></div>
-                            <a href="#" class="job-apply">Apply Now</a>
-                        </div>
-                    </div>
-                `).join('');
-            }
+            renderJobs(govtJobs, document.getElementById('jobsGrid'));
         });
     </script>
 </body>

@@ -599,34 +599,34 @@ const jobsData = [
 
 // Exams Data - Real 2025-2026
 const examsData = [
-    { title: "UPSC CSE Prelims 2025", date: "25 May 2025", icon: "fas fa-file-alt" },
-    { title: "SSC GD Constable CBT 2026", date: "23 Feb 2026", icon: "fas fa-file-alt" },
-    { title: "AFCAT 01/2026 Exam", date: "31 Jan 2026", icon: "fas fa-file-alt" },
-    { title: "IAF Agniveervayu Exam", date: "30-31 Mar 2026", icon: "fas fa-file-alt" },
-    { title: "IBPS Clerk Prelims 2026", date: "Oct 2026", icon: "fas fa-file-alt" },
-    { title: "IOCL Non-Executive Exam", date: "30 Jan 2026", icon: "fas fa-file-alt" },
-    { title: "RBI Office Attendant Exam", date: "Mar 2026", icon: "fas fa-file-alt" },
-    { title: "UP Police Constable Exam", date: "Mar 2026", icon: "fas fa-file-alt" }
+    { title: "UPSC CSE Prelims 2025", date: "25 May 2025", icon: "fas fa-file-alt", link: "https://upsc.gov.in" },
+    { title: "SSC GD Constable CBT 2026", date: "23 Feb 2026", icon: "fas fa-file-alt", link: "https://ssc.gov.in" },
+    { title: "AFCAT 01/2026 Exam", date: "31 Jan 2026", icon: "fas fa-file-alt", link: "https://afcat.cdac.in" },
+    { title: "IAF Agniveervayu Exam", date: "30-31 Mar 2026", icon: "fas fa-file-alt", link: "https://agnipathvayu.cdac.in" },
+    { title: "IBPS Clerk Prelims 2026", date: "Oct 2026", icon: "fas fa-file-alt", link: "https://ibps.in" },
+    { title: "IOCL Non-Executive Exam", date: "30 Jan 2026", icon: "fas fa-file-alt", link: "https://iocl.com" },
+    { title: "RBI Office Attendant Exam", date: "Mar 2026", icon: "fas fa-file-alt", link: "https://rbi.org.in" },
+    { title: "UP Police Constable Exam", date: "Mar 2026", icon: "fas fa-file-alt", link: "https://uppbpb.gov.in" }
 ];
 
 // Results Data - Real
 const resultsData = [
-    { title: "SSC CGL 2024 Final Result", date: "Jan 2025", icon: "fas fa-trophy" },
-    { title: "IBPS Clerk Prelims Result", date: "Jan 2025", icon: "fas fa-trophy" },
-    { title: "RBI Grade B Phase 2 Result", date: "19 Jan 2026", icon: "fas fa-trophy" },
-    { title: "LIC AAO Mains Result", date: "Jan 2026", icon: "fas fa-trophy" },
-    { title: "UPSC NDA II Result 2024", date: "Jan 2025", icon: "fas fa-trophy" },
-    { title: "SBI PO Final Result 2024", date: "Dec 2024", icon: "fas fa-trophy" }
+    { title: "SSC CGL 2024 Final Result", date: "Jan 2025", icon: "fas fa-trophy", link: "https://ssc.gov.in" },
+    { title: "IBPS Clerk Prelims Result", date: "Jan 2025", icon: "fas fa-trophy", link: "https://ibps.in" },
+    { title: "RBI Grade B Phase 2 Result", date: "19 Jan 2026", icon: "fas fa-trophy", link: "https://rbi.org.in" },
+    { title: "LIC AAO Mains Result", date: "Jan 2026", icon: "fas fa-trophy", link: "https://licindia.in" },
+    { title: "UPSC NDA II Result 2024", date: "Jan 2025", icon: "fas fa-trophy", link: "https://upsc.gov.in" },
+    { title: "SBI PO Final Result 2024", date: "Dec 2024", icon: "fas fa-trophy", link: "https://bank.sbi" }
 ];
 
 // Admit Cards Data - Real
 const admitCardsData = [
-    { title: "RRB Group D Admit Card", date: "Feb 2026", icon: "fas fa-id-card" },
-    { title: "SSC GD Constable Admit Card", date: "Feb 2026", icon: "fas fa-id-card" },
-    { title: "AFCAT 01/2026 Admit Card", date: "Jan 2026", icon: "fas fa-id-card" },
-    { title: "UP Police Constable Admit", date: "Feb 2026", icon: "fas fa-id-card" },
-    { title: "IOCL Non-Executive Admit", date: "24 Jan 2026", icon: "fas fa-id-card" },
-    { title: "Kerala PSC Admit Cards", date: "Feb 2026", icon: "fas fa-id-card" }
+    { title: "RRB Group D Admit Card", date: "Feb 2026", icon: "fas fa-id-card", link: "https://rrbapply.gov.in" },
+    { title: "SSC GD Constable Admit Card", date: "Feb 2026", icon: "fas fa-id-card", link: "https://ssc.gov.in" },
+    { title: "AFCAT 01/2026 Admit Card", date: "Jan 2026", icon: "fas fa-id-card", link: "https://afcat.cdac.in" },
+    { title: "UP Police Constable Admit", date: "Feb 2026", icon: "fas fa-id-card", link: "https://uppbpb.gov.in" },
+    { title: "IOCL Non-Executive Admit", date: "24 Jan 2026", icon: "fas fa-id-card", link: "https://iocl.com" },
+    { title: "Kerala PSC Admit Cards", date: "Feb 2026", icon: "fas fa-id-card", link: "https://keralapsc.gov.in" }
 ];
 
 // Extended Jobs Data for listing pages

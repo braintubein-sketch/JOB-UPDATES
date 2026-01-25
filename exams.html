@@ -6,14 +6,18 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description"
         content="Upcoming Exams 2024. SSC, UPSC, Railway, Bank exam schedule and dates. Prepare for government exams.">
-    <title>Upcoming Exams 2024 - Exam Schedule | JOB UPDATES</title>`n    <link rel="icon" type="image/svg+xml" href="favicon.svg">`n    <link rel="apple-touch-icon" href="logo.svg">`n    <meta name="theme-color" content="#1e40af">
+    <title>Upcoming Exams 2024 - Exam Schedule | JOB UPDATES</title>`n
+    <link rel="icon" type="image/svg+xml" href="favicon.svg">`n
+    <link rel="apple-touch-icon" href="logo.svg">`n
+    <meta name="theme-color" content="#1e40af">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link
         href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Outfit:wght@400;500;600;700;800&display=swap"
         rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-    <link rel="stylesheet" href="css/style.css">`n    <link rel="stylesheet" href="css/mobile.css">
+    <link rel="stylesheet" href="css/style.css">`n
+    <link rel="stylesheet" href="css/mobile.css">
 </head>
 
 <body>
@@ -68,63 +72,12 @@
             <div class="listing-header">
                 <h2><i class="fas fa-calendar-alt"></i> Exam Calendar</h2>
             </div>
-            <div class="exam-timeline">
-                <div class="exam-item glass-card">
-                    <div class="exam-date"><span class="month">Feb</span><span class="day">15</span></div>
-                    <div class="exam-content">
-                        <span class="exam-badge upcoming">Upcoming</span>
-                        <h3>SSC CGL Tier 1 2024</h3>
-                        <p>Staff Selection Commission - Combined Graduate Level</p>
-                        <div class="exam-meta"><span><i class="fas fa-users"></i> 17,727 Posts</span><span><i
-                                    class="fas fa-map-marker-alt"></i> All India</span></div>
-                    </div>
-                    <a href="#" class="btn btn-outline">View Details</a>
-                </div>
-                <div class="exam-item glass-card">
-                    <div class="exam-date"><span class="month">Feb</span><span class="day">20</span></div>
-                    <div class="exam-content">
-                        <span class="exam-badge upcoming">Upcoming</span>
-                        <h3>IBPS Clerk Mains 2024</h3>
-                        <p>Institute of Banking Personnel Selection</p>
-                        <div class="exam-meta"><span><i class="fas fa-users"></i> 6,128 Posts</span><span><i
-                                    class="fas fa-map-marker-alt"></i> All India</span></div>
-                    </div>
-                    <a href="#" class="btn btn-outline">View Details</a>
-                </div>
-                <div class="exam-item glass-card">
-                    <div class="exam-date"><span class="month">Mar</span><span class="day">10</span></div>
-                    <div class="exam-content">
-                        <span class="exam-badge upcoming">Upcoming</span>
-                        <h3>RRB NTPC CBT 2</h3>
-                        <p>Railway Recruitment Board</p>
-                        <div class="exam-meta"><span><i class="fas fa-users"></i> 11,558 Posts</span><span><i
-                                    class="fas fa-map-marker-alt"></i> All India</span></div>
-                    </div>
-                    <a href="#" class="btn btn-outline">View Details</a>
-                </div>
-                <div class="exam-item glass-card">
-                    <div class="exam-date"><span class="month">Mar</span><span class="day">25</span></div>
-                    <div class="exam-content">
-                        <span class="exam-badge upcoming">Upcoming</span>
-                        <h3>SBI PO Prelims 2024</h3>
-                        <p>State Bank of India</p>
-                        <div class="exam-meta"><span><i class="fas fa-users"></i> 2,000 Posts</span><span><i
-                                    class="fas fa-map-marker-alt"></i> All India</span></div>
-                    </div>
-                    <a href="#" class="btn btn-outline">View Details</a>
-                </div>
-                <div class="exam-item glass-card">
-                    <div class="exam-date"><span class="month">May</span><span class="day">26</span></div>
-                    <div class="exam-content">
-                        <span class="exam-badge upcoming">Upcoming</span>
-                        <h3>UPSC CSE Prelims 2024</h3>
-                        <p>Union Public Service Commission</p>
-                        <div class="exam-meta"><span><i class="fas fa-users"></i> 1,056 Posts</span><span><i
-                                    class="fas fa-map-marker-alt"></i> All India</span></div>
-                    </div>
-                    <a href="#" class="btn btn-outline">View Details</a>
-                </div>
-            </div>
+            <div class="results-grid" id="examsGrid"></div>
+            <script>
+                document.addEventListener('DOMContentLoaded', () => {
+                    renderUpdatesFull(examsData, 'examsGrid', 'View Details');
+                });
+            </script>
         </div>
     </section>
 
