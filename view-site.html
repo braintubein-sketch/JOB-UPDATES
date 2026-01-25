@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Secure Viewer - JOB UPDATES</title>
+    <link rel="icon" type="image/svg+xml" href="favicon.svg">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="css/style.css">
+    <style>
+        body,
+        html {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            overflow: hidden;
+            background: #f1f5f9;
+        }
+
+        .viewer-header {
+            height: 60px;
+            background: #1e40af;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 20px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            position: relative;
+            z-index: 10;
+        }
+
+        .viewer-logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-weight: 700;
+            font-family: 'Outfit', sans-serif;
+        }
+
+        .viewer-actions {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .viewer-btn {
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            padding: 8px 15px;
+            border-radius: 6px;
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.2s;
+        }
+
+        .viewer-btn:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        .viewer-btn.close {
+            background: #ef4444;
+        }
+
+        .iframe-container {
+            position: absolute;
+            top: 60px;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: white;
+        }
+
+        iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+
+        .fallback-msg {
+            display: none;
+            text-align: center;
+            padding: 100px 20px;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .fallback-msg i {
+            font-size: 4rem;
+            color: #64748b;
+            margin-bottom: 20px;
+        }
+
+        .fallback-msg p {
+            max-width: 500px;
+            margin-bottom: 30px;
+            color: #1e293b;
+            font-size: 1.1rem;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="viewer-header">
+        <div class="viewer-logo">
+            <i class="fas fa-shield-alt"></i>
+            <span>JOB UPDATES Secure Viewer</span>
+        </div>
+        <div class="viewer-actions">
+            <a href="#" id="openExternal" target="_blank" class="viewer-btn">
+                <i class="fas fa-external-link-alt"></i> Open Externally
+            </a>
+            <a href="javascript:history.back()" class="viewer-btn close">
+                <i class="fas fa-times"></i> Close
+            </a>
+        </div>
+    </div>
+
+    <div class="iframe-container">
+        <iframe id="siteFrame" src="" sandbox="allow-forms allow-scripts allow-same-origin"
+            title="External Site"></iframe>
+
+        <div id="fallback" class="fallback-msg">
+            <i class="fas fa-lock"></i>
+            <p>For security reasons, this specific government/banking website cannot be displayed inside our secure
+                viewer. Please click the button below to view it directly.</p>
+            <a href="#" id="manualLink" target="_blank" class="btn btn-primary btn-lg">Open Official Website</a>
+        </div>
+    </div>
+
+    <script>
+        const urlParams = new URLSearchParams(window.location.search);
+        const targetUrl = urlParams.get('url');
+        const frame = document.getElementById('siteFrame');
+        const openExternal = document.getElementById('openExternal');
+        const manualLink = document.getElementById('manualLink');
+        const fallback = document.getElementById('fallback');
+
+        if (targetUrl) {
+            frame.src = targetUrl;
+            openExternal.href = targetUrl;
+            manualLink.href = targetUrl;
+
+            // Simple timeout check: if frame doesn't load content (or throws error), 
+            // many modern sites block iframes via X-Frame-Options.
+            // We can't catch the actual error due to same-origin policy,
+            // but we can provide the manual link prominently.
+            setTimeout(() => {
+                // If the user is still on this page and hasn't left, 
+                // we show the fallback message after a few seconds 
+                // as a helpful hint in case the frame is blank.
+                fallback.style.display = 'flex';
+            }, 3000);
+        } else {
+            window.location.href = 'index.html';
+        }
+    </script>
+</body>
+
+</html>

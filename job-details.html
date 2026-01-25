@@ -88,17 +88,31 @@
         document.addEventListener('DOMContentLoaded', () => {
             const urlParams = new URLSearchParams(window.location.search);
             const jobId = parseInt(urlParams.get('id'));
+            const pTitle = urlParams.get('title');
+            const pLink = urlParams.get('link');
+            const pType = urlParams.get('type');
+            const pDate = urlParams.get('date');
+
             const contentDiv = document.getElementById('jobDetailsContent');
 
-            if (!jobId || !jobsData) {
-                contentDiv.innerHTML = '<div class="error-msg">Job not found. <a href="index.html">Go back home</a></div>';
-                return;
+            let job;
+            if (jobId) {
+                job = jobsData.find(j => j.id === jobId);
+            } else if (pTitle) {
+                // Handle dynamic updates from lists
+                job = {
+                    title: pTitle,
+                    applyLink: pLink,
+                    type: pType ? pType.replace('List', '') : 'notification',
+                    lastDate: pDate || 'Check Link',
+                    location: 'All India',
+                    qualification: 'See Official Notification',
+                    vacancies: 'Check Notification'
+                };
             }
 
-            const job = jobsData.find(j => j.id === jobId);
-
             if (!job) {
-                contentDiv.innerHTML = '<div class="error-msg">Job details not found. It might have been updated or removed. <a href="index.html">Back to Home</a></div>';
+                contentDiv.innerHTML = '<div class="error-msg">Information not found. <a href="index.html">Go back home</a></div>';
                 return;
             }
 
@@ -108,7 +122,7 @@
             contentDiv.innerHTML = `
                 <div class="details-card glass-card">
                     <div class="details-header">
-                        <span class="job-badge ${job.type}">${job.type === 'govt' ? 'Government' : 'Private'}</span>
+                        <span class="job-badge ${job.type}">${job.type.toUpperCase()}</span>
                         ${job.urgent ? '<span class="job-badge urgent">Urgent</span>' : ''}
                         <h1>${job.title}</h1>
                     </div>
@@ -118,56 +132,48 @@
                             <i class="fas fa-map-marker-alt"></i>
                             <div>
                                 <label>Location</label>
-                                <p>${job.location}</p>
+                                <p>${job.location || 'All India'}</p>
                             </div>
                         </div>
                         <div class="detail-item">
                             <i class="fas fa-graduation-cap"></i>
                             <div>
                                 <label>Qualification</label>
-                                <p>${job.qualification}</p>
+                                <p>${job.qualification || 'See Link'}</p>
                             </div>
                         </div>
                         <div class="detail-item">
                             <i class="fas fa-users"></i>
                             <div>
-                                <label>Total Vacancies</label>
-                                <p>${job.vacancies}</p>
+                                <label>Details</label>
+                                <p>${job.vacancies || 'Check Notification'}</p>
                             </div>
                         </div>
                         <div class="detail-item">
                             <i class="fas fa-calendar-alt"></i>
                             <div>
-                                <label>Last Date to Apply</label>
+                                <label>Important Date</label>
                                 <p>${job.lastDate}</p>
                             </div>
                         </div>
-                        ${job.salary ? `
-                        <div class="detail-item">
-                            <i class="fas fa-rupee-sign"></i>
-                            <div>
-                                <label>Salary / CTC</label>
-                                <p>${job.salary}</p>
-                            </div>
-                        </div>` : ''}
                     </div>
 
                     <div class="details-description">
-                        <h2>Job Description & Requirements</h2>
-                        <p>This is a recruitment notification for <strong>${job.title}</strong> based in <strong>${job.location}</strong>. Candidates meeting the minimum qualification of <strong>${job.qualification}</strong> are eligible to apply.</p>
-                        <p>Please ensure you read the full official notification before applying. The deadline for this application is <strong>${job.lastDate}</strong>.</p>
+                        <h2>Information Details</h2>
+                        <p>This is a latest update regarding <strong>${job.title}</strong>. For complete details and official documentation, please view the official page using the button below.</p>
+                        <p>We recommend all aspirants to read the official notification carefully before proceeding.</p>
                         
                         <div class="important-note">
                             <i class="fas fa-info-circle"></i>
-                            <p><strong>Note:</strong> JOB UPDATES is not responsible for any recruitment. We only provide the information. Always verify from the official department website.</p>
+                            <p><strong>Safe Browser:</strong> You are viewing this through the JOB UPDATES secure viewer. Your session is protected.</p>
                         </div>
                     </div>
 
                     <div class="details-actions">
-                        <a href="${job.applyLink}" target="_blank" rel="noopener" class="btn btn-primary btn-lg">
-                            <i class="fas fa-external-link-alt"></i> Official Apply Link
+                        <a href="view-site.html?url=${encodeURIComponent(job.applyLink || job.link)}" class="btn btn-primary btn-lg">
+                            <i class="fas fa-eye"></i> View Official Page
                         </a>
-                        <a href="index.html" class="btn btn-outline">Back to All Jobs</a>
+                        <a href="index.html" class="btn btn-outline">Back to Home</a>
                     </div>
                 </div>
             `;

@@ -191,11 +191,13 @@ function renderUpdates(data, containerId) {
     if (!container) return;
 
     container.innerHTML = data.slice(0, 5).map(item => `
-        <li class="update-item">
-            <i class="${item.icon}"></i>
-            <span>${item.title}</span>
-            <span class="date">${item.date}</span>
-        </li>
+        <a href="job-details.html?id=${item.id || ''}&title=${encodeURIComponent(item.title)}&type=${containerId}&date=${item.date}&link=${encodeURIComponent(item.link)}" class="update-item-link">
+            <li class="update-item">
+                <i class="${item.icon}"></i>
+                <span>${item.title}</span>
+                <span class="date">${item.date}</span>
+            </li>
+        </a>
     `).join('');
 }
 
@@ -209,9 +211,8 @@ function renderUpdatesFull(data, containerId, btnText = 'View Details') {
             ${item.new ? '<div class="result-badge new">New</div>' : ''}
             <div class="result-icon"><i class="${item.icon}"></i></div>
             <h3>${item.title}</h3>
-            <p>${item.date}</p>
             <div class="result-meta"><span><i class="far fa-calendar-alt"></i> ${item.date}</span></div>
-            <a href="${item.link || '#'}" target="_blank" rel="noopener" class="btn btn-primary">${btnText}</a>
+            <a href="job-details.html?id=${item.id || ''}&title=${encodeURIComponent(item.title)}&type=${containerId}&date=${item.date}&link=${encodeURIComponent(item.link || item.applyLink)}" class="btn btn-primary">${btnText}</a>
         </div>
     `).join('');
 }
