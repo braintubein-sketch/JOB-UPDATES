@@ -17,7 +17,15 @@ export async function GET(request: Request) {
     const isCronAuthorized = process.env.CRON_SECRET && key === process.env.CRON_SECRET;
     const isAdminAuthorized = session?.user;
 
-    if (!isCronAuthorized && !isAdminAuthorized) {
+    const authHeader = request.headers.get('authorization');
+    const isVercelCronAuthorized = authHeader?.startsWith('Bearer ') && authHeader.includes('vercel-cron');
+
+    // Secure the endpoint in production
+    // We allow if:
+    // 1. Key matches CRON_SECRET (External triggers like Cron-Job.org)
+    // 2. Admin is logged in (Manual button from dashboard)
+    // 3. Authorization header contains 'Bearer vercel-cron' (for Vercel's native cron jobs)
+    if (!isCronAuthorized && !isAdminAuthorized && !isVercelCronAuthorized) {
         return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
