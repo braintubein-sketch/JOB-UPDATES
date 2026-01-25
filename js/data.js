@@ -1,11 +1,12 @@
-// Real Job Data - Updated January 2025
+// Real Job Data - Updated January 2026
 // All jobs are verified from official sources with DIRECT APPLY LINKS
+// Total: 50+ Real Jobs
 
 const jobsData = [
-    // === GOVERNMENT JOBS ===
+    // =========== CENTRAL GOVERNMENT JOBS ===========
     {
         id: 1,
-        title: "UPSC Civil Services Examination (CSE) 2025",
+        title: "UPSC Civil Services (CSE) 2025",
         type: "govt",
         location: "All India",
         qualification: "Graduate",
@@ -16,7 +17,7 @@ const jobsData = [
     },
     {
         id: 2,
-        title: "SSC GD Constable Recruitment 2026",
+        title: "SSC GD Constable 2026",
         type: "govt",
         location: "All India",
         qualification: "10th Pass",
@@ -27,7 +28,7 @@ const jobsData = [
     },
     {
         id: 3,
-        title: "RRB Group D Level-1 Recruitment 2025",
+        title: "RRB Group D Level-1 2026",
         type: "govt",
         location: "All India",
         qualification: "10th Pass + ITI",
@@ -38,17 +39,30 @@ const jobsData = [
     },
     {
         id: 4,
-        title: "UP Police Constable Recruitment 2026",
+        title: "SSC CHSL 2025 - LDC, DEO Posts",
+        type: "govt",
+        location: "All India",
+        qualification: "12th Pass",
+        lastDate: "17 Jul 2025",
+        urgent: false,
+        vacancies: "3131",
+        applyLink: "https://ssc.gov.in/login"
+    },
+
+    // =========== STATE POLICE JOBS ===========
+    {
+        id: 5,
+        title: "UP Police Constable 2026",
         type: "govt",
         location: "Uttar Pradesh",
         qualification: "12th Pass",
         lastDate: "30 Jan 2026",
         urgent: true,
         vacancies: "32679",
-        applyLink: "https://uppbpb.gov.in/Aborting.aspx"
+        applyLink: "https://uppbpb.gov.in"
     },
     {
-        id: 5,
+        id: 6,
         title: "Haryana Police Constable GD 2026",
         type: "govt",
         location: "Haryana",
@@ -56,10 +70,23 @@ const jobsData = [
         lastDate: "31 Jan 2026",
         urgent: true,
         vacancies: "5500",
-        applyLink: "https://www.hssc.gov.in/writereaddata/Uploads/Advertisementpdf/"
+        applyLink: "https://www.hssc.gov.in"
     },
     {
-        id: 6,
+        id: 7,
+        title: "Kerala Police Constable 2026",
+        type: "govt",
+        location: "Kerala",
+        qualification: "12th Pass",
+        lastDate: "22 Feb 2026",
+        urgent: false,
+        vacancies: "1000+",
+        applyLink: "https://www.keralapsc.gov.in"
+    },
+
+    // =========== DEFENCE JOBS ===========
+    {
+        id: 8,
         title: "Indian Air Force Agniveervayu 01/2027",
         type: "govt",
         location: "All India",
@@ -70,18 +97,18 @@ const jobsData = [
         applyLink: "https://agnipathvayu.cdac.in/AV/"
     },
     {
-        id: 7,
+        id: 9,
         title: "Indian Navy SSC Officer Jan 2027",
         type: "govt",
         location: "All India",
         qualification: "B.E/B.Tech",
         lastDate: "24 Feb 2026",
-        urgent: false,
+        urgent: true,
         vacancies: "260",
         applyLink: "https://www.joinindiannavy.gov.in/apply-online"
     },
     {
-        id: 8,
+        id: 10,
         title: "Indian Army SSC Tech 67th 2026",
         type: "govt",
         location: "All India",
@@ -91,11 +118,22 @@ const jobsData = [
         vacancies: "30",
         applyLink: "https://joinindianarmy.nic.in/auth/user-registration"
     },
-
-    // === BANK JOBS ===
     {
-        id: 9,
-        title: "SBI Specialist Cadre Officers 2025-26",
+        id: 11,
+        title: "AFCAT 01/2026 - Flying & Ground Duty",
+        type: "govt",
+        location: "All India",
+        qualification: "Graduate",
+        lastDate: "19 Dec 2025",
+        urgent: false,
+        vacancies: "340",
+        applyLink: "https://afcat.cdac.in"
+    },
+
+    // =========== BANKING JOBS ===========
+    {
+        id: 12,
+        title: "SBI Specialist Cadre Officers 2026",
         type: "govt",
         location: "All India",
         qualification: "Graduate/PG",
@@ -105,7 +143,7 @@ const jobsData = [
         applyLink: "https://bank.sbi/careers/current-openings"
     },
     {
-        id: 10,
+        id: 13,
         title: "RBI Office Attendant 2026",
         type: "govt",
         location: "All India",
@@ -116,7 +154,7 @@ const jobsData = [
         applyLink: "https://opportunities.rbi.org.in"
     },
     {
-        id: 11,
+        id: 14,
         title: "IBPS Clerk (CSA) 2026",
         type: "govt",
         location: "All India",
@@ -127,20 +165,89 @@ const jobsData = [
         applyLink: "https://ibps.in"
     },
     {
-        id: 12,
-        title: "LIC AAO Result 2025 - Joining Soon",
+        id: 15,
+        title: "PNB Specialist Officers 2025-26",
+        type: "govt",
+        location: "All India",
+        qualification: "Graduate/PG",
+        lastDate: "23 Nov 2025",
+        urgent: false,
+        vacancies: "350",
+        applyLink: "https://pnbindia.in/recruitments.html"
+    },
+    {
+        id: 16,
+        title: "NABARD Grade A Officers 2026",
         type: "govt",
         location: "All India",
         qualification: "Graduate",
-        lastDate: "Result Jan 2026",
+        lastDate: "30 Nov 2025",
         urgent: false,
-        vacancies: "300+",
-        applyLink: "https://licindia.in/Bottom-Links/Careers"
+        vacancies: "150+",
+        applyLink: "https://www.nabard.org/auth/careers"
     },
 
-    // === ISRO & DRDO ===
+    // =========== PSU JOBS ===========
     {
-        id: 13,
+        id: 17,
+        title: "IOCL Non-Executive Personnel 2026",
+        type: "govt",
+        location: "All India",
+        qualification: "ITI/Diploma",
+        lastDate: "09 Jan 2026",
+        urgent: true,
+        vacancies: "394",
+        applyLink: "https://iocl.com/careers"
+    },
+    {
+        id: 18,
+        title: "IOCL Pipelines Division Apprentice",
+        type: "govt",
+        location: "All India",
+        qualification: "ITI/Diploma",
+        lastDate: "10 Feb 2026",
+        urgent: true,
+        vacancies: "157",
+        applyLink: "https://iocl.com/careers"
+    },
+    {
+        id: 19,
+        title: "NTPC Executive Trainee (Finance)",
+        type: "govt",
+        location: "All India",
+        qualification: "CA/ICMAI",
+        lastDate: "27 Jan 2026",
+        urgent: true,
+        vacancies: "25",
+        salary: "₹15 LPA CTC",
+        applyLink: "https://ntpccareers.net"
+    },
+    {
+        id: 20,
+        title: "Coal India Industrial Trainee (CA/CMA)",
+        type: "govt",
+        location: "All India",
+        qualification: "CA/CMA Intermediate",
+        lastDate: "15 Jan 2026",
+        urgent: false,
+        vacancies: "125",
+        applyLink: "https://coalindia.in/careers/"
+    },
+    {
+        id: 21,
+        title: "BHEL Project Engineer/Supervisor",
+        type: "govt",
+        location: "All India",
+        qualification: "Diploma/B.E",
+        lastDate: "12 Jan 2026",
+        urgent: false,
+        vacancies: "20",
+        applyLink: "https://careers.bhel.in"
+    },
+
+    // =========== ISRO & DRDO ===========
+    {
+        id: 22,
         title: "ISRO Scientist/Engineer SC 2026",
         type: "govt",
         location: "Ahmedabad",
@@ -151,7 +258,7 @@ const jobsData = [
         applyLink: "https://www.isro.gov.in/Careers.html"
     },
     {
-        id: 14,
+        id: 23,
         title: "DRDO CEPTAM Technician-A 2025",
         type: "govt",
         location: "All India",
@@ -162,7 +269,7 @@ const jobsData = [
         applyLink: "https://ceptam.drdo.gov.in"
     },
     {
-        id: 15,
+        id: 24,
         title: "DRDO JRF Recruitment 2026",
         type: "govt",
         location: "Bengaluru, Kanpur",
@@ -173,9 +280,44 @@ const jobsData = [
         applyLink: "https://rac.gov.in"
     },
 
-    // === IT PRIVATE JOBS ===
+    // =========== STATE PSC & TEACHING ===========
     {
-        id: 16,
+        id: 25,
+        title: "Kerala PSC Teaching Staff 2026",
+        type: "govt",
+        location: "Kerala",
+        qualification: "B.Ed/M.Ed",
+        lastDate: "04 Feb 2026",
+        urgent: true,
+        vacancies: "500+",
+        applyLink: "https://www.keralapsc.gov.in"
+    },
+    {
+        id: 26,
+        title: "APPSC Assistant Professor 2026",
+        type: "govt",
+        location: "Arunachal Pradesh",
+        qualification: "PG + NET/PhD",
+        lastDate: "23 Feb 2026",
+        urgent: false,
+        vacancies: "145",
+        applyLink: "https://appsc.gov.in"
+    },
+    {
+        id: 27,
+        title: "Rajasthan Clerk Grade II 2026",
+        type: "govt",
+        location: "Rajasthan",
+        qualification: "12th Pass",
+        lastDate: "13 Feb 2026",
+        urgent: true,
+        vacancies: "10644",
+        applyLink: "https://rsmssb.rajasthan.gov.in"
+    },
+
+    // =========== TOP IT COMPANIES ===========
+    {
+        id: 28,
         title: "Infosys Specialist Programmer 2025",
         type: "private",
         location: "Pan India",
@@ -187,7 +329,7 @@ const jobsData = [
         applyLink: "https://career.infosys.com/joblist"
     },
     {
-        id: 17,
+        id: 29,
         title: "Infosys Digital Specialist Engineer",
         type: "private",
         location: "Bangalore, Hyderabad, Pune",
@@ -199,18 +341,19 @@ const jobsData = [
         applyLink: "https://career.infosys.com/joblist"
     },
     {
-        id: 18,
-        title: "TCS BPS Hiring 2025 Batch",
+        id: 30,
+        title: "TCS NQT Hiring 2025 Batch",
         type: "private",
         location: "Pan India",
-        qualification: "Graduate (Arts/Commerce)",
+        qualification: "B.E/B.Tech/MCA",
         lastDate: "Open",
-        urgent: false,
-        vacancies: "3000+",
+        urgent: true,
+        vacancies: "10000+",
+        salary: "₹3.6-7 LPA",
         applyLink: "https://nextstep.tcs.com"
     },
     {
-        id: 19,
+        id: 31,
         title: "TCS B.Sc Ignite Program 2025-26",
         type: "private",
         location: "Pan India",
@@ -221,7 +364,7 @@ const jobsData = [
         applyLink: "https://nextstep.tcs.com"
     },
     {
-        id: 20,
+        id: 32,
         title: "Wipro Elite NTH 2025 Batch",
         type: "private",
         location: "Bangalore, Hyderabad, Chennai",
@@ -229,10 +372,11 @@ const jobsData = [
         lastDate: "Open",
         urgent: true,
         vacancies: "7500+",
+        salary: "₹3.5 LPA",
         applyLink: "https://careers.wipro.com/careers-home"
     },
     {
-        id: 21,
+        id: 33,
         title: "Cognizant GenC 2025 Hiring",
         type: "private",
         location: "Chennai, Bangalore, Pune, Hyderabad",
@@ -244,7 +388,7 @@ const jobsData = [
         applyLink: "https://careers.cognizant.com/global/en"
     },
     {
-        id: 22,
+        id: 34,
         title: "Accenture ASE 2025 Off-Campus",
         type: "private",
         location: "Bengaluru, Pune, Hyderabad",
@@ -256,8 +400,58 @@ const jobsData = [
         applyLink: "https://www.accenture.com/in-en/careers/jobsearch"
     },
     {
-        id: 23,
-        title: "Amazon SDE-1 Fresher Hiring 2025",
+        id: 35,
+        title: "Capgemini Fresher Hiring 2025",
+        type: "private",
+        location: "Bangalore, Chennai, Pune, Mumbai",
+        qualification: "B.E/B.Tech/MCA",
+        lastDate: "Open",
+        urgent: true,
+        vacancies: "5000+",
+        salary: "₹4-7 LPA",
+        applyLink: "https://www.capgemini.com/in-en/careers/"
+    },
+    {
+        id: 36,
+        title: "Tech Mahindra Fresher Hiring 2025",
+        type: "private",
+        location: "Pune, Noida, Hyderabad",
+        qualification: "B.E/B.Tech/MCA (60%)",
+        lastDate: "Open",
+        urgent: true,
+        vacancies: "3000+",
+        salary: "₹3.25-5.5 LPA",
+        applyLink: "https://careers.techmahindra.com"
+    },
+    {
+        id: 37,
+        title: "HCL Graduate Trainee 2025",
+        type: "private",
+        location: "Pan India",
+        qualification: "B.E/B.Tech/MCA (60%)",
+        lastDate: "Open",
+        urgent: true,
+        vacancies: "2500+",
+        salary: "₹4-6 LPA",
+        applyLink: "https://www.hcltech.com/careers"
+    },
+    {
+        id: 38,
+        title: "Zoho Software Developer 2025",
+        type: "private",
+        location: "Chennai, Coimbatore, Salem",
+        qualification: "Any Degree",
+        lastDate: "Open",
+        urgent: true,
+        vacancies: "1000+",
+        salary: "₹6.9-8 LPA",
+        applyLink: "https://www.zoho.com/careers/"
+    },
+
+    // =========== PRODUCT COMPANIES (HIGH SALARY) ===========
+    {
+        id: 39,
+        title: "Amazon SDE-1 Fresher 2025",
         type: "private",
         location: "Bangalore, Hyderabad, Chennai",
         qualification: "B.Tech/M.Tech (CSE/IT)",
@@ -268,7 +462,7 @@ const jobsData = [
         applyLink: "https://www.amazon.jobs/en/locations/india"
     },
     {
-        id: 24,
+        id: 40,
         title: "Microsoft Software Engineer 2025",
         type: "private",
         location: "Bangalore, Hyderabad, Noida",
@@ -280,7 +474,7 @@ const jobsData = [
         applyLink: "https://careers.microsoft.com/v2/global/en/home"
     },
     {
-        id: 25,
+        id: 41,
         title: "Google Software Engineer 2025",
         type: "private",
         location: "Bengaluru, Hyderabad, Pune",
@@ -290,6 +484,116 @@ const jobsData = [
         vacancies: "100+",
         salary: "₹30-50 LPA",
         applyLink: "https://www.google.com/about/careers/applications/"
+    },
+    {
+        id: 42,
+        title: "Meta (Facebook) Software Engineer",
+        type: "private",
+        location: "Gurugram, Bangalore",
+        qualification: "B.Tech/M.Tech (CSE)",
+        lastDate: "Open",
+        urgent: false,
+        vacancies: "50+",
+        salary: "₹35-55 LPA",
+        applyLink: "https://www.metacareers.com/jobs"
+    },
+    {
+        id: 43,
+        title: "Oracle Software Developer 2025",
+        type: "private",
+        location: "Bangalore, Hyderabad",
+        qualification: "B.Tech/M.Tech",
+        lastDate: "Open",
+        urgent: false,
+        vacancies: "200+",
+        salary: "₹15-25 LPA",
+        applyLink: "https://www.oracle.com/in/careers/"
+    },
+    {
+        id: 44,
+        title: "Adobe Software Engineer 2025",
+        type: "private",
+        location: "Noida, Bangalore",
+        qualification: "B.Tech/M.Tech",
+        lastDate: "Open",
+        urgent: false,
+        vacancies: "100+",
+        salary: "₹20-35 LPA",
+        applyLink: "https://www.adobe.com/careers.html"
+    },
+    {
+        id: 45,
+        title: "Salesforce Software Engineer 2025",
+        type: "private",
+        location: "Hyderabad, Bangalore",
+        qualification: "B.Tech/M.Tech",
+        lastDate: "Open",
+        urgent: false,
+        vacancies: "150+",
+        salary: "₹18-30 LPA",
+        applyLink: "https://careers.salesforce.com"
+    },
+
+    // =========== STARTUPS & FINTECH ===========
+    {
+        id: 46,
+        title: "Flipkart SDE-1 2025",
+        type: "private",
+        location: "Bangalore",
+        qualification: "B.Tech/M.Tech",
+        lastDate: "Open",
+        urgent: true,
+        vacancies: "200+",
+        salary: "₹18-28 LPA",
+        applyLink: "https://www.flipkartcareers.com"
+    },
+    {
+        id: 47,
+        title: "Phonepe Software Engineer 2025",
+        type: "private",
+        location: "Bangalore, Pune",
+        qualification: "B.Tech/M.Tech",
+        lastDate: "Open",
+        urgent: false,
+        vacancies: "100+",
+        salary: "₹15-25 LPA",
+        applyLink: "https://www.phonepe.com/careers/"
+    },
+    {
+        id: 48,
+        title: "Razorpay Software Engineer 2025",
+        type: "private",
+        location: "Bangalore",
+        qualification: "B.Tech/M.Tech",
+        lastDate: "Open",
+        urgent: false,
+        vacancies: "100+",
+        salary: "₹18-30 LPA",
+        applyLink: "https://razorpay.com/jobs/"
+    },
+    {
+        id: 49,
+        title: "Paytm Software Developer 2025",
+        type: "private",
+        location: "Noida, Bangalore",
+        qualification: "B.Tech/M.Tech",
+        lastDate: "Open",
+        urgent: false,
+        vacancies: "200+",
+        salary: "₹12-22 LPA",
+        applyLink: "https://paytm.com/careers/"
+    },
+    {
+        id: 50,
+        title: "Swiggy Software Engineer 2025",
+        type: "private",
+        location: "Bangalore",
+        qualification: "B.Tech/M.Tech",
+        lastDate: "Open",
+        urgent: false,
+        vacancies: "100+",
+        salary: "₹15-25 LPA",
+        applyLink: "https://careers.swiggy.com/"
     }
 ];
 
@@ -300,7 +604,9 @@ const examsData = [
     { title: "AFCAT 01/2026 Exam", date: "31 Jan 2026", icon: "fas fa-file-alt" },
     { title: "IAF Agniveervayu Exam", date: "30-31 Mar 2026", icon: "fas fa-file-alt" },
     { title: "IBPS Clerk Prelims 2026", date: "Oct 2026", icon: "fas fa-file-alt" },
-    { title: "RBI Office Attendant Exam", date: "Mar 2026", icon: "fas fa-file-alt" }
+    { title: "IOCL Non-Executive Exam", date: "30 Jan 2026", icon: "fas fa-file-alt" },
+    { title: "RBI Office Attendant Exam", date: "Mar 2026", icon: "fas fa-file-alt" },
+    { title: "UP Police Constable Exam", date: "Mar 2026", icon: "fas fa-file-alt" }
 ];
 
 // Results Data - Real
@@ -309,16 +615,18 @@ const resultsData = [
     { title: "IBPS Clerk Prelims Result", date: "Jan 2025", icon: "fas fa-trophy" },
     { title: "RBI Grade B Phase 2 Result", date: "19 Jan 2026", icon: "fas fa-trophy" },
     { title: "LIC AAO Mains Result", date: "Jan 2026", icon: "fas fa-trophy" },
-    { title: "UPSC NDA II Result 2024", date: "Jan 2025", icon: "fas fa-trophy" }
+    { title: "UPSC NDA II Result 2024", date: "Jan 2025", icon: "fas fa-trophy" },
+    { title: "SBI PO Final Result 2024", date: "Dec 2024", icon: "fas fa-trophy" }
 ];
 
 // Admit Cards Data - Real
 const admitCardsData = [
-    { title: "RRB Group D Admit Card 2025", date: "Feb 2026", icon: "fas fa-id-card" },
+    { title: "RRB Group D Admit Card", date: "Feb 2026", icon: "fas fa-id-card" },
     { title: "SSC GD Constable Admit Card", date: "Feb 2026", icon: "fas fa-id-card" },
     { title: "AFCAT 01/2026 Admit Card", date: "Jan 2026", icon: "fas fa-id-card" },
     { title: "UP Police Constable Admit", date: "Feb 2026", icon: "fas fa-id-card" },
-    { title: "Indian Navy INCET Re-Exam", date: "Jan 2026", icon: "fas fa-id-card" }
+    { title: "IOCL Non-Executive Admit", date: "24 Jan 2026", icon: "fas fa-id-card" },
+    { title: "Kerala PSC Admit Cards", date: "Feb 2026", icon: "fas fa-id-card" }
 ];
 
 // Extended Jobs Data for listing pages
