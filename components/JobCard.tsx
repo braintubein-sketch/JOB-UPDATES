@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { ArrowUpRight } from 'lucide-react';
+import { Calendar, Building2, ExternalLink, ChevronRight, MapPin } from 'lucide-react';
 
 interface Job {
     id: string;
@@ -15,25 +15,42 @@ interface Job {
 
 const JobCard = ({ job }: { job: Job }) => {
     return (
-        <div className="card">
-            <div className="badge">{job.category}</div>
-            <h3 className="mb-8 line-clamp-2" style={{ fontSize: '20px', minHeight: '56px' }}>{job.title}</h3>
-            <div className="mt-24">
-                <div className="text-sm font-semibold">{job.organization}</div>
-                <div className="text-secondary text-xs">{job.qualification}</div>
-            </div>
-            <div className="mt-24 pt-16 flex items-center justify-between" style={{ borderTop: '1px solid var(--border)' }}>
-                <Link href={`/jobs/${job.slug}`} className="btn-link text-sm flex items-center gap-1 font-semibold">
-                    View Detail <ArrowUpRight size={14} />
-                </Link>
-                <div className="text-secondary text-xs">
-                    {new Date(job.createdAt).toLocaleDateString()}
+        <div className="card-premium h-full flex flex-col">
+            <div className="flex justify-between items-start mb-4">
+                <span className={`badge ${job.category === 'Govt' ? 'badge-govt' : 'badge-private'}`}>
+                    {job.category}
+                </span>
+                <div className="text-secondary" style={{ opacity: 0.5 }}>
+                    <ExternalLink size={14} />
                 </div>
             </div>
-            <style jsx>{`
-        .pt-16 { padding-top: 16px; }
-        .gap-1 { gap: 4px; }
-      `}</style>
+
+            <Link href={`/jobs/${job.slug}`} className="flex-1" style={{ textDecoration: 'none', color: 'inherit' }}>
+                <h3 className="mb-4 line-clamp-2" style={{ fontSize: '18px', fontWeight: 700, minHeight: '52px' }}>
+                    {job.title}
+                </h3>
+
+                <div className="flex flex-col gap-2 mb-6">
+                    <div className="flex items-center gap-2 text-sm text-secondary">
+                        <Building2 size={14} />
+                        <span className="font-medium truncate">{job.organization}</span>
+                    </div>
+                    <div className="flex items-center gap-2 text-sm text-secondary">
+                        <MapPin size={14} />
+                        <span>All India</span>
+                    </div>
+                </div>
+            </Link>
+
+            <div className="flex items-center justify-between pt-4 mt-auto" style={{ borderTop: '1px solid var(--border)' }}>
+                <div className="flex items-center gap-2 text-xs text-secondary">
+                    <Calendar size={12} />
+                    {new Date(job.createdAt).toLocaleDateString('en-IN', { day: 'numeric', month: 'short' })}
+                </div>
+                <Link href={`/jobs/${job.slug}`} className="flex items-center gap-1 text-sm font-bold" style={{ textDecoration: 'none', color: 'var(--primary)' }}>
+                    Details <ChevronRight size={16} />
+                </Link>
+            </div>
         </div>
     );
 };
