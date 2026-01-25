@@ -1,3 +1,4 @@
+// Production Schema v1.1
 generator client {
   provider = "prisma-client-js"
 }
