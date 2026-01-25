@@ -1,10 +1,10 @@
 import JobListPage from '@/components/JobListPage';
 
-export default function Results() {
+export default function ResultsPage() {
     return (
         <JobListPage
-            title="Latest Examination Results"
-            description="Direct links to official result pages for all major government and competitive exams."
+            title="Official Results"
+            description="Verified exam results, merit lists, and selection notifications from official boards."
             category="Result"
         />
     );

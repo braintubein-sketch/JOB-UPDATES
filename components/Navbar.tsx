@@ -2,26 +2,19 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { Menu, X, Moon, Sun, Briefcase } from 'lucide-react';
+import { Menu, X, Moon, Sun, Briefcase, Bell } from 'lucide-react';
 
 const Navbar = () => {
-    const [isOpen, setIsOpen] = useState(false);
-    const [theme, setTheme] = useState('light');
+    const [scrolled, setScrolled] = useState(false);
+    const [isMenuOpen, setIsMenuOpen] = useState(false);
 
     useEffect(() => {
-        const savedTheme = localStorage.getItem('theme') || 'light';
-        setTheme(savedTheme);
-        document.documentElement.setAttribute('data-theme', savedTheme);
+        const handleScroll = () => setScrolled(window.scrollY > 20);
+        window.addEventListener('scroll', handleScroll);
+        return () => window.removeEventListener('scroll', handleScroll);
     }, []);
 
-    const toggleTheme = () => {
-        const newTheme = theme === 'light' ? 'dark' : 'light';
-        setTheme(newTheme);
-        localStorage.setItem('theme', newTheme);
-        document.documentElement.setAttribute('data-theme', newTheme);
-    };
-
-    const navLinks = [
+    const links = [
         { name: 'Latest Jobs', href: '/latest-jobs' },
         { name: 'Govt Jobs', href: '/govt-jobs' },
         { name: 'Private Jobs', href: '/private-jobs' },
@@ -30,64 +23,58 @@ const Navbar = () => {
     ];
 
     return (
-        <nav className="nav-sticky">
-            <div className="container flex items-center justify-between" style={{ height: '72px' }}>
-                <Link href="/" className="flex items-center gap-2" style={{ textDecoration: 'none', color: 'inherit' }}>
-                    <div className="flex items-center justify-center bg-primary" style={{ width: '40px', height: '40px', borderRadius: '10px' }}>
-                        <Briefcase size={20} color="white" />
+        <nav className={`fixed w-full z-[1000] transition-all duration-500 ${scrolled ? 'glass py-2 shadow-lg' : 'py-6'}`}>
+            <div className="container flex items-center justify-between">
+                <Link href="/" className="flex items-center gap-3 group">
+                    <div className="w-12 h-12 bg-primary flex items-center justify-center rounded-2xl text-white shadow-xl group-hover:rotate-12 transition-transform">
+                        <Briefcase size={26} />
                     </div>
-                    <span className="font-heading" style={{ fontSize: '20px', fontWeight: 800 }}>
-                        Job<span style={{ color: 'var(--primary)' }}>Updates</span>
-                    </span>
+                    <div className="flex flex-col">
+                        <span className="text-2xl font-black tracking-tight leading-none uppercase italic">Official<span className="text-primary NOT-italic">Path</span></span>
+                        <span className="text-[10px] font-black uppercase tracking-widest text-secondary mt-1">Verified Updates</span>
+                    </div>
                 </Link>
 
-                <div className="hidden md:flex items-center gap-8">
-                    {navLinks.map((link) => (
+                <div className="hidden lg:flex items-center gap-10">
+                    {links.map((link) => (
                         <Link
                             key={link.name}
                             href={link.href}
-                            className="text-sm font-semibold hover:text-primary transition-colors"
-                            style={{ textDecoration: 'none', color: 'inherit' }}
+                            className="text-sm font-black uppercase tracking-widest hover:text-primary transition-colors py-2 relative group"
                         >
                             {link.name}
+                            <span className="absolute bottom-0 left-0 w-0 h-1 bg-primary transition-all group-hover:w-full"></span>
                         </Link>
                     ))}
+
+                    <div className="flex items-center gap-4 border-l border-border pl-8">
+                        <button className="w-10 h-10 rounded-full bg-primary/5 flex items-center justify-center text-primary hover:bg-primary/10 transition-colors">
+                            <Bell size={18} />
+                        </button>
+                        <Link href="/latest-jobs" className="btn-premium btn-primary py-3 px-8 text-sm">
+                            Get Notification
+                        </Link>
+                    </div>
                 </div>
 
-                <div className="flex items-center gap-4">
-                    <button onClick={toggleTheme} className="flex items-center justify-center hover:bg-primary-soft transition-colors" style={{ width: '40px', height: '40px', borderRadius: '50%', background: 'none', border: '1px solid var(--border)', cursor: 'pointer', color: 'inherit' }}>
-                        {theme === 'light' ? <Moon size={18} /> : <Sun size={18} />}
-                    </button>
-                    <button className="md:hidden flex items-center justify-center transition-colors" style={{ width: '40px', height: '40px', background: 'none', border: 'none', cursor: 'pointer', color: 'inherit' }} onClick={() => setIsOpen(!isOpen)}>
-                        {isOpen ? <X size={24} /> : <Menu size={24} />}
-                    </button>
-                    <Link href="/latest-jobs" className="btn btn-primary hidden md:flex">
-                        Explore
-                    </Link>
-                </div>
+                <button className="lg:hidden p-2" onClick={() => setIsMenuOpen(!isMenuOpen)}>
+                    {isMenuOpen ? <X size={28} /> : <Menu size={28} />}
+                </button>
             </div>
 
             {/* Mobile Menu */}
-            {isOpen && (
-                <div className="md:hidden flex flex-col gap-4 py-6 px-4" style={{ backgroundColor: 'var(--card)', borderBottom: '1px solid var(--border)' }}>
-                    {navLinks.map((link) => (
+            {isMenuOpen && (
+                <div className="lg:hidden glass absolute top-full left-0 w-full p-8 flex flex-col gap-6 shadow-2xl animate-fade-in">
+                    {links.map((link) => (
                         <Link
                             key={link.name}
                             href={link.href}
-                            className="text-lg font-bold"
-                            style={{ textDecoration: 'none', color: 'inherit' }}
-                            onClick={() => setIsOpen(false)}
+                            className="text-2xl font-black uppercase tracking-tight border-b border-border pb-4"
+                            onClick={() => setIsMenuOpen(false)}
                         >
                             {link.name}
                         </Link>
                     ))}
-                    <Link
-                        href="/latest-jobs"
-                        className="btn btn-primary"
-                        onClick={() => setIsOpen(false)}
-                    >
-                        Explore Opportunities
-                    </Link>
                 </div>
             )}
         </nav>

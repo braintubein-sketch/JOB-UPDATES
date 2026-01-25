@@ -1,10 +1,10 @@
 import JobListPage from '@/components/JobListPage';
 
-export default function GovtJobs() {
+export default function GovtJobsPage() {
     return (
         <JobListPage
             title="Government Jobs 2026"
-            description="Find the latest Central and State government job notifications from official departments."
+            description="Find all Central and State government recruitment notifications from verified official departments."
             category="Govt"
         />
     );

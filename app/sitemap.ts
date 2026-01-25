@@ -1,34 +1,29 @@
 import { MetadataRoute } from 'next';
-import { prisma } from '@/lib/prisma';
+import dbConnect from '@/lib/mongodb/dbConnect';
+import { Job } from '@/models/Job';
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
+    await dbConnect();
     const baseUrl = 'https://jobupdate.site';
 
-    // Fetch all approved jobs to include in the sitemap
-    const jobs = await prisma.job.findMany({
-        where: { status: 'APPROVED' },
-        select: { slug: true, updatedAt: true },
-    }).catch(() => []);
+    const jobs = await Job.find({ status: 'APPROVED' })
+        .select('slug updatedAt')
+        .lean();
 
-    const jobEntries = jobs.map((job: { slug: string; updatedAt: Date }) => ({
+    const jobEntries = jobs.map((job: any) => ({
         url: `${baseUrl}/jobs/${job.slug}`,
         lastModified: job.updatedAt,
         changeFrequency: 'weekly' as const,
         priority: 0.7,
     }));
 
-    const staticPages = [
+    const staticEntries = [
         '',
         '/latest-jobs',
         '/govt-jobs',
         '/private-jobs',
         '/results',
         '/admit-cards',
-        '/about',
-        '/contact',
-        '/sources',
-        '/privacy',
-        '/disclaimer',
     ].map((route) => ({
         url: `${baseUrl}${route}`,
         lastModified: new Date(),
@@ -36,5 +31,5 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
         priority: route === '' ? 1.0 : 0.8,
     }));
 
-    return [...staticPages, ...jobEntries];
+    return [...staticEntries, ...jobEntries];
 }
