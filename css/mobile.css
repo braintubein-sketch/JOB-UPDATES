@@ -1,0 +1,356 @@
+/* ===== Mobile Enhancements ===== */
+
+/* Smooth touch scrolling */
+html {
+    -webkit-overflow-scrolling: touch;
+}
+
+/* Prevent text size adjustment on orientation change */
+body {
+    -webkit-text-size-adjust: 100%;
+    -moz-text-size-adjust: 100%;
+    -ms-text-size-adjust: 100%;
+}
+
+/* Better tap targets for mobile */
+.btn,
+.tab-btn,
+.nav-link,
+.social-btn {
+    min-height: 44px;
+    min-width: 44px;
+}
+
+/* Mobile Navigation Overlay */
+@media (max-width: 768px) {
+    .nav-menu {
+        overflow-y: auto;
+        max-height: calc(100vh - 70px);
+    }
+
+    .nav-menu.active {
+        animation: slideIn 0.3s ease forwards;
+    }
+
+    @keyframes slideIn {
+        from {
+            opacity: 0;
+            transform: translateX(100%);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateX(0);
+        }
+    }
+
+    /* Mobile Hero adjustments */
+    .hero {
+        padding: 100px 0 50px;
+        text-align: center;
+    }
+
+    .hero-content {
+        max-width: 100%;
+    }
+
+    .hero-badge {
+        margin: 0 auto 20px;
+    }
+
+    .hero-description {
+        max-width: 100%;
+        margin-left: auto;
+        margin-right: auto;
+    }
+
+    .hero-stats {
+        justify-content: center;
+    }
+
+    .stat-item {
+        flex: 1;
+        min-width: 80px;
+    }
+
+    /* Better button layout on mobile */
+    .hero-cta {
+        align-items: center;
+    }
+
+    .hero-cta .btn {
+        width: 100%;
+        max-width: 280px;
+        justify-content: center;
+    }
+
+    /* Mobile filter card */
+    .filter-card {
+        padding: 20px;
+    }
+
+    .filter-title {
+        font-size: 1.1rem;
+        margin-bottom: 20px;
+    }
+
+    /* Mobile tabs - horizontal scroll */
+    .jobs-tabs {
+        justify-content: flex-start;
+        overflow-x: auto;
+        padding-bottom: 10px;
+        margin: 0 -20px 30px;
+        padding: 0 20px 10px;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    .jobs-tabs::-webkit-scrollbar {
+        display: none;
+    }
+
+    .tab-btn {
+        flex-shrink: 0;
+        padding: 10px 18px;
+        font-size: 0.9rem;
+    }
+
+    /* Mobile job cards */
+    .job-card {
+        padding: 20px;
+        animation: none !important;
+    }
+
+    .job-title {
+        font-size: 1.05rem;
+    }
+
+    .job-footer {
+        flex-direction: column;
+        gap: 12px;
+        align-items: flex-start;
+    }
+
+    .job-apply {
+        width: 100%;
+        text-align: center;
+    }
+
+    /* Mobile categories */
+    .category-card {
+        padding: 24px 16px;
+        animation: none !important;
+    }
+
+    .category-icon {
+        width: 56px;
+        height: 56px;
+        font-size: 1.5rem;
+    }
+
+    .category-card h3 {
+        font-size: 1rem;
+    }
+
+    /* Mobile update cards */
+    .update-card {
+        padding: 20px;
+    }
+
+    .update-item {
+        padding: 10px;
+        font-size: 0.85rem;
+    }
+
+    .update-item .date {
+        display: none;
+    }
+
+    /* Mobile social section */
+    .social-card {
+        padding: 30px 20px;
+    }
+
+    .social-content h3 {
+        font-size: 1.3rem;
+    }
+
+    /* Mobile footer */
+    .footer {
+        padding: 50px 0 20px;
+    }
+
+    .footer-brand>p {
+        font-size: 0.9rem;
+    }
+
+    /* Mobile notification panel */
+    .notification-panel {
+        top: 70px;
+        right: 10px;
+        left: 10px;
+        width: auto;
+        max-width: none;
+    }
+
+    /* Bottom safe area for iOS */
+    .footer-bottom {
+        padding-bottom: env(safe-area-inset-bottom, 20px);
+    }
+
+    /* Better spacing for page hero */
+    .page-hero {
+        padding: 120px 0 40px;
+    }
+
+    .page-hero h1 {
+        font-size: 1.8rem;
+    }
+
+    /* Result cards on mobile */
+    .result-card {
+        padding: 24px 20px;
+    }
+
+    .result-icon {
+        width: 60px;
+        height: 60px;
+        font-size: 1.5rem;
+    }
+
+    /* Exam timeline mobile */
+    .exam-date {
+        min-width: 60px;
+        padding: 12px;
+    }
+
+    .exam-date .day {
+        font-size: 1.5rem;
+    }
+}
+
+/* Extra small devices */
+@media (max-width: 375px) {
+    .container {
+        padding: 0 12px;
+    }
+
+    .hero-title {
+        font-size: 1.6rem;
+    }
+
+    .hero-stats {
+        gap: 16px;
+    }
+
+    .stat-number {
+        font-size: 1.6rem;
+    }
+
+    .stat-label {
+        font-size: 0.75rem;
+    }
+
+    .section-title {
+        font-size: 1.5rem;
+    }
+
+    .categories-grid {
+        gap: 16px;
+    }
+
+    .category-card {
+        padding: 20px 12px;
+    }
+
+    .category-icon {
+        width: 50px;
+        height: 50px;
+        font-size: 1.3rem;
+        margin-bottom: 12px;
+    }
+
+    .logo-text {
+        font-size: 1.2rem;
+    }
+
+    .logo-icon {
+        width: 36px;
+        height: 36px;
+        font-size: 1rem;
+    }
+}
+
+/* Landscape mobile optimizations */
+@media (max-width: 768px) and (orientation: landscape) {
+    .hero {
+        min-height: auto;
+        padding: 90px 0 40px;
+    }
+
+    .hero-stats {
+        margin-top: 20px;
+    }
+
+    .floating-shapes {
+        display: none;
+    }
+}
+
+/* Touch device specific */
+@media (hover: none) and (pointer: coarse) {
+
+    /* Disable hover animations on touch */
+    .job-card:hover,
+    .category-card:hover,
+    .result-card:hover {
+        transform: none;
+    }
+
+    /* Add active state instead */
+    .job-card:active,
+    .category-card:active,
+    .result-card:active {
+        transform: scale(0.98);
+        opacity: 0.9;
+    }
+
+    .btn:active {
+        transform: scale(0.98);
+    }
+
+    /* Hide scrollbars on mobile */
+    ::-webkit-scrollbar {
+        width: 0;
+        height: 0;
+    }
+}
+
+/* PWA splash screen styling */
+@media (display-mode: standalone) {
+    .header {
+        padding-top: env(safe-area-inset-top, 0);
+    }
+}
+
+/* Print styles */
+@media print {
+
+    .header,
+    .alert-banner,
+    .social-section,
+    .back-to-top,
+    .notification-panel,
+    .footer {
+        display: none;
+    }
+
+    .hero {
+        padding: 20px 0;
+        min-height: auto;
+    }
+
+    .job-card {
+        break-inside: avoid;
+        page-break-inside: avoid;
+    }
+}
