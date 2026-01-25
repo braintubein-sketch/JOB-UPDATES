@@ -11,13 +11,18 @@ interface JobListPageProps {
 }
 
 export default async function JobListPage({ title, description, category, type }: JobListPageProps) {
-    await dbConnect();
+    let jobs: any[] = [];
+    try {
+        await dbConnect();
 
-    // Create query
-    const query: any = { status: 'APPROVED' };
-    if (category) query.category = category;
+        // Create query
+        const query: any = { status: 'APPROVED' };
+        if (category) query.category = category;
 
-    const jobs = await Job.find(query).sort({ createdAt: -1 }).limit(50).lean();
+        jobs = await Job.find(query).sort({ createdAt: -1 }).limit(50).lean();
+    } catch (error) {
+        console.error('Job list page error:', error);
+    }
 
     return (
         <div className="section">

@@ -1,212 +1,98 @@
-@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Outfit:wght@300;400;500;600;700;800;900&display=swap');
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
 
-:root {
-  --background: #fdfdfd;
-  --foreground: #090a0f;
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Outfit:wght@400;500;600;700;800;900&display=swap');
 
-  --primary: #1e40af;
-  /* Deep Royal Blue */
-  --primary-glow: rgba(30, 64, 175, 0.15);
-  --secondary: #64748b;
-  --accent: #b45309;
-  /* Deep Amber */
-  --accent-soft: #fef3c7;
-
-  --surface: #ffffff;
-  --border: #e2e8f0;
-  --radius-sm: 8px;
-  --radius-md: 16px;
-  --radius-lg: 32px;
-
-  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.1);
-  --shadow-md: 0 10px 25px -5px rgba(0, 0, 0, 0.05);
-  --shadow-lg: 0 20px 48px -10px rgba(0, 0, 0, 0.1);
-}
-
-[data-theme='dark'] {
-  --background: #05060b;
-  --foreground: #f1f5f9;
-  --primary: #3b82f6;
-  --surface: #0d1117;
-  --border: #1e293b;
-}
-
-* {
-  box-sizing: border-box;
-  margin: 0;
-  padding: 0;
-}
-
-body {
-  font-family: 'Plus Jakarta Sans', sans-serif;
-  background-color: var(--background);
-  color: var(--foreground);
-  line-height: 1.6;
-}
-
-h1,
-h2,
-h3,
-.font-display {
-  font-family: 'Outfit', sans-serif;
-  letter-spacing: -0.02em;
-}
-
-.container {
-  max-width: 1240px;
-  margin: 0 auto;
-  padding: 0 24px;
-}
-
-/* Glassmorphism */
-.glass {
-  background: rgba(255, 255, 255, 0.7);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
-  border: 1px solid rgba(255, 255, 255, 0.3);
-}
-
-/* Premium Components */
-.card-stack {
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: var(--radius-md);
-  padding: 32px;
-  transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-}
-
-.card-stack:hover {
-  transform: translateY(-8px);
-  box-shadow: var(--shadow-lg);
-  border-color: var(--primary);
-}
-
-.btn-premium {
-  display: inline-flex;
-  align-items: center;
-  gap: 12px;
-  padding: 14px 28px;
-  border-radius: 99px;
-  font-weight: 700;
-  text-decoration: none;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  border: none;
-}
-
-.btn-primary {
-  background: linear-gradient(135deg, var(--primary), #111827);
-  color: white;
-  box-shadow: 0 10px 20px -5px var(--primary-glow);
-}
-
-.btn-primary:hover {
-  transform: scale(1.03);
-  box-shadow: 0 15px 30px -5px var(--primary-glow);
-}
-
-.btn-outline {
-  background: transparent;
-  border: 1px solid var(--border);
-  color: var(--foreground);
-}
-
-.btn-outline:hover {
-  background: var(--background);
-  border-color: var(--primary);
-}
-
-/* Typography Utilities */
-.text-gradient {
-  background: linear-gradient(135deg, var(--primary) 0%, var(--accent) 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-}
-
-.display-1 {
-  font-size: clamp(3rem, 7vw, 5rem);
-  font-weight: 900;
-  line-height: 1.1;
-}
-
-.display-2 {
-  font-size: 48px;
-  font-weight: 800;
-}
-
-/* Badges */
-.p-badge {
-  padding: 6px 16px;
-  border-radius: 99px;
-  font-size: 12px;
-  font-weight: 800;
-  text-transform: uppercase;
-  letter-spacing: 0.1em;
-}
-
-.p-badge-govt {
-  background: #dbeafe;
-  color: #1e40af;
-}
-
-.p-badge-accent {
-  background: #fef3c7;
-  color: #92400e;
-}
-
-/* Grid System */
-.grid {
-  display: grid;
-  gap: 24px;
-}
-
-.grid-cols-1 {
-  grid-template-columns: 1fr;
-}
-
-@media (min-width: 768px) {
-  .md\:grid-cols-2 {
-    grid-template-columns: repeat(2, 1fr);
+@layer base {
+  :root {
+    --background: 255 255 255;
+    --foreground: 15 23 42;
   }
 
-  .md\:grid-cols-3 {
-    grid-template-columns: repeat(3, 1fr);
+  .dark {
+    --background: 2 6 23;
+    --foreground: 248 250 252;
+  }
+
+  body {
+    @apply bg-white dark:bg-slate-950 text-slate-900 dark:text-slate-50;
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4,
+  .font-display {
+    font-family: 'Outfit', sans-serif;
   }
 }
 
-/* Helper Utilities */
-.flex {
-  display: flex;
+@layer components {
+  .container-premium {
+    @apply max-w-7xl mx-auto px-4 sm:px-6 lg:px-8;
+  }
+
+  .card-premium {
+    @apply bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-6 transition-all duration-300;
+  }
+
+  .card-premium:hover {
+    @apply shadow-xl border-primary-500 -translate-y-1;
+  }
+
+  .btn-premium {
+    @apply inline-flex items-center justify-center gap-2 px-6 py-3 rounded-xl font-semibold text-sm transition-all duration-300;
+  }
+
+  .btn-primary {
+    @apply bg-primary-600 hover:bg-primary-700 text-white shadow-lg shadow-primary-500/20 hover:shadow-primary-500/30;
+  }
+
+  .btn-secondary {
+    @apply bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-900 dark:text-slate-100;
+  }
+
+  .btn-outline {
+    @apply border-2 border-slate-200 dark:border-slate-700 hover:border-primary-500 hover:text-primary-600;
+  }
+
+  .badge {
+    @apply inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider;
+  }
+
+  .badge-govt {
+    @apply bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-400;
+  }
+
+  .badge-private {
+    @apply bg-amber-50 dark:bg-amber-900/30 text-amber-700 dark:text-amber-400;
+  }
+
+  .badge-result {
+    @apply bg-green-50 dark:bg-green-900/30 text-green-700 dark:text-green-400;
+  }
+
+  .section-premium {
+    @apply py-16 md:py-24;
+  }
+
+  .glass {
+    @apply bg-white/80 dark:bg-slate-900/80 backdrop-blur-xl;
+  }
+
+  .text-gradient {
+    @apply bg-gradient-to-r from-primary-600 to-purple-600 bg-clip-text text-transparent;
+  }
 }
 
-.items-center {
-  align-items: center;
-}
+@layer utilities {
+  .animate-fade-in {
+    animation: fadeIn 0.5s ease-out forwards;
+  }
 
-.justify-between {
-  justify-content: space-between;
-}
-
-.py-20 {
-  padding-top: 80px;
-  padding-bottom: 80px;
-}
-
-.mb-8 {
-  margin-bottom: 32px;
-}
-
-.text-center {
-  text-align: center;
-}
-
-.w-full {
-  width: 100%;
-}
-
-.line-clamp-2 {
-  display: -webkit-box;
-  -webkit-line-clamp: 2;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
+  .animate-slide-up {
+    animation: slideUp 0.6s ease-out forwards;
+  }
 }
