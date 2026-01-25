@@ -155,7 +155,7 @@ function renderJobs(jobs, container) {
                     <i class="far fa-calendar-alt"></i>
                     Last Date: <span>${job.lastDate}</span>
                 </div>
-                <a href="${job.applyLink || '#'}" target="_blank" rel="noopener" class="job-apply">Apply Now</a>
+                <a href="job-details.html?id=${job.id}" class="job-apply">Apply Now</a>
             </div>
         </div>
     `).join('');

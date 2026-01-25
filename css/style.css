@@ -2081,3 +2081,148 @@ textarea.form-input {
         padding: 24px 20px;
     }
 }
+/* ===== Job Details Page ===== */
+.details-card {
+    padding: 50px;
+    margin-top: 30px;
+}
+
+.details-header {
+    margin-bottom: 40px;
+    text-align: center;
+}
+
+.details-header h1 {
+    font-family: 'Outfit', sans-serif;
+    font-size: 2.5rem;
+    font-weight: 800;
+    margin-top: 15px;
+    color: var(--primary);
+}
+
+.details-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 30px;
+    margin-bottom: 50px;
+    padding: 40px;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: var(--radius-lg);
+    border: 1px solid var(--border);
+}
+
+.detail-item {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+}
+
+.detail-item i {
+    width: 60px;
+    height: 60px;
+    background: var(--gradient-primary);
+    color: white;
+    border-radius: var(--radius-md);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+    flex-shrink: 0;
+}
+
+.detail-item label {
+    display: block;
+    font-size: 0.85rem;
+    color: var(--text-muted);
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 4px;
+}
+
+.detail-item p {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: var(--text);
+}
+
+.details-description {
+    max-width: 800px;
+    margin: 0 auto 50px;
+}
+
+.details-description h2 {
+    font-family: 'Outfit', sans-serif;
+    font-size: 1.5rem;
+    margin-bottom: 20px;
+}
+
+.details-description p {
+    font-size: 1.1rem;
+    line-height: 1.8;
+    color: var(--text-muted);
+    margin-bottom: 20px;
+}
+
+.important-note {
+    background: rgba(245, 158, 11, 0.1);
+    border-left: 4px solid #f59e0b;
+    padding: 20px;
+    border-radius: var(--radius-sm);
+    display: flex;
+    gap: 15px;
+    align-items: center;
+    margin-top: 40px;
+}
+
+.important-note i {
+    color: #f59e0b;
+    font-size: 1.5rem;
+}
+
+.important-note p {
+    margin: 0;
+    font-size: 0.95rem;
+    color: var(--text);
+}
+
+.details-actions {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    margin-top: 50px;
+}
+
+.loading-state, .error-msg {
+    text-align: center;
+    padding: 100px 0;
+}
+
+.loading-state i {
+    font-size: 3rem;
+    color: var(--primary);
+    margin-bottom: 20px;
+}
+
+@media (max-width: 768px) {
+    .details-card {
+        padding: 30px 20px;
+    }
+    
+    .details-header h1 {
+        font-size: 1.8rem;
+    }
+    
+    .details-grid {
+        grid-template-columns: 1fr;
+        padding: 24px;
+    }
+    
+    .details-actions {
+        flex-direction: column;
+    }
+    
+    .details-actions .btn {
+        width: 100%;
+    }
+}
