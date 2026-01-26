@@ -22,8 +22,32 @@ export default async function BlogPostPage({ params }: { params: { slug: string 
 
     if (!article) return notFound();
 
+    const jsonLd = {
+        "@context": "https://schema.org",
+        "@type": "Article",
+        "headline": article.title,
+        "author": {
+            "@type": "Person",
+            "name": article.author
+        },
+        "publisher": {
+            "@type": "Organization",
+            "name": "JobUpdates",
+            "logo": {
+                "@type": "ImageObject",
+                "url": "https://jobupdate.site/favicon.png"
+            }
+        },
+        "datePublished": article.createdAt,
+        "description": article.title
+    };
+
     return (
         <div className="min-h-screen bg-slate-50 dark:bg-slate-950 pb-20">
+            <script
+                type="application/ld+json"
+                dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd).replace(/\//g, '\\/') }}
+            />
             {/* Post Header */}
             <div className="bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 pt-16 pb-12">
                 <div className="container-main max-w-4xl">

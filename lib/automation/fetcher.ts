@@ -209,6 +209,12 @@ export async function automateContentFetch() {
                 else if (titleLower.includes('ssc')) realOrg = 'Staff Selection Commission';
                 else if (titleLower.includes('upsc')) realOrg = 'UPSC';
 
+                const sanitizedDescription = (item.contentSnippet || item.content || details.professionalTitle)
+                    .replace(/<[^>]*>?/gm, '')
+                    .replace(/&nbsp;/g, ' ')
+                    .replace(/\s+/g, ' ')
+                    .trim();
+
                 await Job.create({
                     title: details.professionalTitle,
                     slug: slug,
@@ -224,7 +230,7 @@ export async function automateContentFetch() {
                     category: titleLower.includes('result') ? 'Result' : titleLower.includes('admit') ? 'Admit Card' : source.defaultCategory,
                     source: item.link,
                     applyLink: officialLink,
-                    description: item.contentSnippet || details.professionalTitle,
+                    description: sanitizedDescription,
                     status: 'PUBLISHED',
                     howToApply: `Visit the official portal at ${officialLink} to complete registration.`,
                 });

@@ -41,8 +41,8 @@ export default function JobTabs({ job }: JobTabsProps) {
                             <h3 className="font-bold text-slate-900 dark:text-white mb-2">Key Highlights:</h3>
                             <ul className="list-disc list-inside text-sm text-slate-600 dark:text-slate-400 space-y-2">
                                 <li>Organization: {job.organization}</li>
-                                <li>Post: {job.postName}</li>
-                                <li>Official Website: {job.organization.toLowerCase().split(' ').join('')}.gov.in</li>
+                                <li>Post: {job.postName || 'Relevant Post'}</li>
+                                <li>Official Website: {job.organization ? job.organization.toLowerCase().split(' ').join('') : 'portal'}.gov.in</li>
                             </ul>
                         </div>
                     </div>

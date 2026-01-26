@@ -78,7 +78,7 @@ export default async function JobDetailPage({ params }: { params: { slug: string
         <div className="min-h-screen bg-slate-50 dark:bg-slate-950 pb-24 lg:pb-0">
             <script
                 type="application/ld+json"
-                dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+                dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd).replace(/\//g, '\\/') }}
             />
 
             {/* Header */}
