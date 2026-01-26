@@ -176,19 +176,40 @@ export async function automateContentFetch() {
                 const snippet = item.contentSnippet || item.content || '';
                 const titleLower = cleanTitle.toLowerCase();
 
-                if (!titleLower.includes('recruitment') && !titleLower.includes('vacancy') && !titleLower.includes('result') && !titleLower.includes('admit card')) continue;
+                // 1. STRICT RELEVANCY FILTER (Job-specific)
+                const isJobRelated = ['recruitment', 'vacancy', 'hiring', 'apply', 'admit card', 'sarkari result', 'exam date', 'notification'].some(key => titleLower.includes(key));
+
+                // 2. NEGATIVE FILTER (Block Politics, News, Sports)
+                const negativeKeywords = ['modi', 'rahul gandhi', 'uddhav', 'thackeray', 'corporator', 'arrested', 'accident', 'movie', 'film', 'cricket', 'match', 'ipl', 'politics', 'election', 'viral', 'opinion', 'disappeared', 'happening in', 'dead', 'death'];
+                const isIrrelevant = negativeKeywords.some(key => titleLower.includes(key));
+
+                if (!isJobRelated || isIrrelevant) continue;
 
                 // DEEP SCRAPE WITH IMPROVED DOMAIN FILTERING
                 console.log(`   🔍 Finding real gov portal for: ${cleanTitle}`);
                 const officialLink = await extractOfficialLink(item.link);
 
+                // If deep scraping failed to find a portal and it's just a general news site, skip it
+                if (officialLink === item.link && !titleLower.includes('notification')) {
+                    const isGenericNews = ['indiatoday', 'zeenews', 'timesofindia', 'hindustantimes'].some(d => officialLink.includes(d));
+                    if (isGenericNews) continue;
+                }
+
                 const details = extractComprehensiveDetails(cleanTitle, snippet);
 
+                // 3. IMPROVED ORGANIZATION LOGIC
                 let realOrg = cleanTitle.split(' ')[0];
+                // Safety check for weird first words
+                if (['where', 'how', 'when', 'what', 'this', 'that', 'why'].includes(realOrg.toLowerCase())) {
+                    realOrg = cleanTitle.split(' ').slice(0, 3).join(' ');
+                }
+
                 if (titleLower.includes('railway')) realOrg = 'Indian Railways';
                 else if (titleLower.includes('bank')) realOrg = 'Banking Sector';
                 else if (titleLower.includes('ssc')) realOrg = 'Staff Selection Commission';
                 else if (titleLower.includes('upsc')) realOrg = 'UPSC';
+                else if (titleLower.includes('tcs')) realOrg = 'TCS';
+                else if (titleLower.includes('infosys')) realOrg = 'Infosys';
 
                 await Job.create({
                     title: cleanTitle,
