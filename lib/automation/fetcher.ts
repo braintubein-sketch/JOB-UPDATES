@@ -40,6 +40,14 @@ export async function automateContentFetch() {
 
                 // 1. FILTER: Only keep actual job-related news
                 const titleLower = item.title.toLowerCase();
+
+                // CLEAN TITLE: Remove junk
+                const cleanTitle = item.title
+                    .replace(/\(Apply Online\)/gi, '')
+                    .replace(/Notification/gi, '')
+                    .replace(/Recruitment/gi, '')
+                    .trim();
+
                 const isJobRelated = titleLower.includes('recruitment') ||
                     titleLower.includes('vacancy') ||
                     titleLower.includes('apply') ||
@@ -61,17 +69,28 @@ export async function automateContentFetch() {
                 else if (titleLower.includes('bank')) category = 'Banking';
                 else if (titleLower.includes('railway')) category = 'Railway';
 
+                // Extract Real Organization from Title (e.g. "SBI Recruitment 2026..." -> "SBI")
+                let realOrg = cleanTitle.split(' ')[0];
+                if (cleanTitle.includes('Railway')) realOrg = 'Indian Railways';
+                else if (cleanTitle.includes('Bank')) realOrg = 'Banking Sector';
+                else if (source.name.includes('Times') || source.name.includes('Hindustan')) {
+                    // For news feeds, we must guess broadly if we can't find specific org
+                    if (realOrg.length < 3) realOrg = 'Govt Recruitment';
+                } else {
+                    realOrg = source.name;
+                }
+
                 await Job.create({
-                    title: item.title,
+                    title: cleanTitle,
                     slug: slug,
-                    organization: source.name,
+                    organization: realOrg,
                     category: category,
                     source: item.link,
-                    applyLink: item.link, // For news items, valid link is the news article itself
+                    applyLink: item.link,
                     description: item.contentSnippet || item.content || 'Read full details at source.',
                     status: 'PUBLISHED',
                     location: 'India',
-                    lastDate: new Date(Date.now() + 15 * 24 * 60 * 60 * 1000), // Estimate 15 days
+                    lastDate: new Date(Date.now() + 25 * 24 * 60 * 60 * 1000),
                 });
 
                 newJobsCount++;

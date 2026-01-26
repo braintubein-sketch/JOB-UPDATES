@@ -16,7 +16,7 @@ const WHATSAPP_CHANNEL_ID = process.env.WHATSAPP_CHANNEL_ID;
 
 function formatTelegramMessage(job: any): string {
     // Drive traffic to OUR website
-    const jobUrl = `https://job-updates.onrender.com/jobs/${job.slug}`;
+    const jobUrl = `https://jobupdate.site/jobs/${job.slug}`;
 
     const lines = [
         `🔥 *NEW JOB NOTIFICATION*`,
