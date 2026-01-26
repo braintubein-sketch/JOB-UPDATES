@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import "./globals.css";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
+import { ThemeProvider } from "@/components/ThemeProvider";
 
 export const metadata: Metadata = {
   title: "Official Indian Job Updates | Verified Recruitment Portal",
@@ -18,13 +19,15 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
-      <body>
-        <Navbar />
-        <main className="pt-[100px] min-h-screen">
-          {children}
-        </main>
-        <Footer />
+    <html lang="en" suppressHydrationWarning>
+      <body className="transition-colors duration-300 dark:bg-slate-950">
+        <ThemeProvider>
+          <Navbar />
+          <main className="pt-[100px] min-h-screen">
+            {children}
+          </main>
+          <Footer />
+        </ThemeProvider>
       </body>
     </html>
   );

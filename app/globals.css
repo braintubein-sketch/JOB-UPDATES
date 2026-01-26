@@ -6,9 +6,13 @@
   --glass: rgba(255, 255, 255, 0.8);
 }
 
+.dark {
+  --glass: rgba(15, 23, 42, 0.8);
+}
+
 @layer base {
   body {
-    @apply bg-slate-50 text-slate-900 font-sans antialiased;
+    @apply bg-slate-50 text-slate-900 font-sans antialiased dark:bg-slate-950 dark:text-slate-100;
     -webkit-tap-highlight-color: transparent;
   }
 }
@@ -21,7 +25,7 @@
   }
 
   .btn-primary {
-    @apply bg-primary-800 text-white shadow-lg shadow-blue-900/10 hover:bg-primary-900 hover:shadow-xl hover:-translate-y-0.5;
+    @apply bg-primary-800 text-white shadow-lg shadow-blue-900/10 hover:bg-primary-900 hover:shadow-xl hover:-translate-y-0.5 dark:bg-primary-600 dark:hover:bg-primary-500;
   }
 
   .btn-secondary {
@@ -29,12 +33,12 @@
   }
 
   .btn-outline {
-    @apply border-2 border-slate-200 text-slate-600 hover:bg-slate-50 hover:border-primary-600 hover:text-primary-600;
+    @apply border-2 border-slate-200 text-slate-600 hover:bg-slate-50 hover:border-primary-600 hover:text-primary-600 dark:border-slate-800 dark:text-slate-400 dark:hover:bg-slate-900 dark:hover:text-primary-400;
   }
 
   /* PREMIUM CARD SYSTEM */
   .job-card {
-    @apply relative bg-white border border-slate-200/60 rounded-2xl p-6 transition-all duration-300 hover:shadow-[0_20px_50px_rgba(0,0,0,0.04)] hover:border-primary-500/30 hover:-translate-y-1;
+    @apply relative bg-white border border-slate-200/60 rounded-2xl p-6 transition-all duration-300 hover:shadow-[0_20px_50px_rgba(0, 0, 0, 0.04)] hover:border-primary-500/30 hover:-translate-y-1 dark:bg-slate-900/50 dark:border-slate-800/60 dark:hover:bg-slate-900 dark:hover:border-primary-500/20;
   }
 
   /* FULL-AREA CLICKABLE LINK AREA */
@@ -45,16 +49,16 @@
 
   /* NAVIGATION */
   .glass-header {
-    @apply sticky top-0 z-[100] w-full backdrop-blur-md bg-white/90 border-b border-slate-200/80;
+    @apply sticky top-0 z-[100] w-full backdrop-blur-md bg-white/90 border-b border-slate-200/80 dark:bg-slate-950/90 dark:border-slate-800/80;
   }
 
   .nav-link {
-    @apply relative px-1 py-1 text-sm font-bold text-slate-600 hover:text-primary-600 transition-colors;
+    @apply relative px-1 py-1 text-sm font-bold text-slate-600 hover:text-primary-600 transition-colors dark:text-slate-400 dark:hover:text-primary-400;
   }
 
   .nav-link::after {
     content: "";
-    @apply absolute -bottom-1 left-0 w-0 h-0.5 bg-primary-600 transition-all duration-300;
+    @apply absolute -bottom-1 left-0 w-0 h-0.5 bg-primary-600 transition-all duration-300 dark:bg-primary-400;
   }
 
   .nav-link:hover::after {
@@ -63,7 +67,7 @@
 
   /* BADGES */
   .badge-premium {
-    @apply inline-flex items-center px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider mb-3;
+    @apply inline-flex items-center px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider mb-3 dark:bg-slate-800;
   }
 }
 
@@ -75,6 +79,11 @@
 /* CONTAINER */
 .container-premium {
   @apply max-w-7xl mx-auto px-4 sm:px-6 lg:px-8;
+}
+
+/* ADSENSE OPTIMIZATION */
+.ad-slot {
+  @apply my-8 min-h-[100px] flex items-center justify-center border-y border-slate-100 bg-slate-50/50 dark:bg-slate-900/30 dark:border-slate-800/50 text-[10px] font-bold text-slate-400 uppercase tracking-[0.2em];
 }
 
 /* ANIMATIONS */
