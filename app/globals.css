@@ -34,7 +34,7 @@
 
   /* PREMIUM CARD SYSTEM */
   .job-card {
-    @apply relative bg-white border border-slate-200/60 rounded-2xl p-6 transition-all duration-300 hover:shadow-[0_20px_50px_rgba(0, 0, 0, 0.04)] hover:border-primary-500/30 hover:-translate-y-1;
+    @apply relative bg-white border border-slate-200/60 rounded-2xl p-6 transition-all duration-300 hover:shadow-[0_20px_50px_rgba(0,0,0,0.04)] hover:border-primary-500/30 hover:-translate-y-1;
   }
 
   /* FULL-AREA CLICKABLE LINK AREA */
