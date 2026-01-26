@@ -13,6 +13,7 @@ const JobSchema = new mongoose.Schema({
     ageLimit: { type: String },
     salary: { type: String },
     location: { type: String, default: 'All India' },
+    experience: { type: String },
 
     // Important Dates
     lastDate: { type: Date },

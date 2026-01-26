@@ -5,7 +5,7 @@ import Link from 'next/link';
 import {
     Building2, MapPin, GraduationCap, Calendar, Users, Banknote,
     ArrowLeft, ExternalLink, ShieldCheck, Download, FileText,
-    Clock, CheckCircle, AlertCircle, BookOpen, ClipboardList
+    Clock, CheckCircle, AlertCircle, BookOpen, ClipboardList, Briefcase
 } from 'lucide-react';
 import CopyJobDetails from '@/components/CopyJobDetails';
 
@@ -117,7 +117,7 @@ export default async function JobDetailPage({ params }: { params: { slug: string
                         {/* Countdown Timer */}
                         {timeLeft && (
                             <div className={`p-6 rounded-2xl text-center min-w-[200px] ${timeLeft.expired ? 'bg-red-100 text-red-700' :
-                                    isUrgent ? 'bg-amber-100 text-amber-700' : 'bg-green-100 text-green-700'
+                                isUrgent ? 'bg-amber-100 text-amber-700' : 'bg-green-100 text-green-700'
                                 }`}>
                                 <Clock size={24} className="mx-auto mb-2" />
                                 {timeLeft.expired ? (
@@ -142,9 +142,10 @@ export default async function JobDetailPage({ params }: { params: { slug: string
                     <div className="lg:col-span-2 space-y-8">
 
                         {/* KEY INFO CARDS */}
-                        <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+                        <div className="grid grid-cols-2 md:grid-cols-3 and lg:grid-cols-4 gap-4">
                             <InfoCard icon={<Users />} label="Vacancies" value={job.vacancies || 'Check PDF'} />
                             <InfoCard icon={<GraduationCap />} label="Qualification" value={job.qualification || 'Refer PDF'} />
+                            <InfoCard icon={<Briefcase />} label="Experience" value={job.experience || 'Not Required'} />
                             <InfoCard icon={<MapPin />} label="Location" value={job.location || 'All India'} />
                             <InfoCard icon={<Banknote />} label="Salary" value={job.salary || 'As per norms'} />
                             <InfoCard icon={<Calendar />} label="Age Limit" value={job.ageLimit || '18-35 Years'} />
