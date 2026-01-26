@@ -60,33 +60,32 @@ export default function HeroSection() {
                     </p>
                 </div>
 
-                {/* Search Box */}
-                <form onSubmit={handleSearch} className="max-w-4xl mx-auto mb-8">
-                    <div className="search-box">
-                        <div className="search-input-group">
-                            <Search size={20} className="text-slate-400" />
+                {/* Search Box - Optimized for Mobile */}
+                <form onSubmit={handleSearch} className="max-w-4xl mx-auto mb-10 px-2 md:px-0">
+                    <div className="bg-white dark:bg-slate-900 p-2 md:p-3 rounded-2xl md:rounded-full border border-slate-200 dark:border-slate-800 shadow-xl shadow-slate-900/5 flex flex-col md:flex-row items-stretch gap-2">
+                        <div className="flex-1 flex items-center gap-3 px-4 py-3 md:py-0 border-b md:border-b-0 md:border-r border-slate-100 dark:border-slate-800">
+                            <Search size={20} className="text-blue-600" />
                             <input
                                 type="text"
-                                placeholder="Job title, keyword, organization..."
+                                placeholder="Job title or keyword"
                                 value={keyword}
                                 onChange={(e) => setKeyword(e.target.value)}
-                                className="flex-1 bg-transparent border-none outline-none text-slate-900 dark:text-white placeholder:text-slate-400"
+                                className="w-full bg-transparent border-none outline-none text-slate-900 dark:text-white placeholder:text-slate-400 font-medium"
                             />
                         </div>
 
-                        <div className="search-input-group md:max-w-[200px]">
-                            <MapPin size={20} className="text-slate-400" />
+                        <div className="flex-1 flex items-center gap-3 px-4 py-3 md:py-0">
+                            <MapPin size={20} className="text-blue-600" />
                             <input
                                 type="text"
                                 placeholder="Location"
                                 value={location}
                                 onChange={(e) => setLocation(e.target.value)}
-                                className="flex-1 bg-transparent border-none outline-none text-slate-900 dark:text-white placeholder:text-slate-400"
+                                className="w-full bg-transparent border-none outline-none text-slate-900 dark:text-white placeholder:text-slate-400 font-medium"
                             />
                         </div>
 
-                        <button type="submit" className="btn-primary w-full md:w-auto">
-                            <Search size={18} className="mr-2" />
+                        <button type="submit" className="btn-primary py-4 md:py-2 px-8 rounded-xl md:rounded-full">
                             Search Jobs
                         </button>
                     </div>

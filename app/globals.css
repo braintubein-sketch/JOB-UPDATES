@@ -33,9 +33,9 @@
   --text-muted: #94a3b8;
 
   /* Shadows */
-  --shadow-card: 0 1px 3px rgba(0,0,0,0.08), 0 1px 2px rgba(0,0,0, 0.06);
-  --shadow-hover: 0 10px 40px rgba(0,0,0,0.08);
-  --shadow-dropdown: 0 10px 40px rgba(0,0,0, 0.12);
+  --shadow-card: 0 1px 3px rgba(0, 0, 0, 0.08), 0 1px 2px rgba(0, 0, 0, 0.06);
+  --shadow-hover: 0 10px 40px rgba(0, 0, 0, 0.08);
+  --shadow-dropdown: 0 10px 40px rgba(0, 0, 0, 0.12);
 }
 
 .dark {
@@ -56,6 +56,17 @@
     @apply bg-slate-50 text-slate-900 font-sans antialiased dark:bg-slate-950 dark:text-slate-100;
     -webkit-tap-highlight-color: transparent;
     font-feature-settings: "cv11", "ss01";
+    overscroll-behavior-y: none;
+    /* App-like feel */
+  }
+
+  /* Support for modern mobile notches */
+  .safe-area-inset-bottom {
+    padding-bottom: env(safe-area-inset-bottom, 20px);
+  }
+
+  .mt-safe {
+    margin-top: env(safe-area-inset-top, 0px);
   }
 
   /* Typography Scale */
@@ -118,7 +129,7 @@
   }
 
   .card-hover {
-    @apply card hover:shadow-[0_10px_40px_rgba(0,0,0,0.08)] hover:border-blue-200 hover:-translate-y-1 dark:hover:border-blue-800;
+    @apply card hover:shadow-[0_10px_40px_rgba(0, 0, 0, 0.08)] hover:border-blue-200 hover:-translate-y-1 dark:hover:border-blue-800;
   }
 
   .card-interactive {
@@ -232,15 +243,20 @@
 
   /* ===== MOBILE BOTTOM NAV ===== */
   .mobile-nav {
-    @apply fixed bottom-0 left-0 right-0 z-50 bg-white border-t border-slate-200 px-2 py-2 lg:hidden dark:bg-slate-950 dark:border-slate-800;
+    @apply fixed bottom-0 left-0 right-0 lg:hidden bg-white/95 dark:bg-slate-900/95 backdrop-blur-xl border-t border-slate-200 dark:border-slate-800 z-[100] px-2 py-3 shadow-[0_-4px_20px_rgba(0, 0, 0, 0.05)];
   }
 
   .mobile-nav-item {
-    @apply flex flex-col items-center gap-0.5 py-2 px-4 text-slate-500 hover:text-blue-600 transition-colors dark:text-slate-400 dark:hover:text-blue-400;
+    @apply flex flex-col items-center gap-1.5 text-slate-500 hover:text-blue-600 transition-colors py-1;
   }
 
   .mobile-nav-item-active {
-    @apply mobile-nav-item text-blue-600 dark:text-blue-400;
+    @apply flex flex-col items-center gap-1.5 text-blue-600 font-bold transition-all relative py-1;
+  }
+
+  .mobile-nav-item-active::after {
+    content: '';
+    @apply absolute -top-3 left-1/2 -translate-x-1/2 w-8 h-1 bg-blue-600 rounded-full;
   }
 
   /* ===== SEARCH BAR (Hero) ===== */

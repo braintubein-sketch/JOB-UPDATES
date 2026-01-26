@@ -2,12 +2,13 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
-import { Menu, X, Search, User, Bell, ChevronDown, Briefcase, Building2, Award, FileText } from 'lucide-react';
+import { usePathname } from 'next/navigation';
+import { Menu, X, Search, User, Bell, Briefcase, Building2, Award, FileText } from 'lucide-react';
 import ThemeToggle from './ThemeToggle';
 
 const Navbar = () => {
+    const pathname = usePathname();
     const [isOpen, setIsOpen] = useState(false);
-    const [showDropdown, setShowDropdown] = useState<string | null>(null);
 
     const mainNav = [
         { name: 'Jobs', href: '/latest-jobs', icon: Briefcase },
@@ -41,7 +42,7 @@ const Navbar = () => {
                                 <Link
                                     key={item.name}
                                     href={item.href}
-                                    className="nav-link flex items-center gap-1.5"
+                                    className={`nav-link flex items-center gap-1.5 ${pathname === item.href ? 'text-blue-600 dark:text-blue-400 font-bold' : ''}`}
                                 >
                                     <item.icon size={16} />
                                     {item.name}
@@ -57,11 +58,11 @@ const Navbar = () => {
                                 <Bell size={18} />
                             </button>
 
-                            <Link href="/login" className="btn-secondary btn-sm">
+                            <Link href="/login" className="btn-secondary px-4 py-2 text-sm">
                                 Login
                             </Link>
 
-                            <Link href="/register" className="btn-primary btn-sm">
+                            <Link href="/register" className="btn-primary px-4 py-2 text-sm">
                                 Register
                             </Link>
                         </div>
@@ -79,7 +80,7 @@ const Navbar = () => {
                     </div>
                 </div>
 
-                {/* Mobile Menu */}
+                {/* Mobile Menu (Top Dropdown) */}
                 {isOpen && (
                     <div className="lg:hidden border-t border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-950 animate-fade-in-up">
                         <div className="container-main py-4">
@@ -89,18 +90,21 @@ const Navbar = () => {
                                         key={item.name}
                                         href={item.href}
                                         onClick={() => setIsOpen(false)}
-                                        className="flex items-center gap-3 px-4 py-3 rounded-xl text-slate-700 hover:bg-slate-100 font-medium transition-colors dark:text-slate-300 dark:hover:bg-slate-800"
+                                        className={`flex items-center gap-3 px-4 py-3 rounded-xl font-medium transition-colors ${pathname === item.href
+                                                ? 'bg-blue-50 text-blue-600 dark:bg-blue-900/20 dark:text-blue-400'
+                                                : 'text-slate-700 hover:bg-slate-100 dark:text-slate-300 dark:hover:bg-slate-800'
+                                            }`}
                                     >
-                                        <item.icon size={20} className="text-blue-600" />
+                                        <item.icon size={20} className={pathname === item.href ? 'text-blue-600' : 'text-slate-400'} />
                                         {item.name}
                                     </Link>
                                 ))}
                             </nav>
                             <div className="mt-4 pt-4 border-t border-slate-200 dark:border-slate-800 grid grid-cols-2 gap-3">
-                                <Link href="/login" onClick={() => setIsOpen(false)} className="btn-secondary text-center">
+                                <Link href="/login" onClick={() => setIsOpen(false)} className="btn-secondary text-center py-3">
                                     Login
                                 </Link>
-                                <Link href="/register" onClick={() => setIsOpen(false)} className="btn-primary text-center">
+                                <Link href="/register" onClick={() => setIsOpen(false)} className="btn-primary text-center py-3">
                                     Register
                                 </Link>
                             </div>
@@ -109,28 +113,28 @@ const Navbar = () => {
                 )}
             </header>
 
-            {/* Mobile Bottom Navigation */}
+            {/* Mobile Bottom Navigation - App Style */}
             <nav className="mobile-nav safe-area-inset-bottom">
-                <div className="flex justify-around">
-                    <Link href="/" className="mobile-nav-item-active">
-                        <Briefcase size={20} />
-                        <span className="text-[10px] font-medium">Home</span>
+                <div className="flex justify-around items-center h-full max-w-md mx-auto">
+                    <Link href="/" className={pathname === '/' ? 'mobile-nav-item-active' : 'mobile-nav-item'}>
+                        <Briefcase size={22} />
+                        <span className="text-[10px] uppercase font-bold tracking-wider">Home</span>
                     </Link>
-                    <Link href="/latest-jobs" className="mobile-nav-item">
-                        <Search size={20} />
-                        <span className="text-[10px] font-medium">Search</span>
+                    <Link href="/latest-jobs" className={pathname === '/latest-jobs' ? 'mobile-nav-item-active' : 'mobile-nav-item'}>
+                        <Search size={22} />
+                        <span className="text-[10px] uppercase font-bold tracking-wider">Search</span>
                     </Link>
-                    <Link href="/govt-jobs" className="mobile-nav-item">
-                        <Building2 size={20} />
-                        <span className="text-[10px] font-medium">Govt</span>
+                    <Link href="/govt-jobs" className={pathname === '/govt-jobs' ? 'mobile-nav-item-active' : 'mobile-nav-item'}>
+                        <Building2 size={22} />
+                        <span className="text-[10px] uppercase font-bold tracking-wider">Govt</span>
                     </Link>
-                    <Link href="/results" className="mobile-nav-item">
-                        <Award size={20} />
-                        <span className="text-[10px] font-medium">Results</span>
+                    <Link href="/results" className={pathname === '/results' ? 'mobile-nav-item-active' : 'mobile-nav-item'}>
+                        <Award size={22} />
+                        <span className="text-[10px] uppercase font-bold tracking-wider">Results</span>
                     </Link>
-                    <Link href="/login" className="mobile-nav-item">
-                        <User size={20} />
-                        <span className="text-[10px] font-medium">Profile</span>
+                    <Link href="/login" className={pathname === '/login' ? 'mobile-nav-item-active' : 'mobile-nav-item'}>
+                        <User size={22} />
+                        <span className="text-[10px] uppercase font-bold tracking-wider">Profile</span>
                     </Link>
                 </div>
             </nav>

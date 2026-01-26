@@ -12,8 +12,8 @@ const parser = new RSSParser({
 });
 
 const SOURCES = [
-    { url: 'https://timesofindia.indiatimes.com/rssfeeds/913168846.cms', name: 'Times of India Jobs', category: 'Private' },
-    { url: 'https://www.hindustantimes.com/feeds/rss/education/employment-news/rssfeed.xml', name: 'Hindustan Times', category: 'Govt' },
+    { url: 'https://timesofindia.indiatimes.com/rssfeeds/913168846.cms', name: 'Times of India Jobs', defaultCategory: 'Private' },
+    { url: 'https://www.hindustantimes.com/feeds/rss/education/employment-news/rssfeed.xml', name: 'Hindustan Times', defaultCategory: 'Govt' },
 ];
 
 export async function automateContentFetch() {
@@ -38,13 +38,22 @@ export async function automateContentFetch() {
                     .trim();
 
                 const titleLower = cleanTitle.toLowerCase();
-                const isJobRelated = titleLower.includes('recruitment') ||
+
+                // smarter category detection
+                let detectedCategory = source.defaultCategory;
+                if (titleLower.includes('result') || titleLower.includes('merit list')) detectedCategory = 'Result';
+                else if (titleLower.includes('admit card') || titleLower.includes('hall ticket')) detectedCategory = 'Admit Card';
+
+                const isRelevant = titleLower.includes('recruitment') ||
                     titleLower.includes('vacancy') ||
                     titleLower.includes('apply') ||
                     titleLower.includes('hiring') ||
-                    titleLower.includes('jobs');
+                    titleLower.includes('jobs') ||
+                    titleLower.includes('result') ||
+                    titleLower.includes('admit card') ||
+                    titleLower.includes('scorecard');
 
-                if (!isJobRelated) continue;
+                if (!isRelevant) continue;
 
                 const slug = generateSlug(cleanTitle);
                 const existing = await Job.findOne({ slug });
@@ -52,15 +61,17 @@ export async function automateContentFetch() {
 
                 // 2. EXTRACT ORG
                 let realOrg = cleanTitle.split(' ')[0];
-                if (cleanTitle.includes('Railway')) realOrg = 'Indian Railways';
-                else if (cleanTitle.includes('Bank')) realOrg = 'Banking Sector';
-                else if (realOrg.length < 3) realOrg = 'Govt of India';
+                if (titleLower.includes('railway')) realOrg = 'Indian Railways';
+                else if (titleLower.includes('bank')) realOrg = 'Banking Sector';
+                else if (titleLower.includes('ssc')) realOrg = 'SSC';
+                else if (titleLower.includes('upsc')) realOrg = 'UPSC';
+                else if (realOrg.length < 3) realOrg = 'Education Board';
 
                 await Job.create({
                     title: cleanTitle,
                     slug: slug,
                     organization: realOrg,
-                    category: source.category,
+                    category: detectedCategory,
                     source: item.link,
                     applyLink: item.link,
                     description: item.contentSnippet || item.content || 'Official notification details.',
@@ -77,7 +88,6 @@ export async function automateContentFetch() {
     }
 
     // ALWAYS TRY TO POST UNPOSTED JOBS
-    // This ensures jobs from previous failed cycles eventually get posted
     const posted = await autoPostNewJobs();
 
     return { newJobs: newJobsCount, posted };
