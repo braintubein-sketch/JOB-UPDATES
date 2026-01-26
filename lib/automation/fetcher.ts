@@ -6,17 +6,20 @@ import { generateSlug } from '../utils';
 const parser = new RSSParser({
     headers: {
         'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
-    }
+    },
+    timeout: 10000,
 });
 
-// BETTER RSS SOURCES
+// ULTIMATE SOURCE LIST - Mix of News & Direct Portals
 const SOURCES = [
-    // IndGovtJobs (Very reliable for Govt Jobs)
-    { url: 'https://www.indgovtjobs.in/feeds/posts/default?alt=rss', name: 'India Govt Jobs', category: 'Govt' },
-    // FreeJobAlert (Using a proxy feed concept or alternative reliable sources)
-    { url: 'https://www.sarkariresult.com.co/feed/', name: 'Sarkari Result Updates', category: 'Govt' },
-    // Jagran Josh (Education & Jobs)
-    { url: 'https://www.jagranjosh.com/rss/josh/job.xml', name: 'Jagran Josh', category: 'Govt' }
+    // Times of India (Education/Jobs) - Very Reliable
+    { url: 'https://timesofindia.indiatimes.com/rssfeeds/913168846.cms', name: 'Times of India Jobs', category: 'Private' },
+    // Hindustan Times (Education)
+    { url: 'https://www.hindustantimes.com/feeds/rss/education/employment-news/rssfeed.xml', name: 'Hindustan Times', category: 'Govt' },
+    // Zee News (Employment)
+    { url: 'https://zeenews.india.com/rss/employment.xml', name: 'Zee News Employment', category: 'Govt' },
+    // Indian Express (Jobs)
+    { url: 'https://indianexpress.com/section/jobs/feed/', name: 'Indian Express Jobs', category: 'Govt' }
 ];
 
 export async function automateContentFetch() {
@@ -24,90 +27,61 @@ export async function automateContentFetch() {
     console.log('=== AUTOMATION CYCLE STARTED ===');
 
     let newJobsCount = 0;
-    let expiredJobsCount = 0;
     let errors: string[] = [];
 
-    // 1. FETCH NEW JOBS FROM SOURCES
     for (const source of SOURCES) {
         try {
-            console.log(`Fetching from: ${source.name} (${source.url})`);
+            console.log(`Fetching from: ${source.name}`);
             const feed = await parser.parseURL(source.url);
 
             for (const item of feed.items) {
                 if (!item.title || !item.link) continue;
 
-                // CLEAN TITLE: Remove "Apply Online", "Notification", etc. to make it clean
-                let cleanTitle = item.title
-                    .replace(/\(Apply Online\)/gi, '')
-                    .replace(/Notification/gi, '')
-                    .replace(/Recruitment/gi, '')
-                    .replace(/ - \d+ Posts/gi, '')
-                    .trim();
+                // 1. FILTER: Only keep actual job-related news
+                const titleLower = item.title.toLowerCase();
+                const isJobRelated = titleLower.includes('recruitment') ||
+                    titleLower.includes('vacancy') ||
+                    titleLower.includes('apply') ||
+                    titleLower.includes('hiring') ||
+                    titleLower.includes('jobs') ||
+                    titleLower.includes('admit card') ||
+                    titleLower.includes('result');
 
-                const slug = generateSlug(cleanTitle);
+                if (!isJobRelated) continue;
 
-                // Check for duplicates
+                const slug = generateSlug(item.title);
                 const existing = await Job.findOne({ slug });
                 if (existing) continue;
 
-                // Auto-categorize based on title keywords
+                // 2. CATEGORIZE
                 let category = source.category;
-                const titleLower = cleanTitle.toLowerCase();
-                const contentLower = (item.content || '').toLowerCase();
+                if (titleLower.includes('result')) category = 'Result';
+                else if (titleLower.includes('admit card')) category = 'Admit Card';
+                else if (titleLower.includes('bank')) category = 'Banking';
+                else if (titleLower.includes('railway')) category = 'Railway';
 
-                if (titleLower.includes('result') || titleLower.includes('merit list')) category = 'Result';
-                else if (titleLower.includes('admit card') || titleLower.includes('hall ticket') || titleLower.includes('call letter')) category = 'Admit Card';
-                else if (titleLower.includes('railway') || titleLower.includes('rrb') || titleLower.includes('rrc')) category = 'Railway';
-                else if (titleLower.includes('bank') || titleLower.includes('ibps') || titleLower.includes('sbi') || titleLower.includes('rbi')) category = 'Banking';
-                else if (titleLower.includes('army') || titleLower.includes('navy') || titleLower.includes('air force') || titleLower.includes('defence') || titleLower.includes('police')) category = 'Defence';
-                else if (titleLower.includes('teacher') || titleLower.includes('ctet') || titleLower.includes('tet') || titleLower.includes('kvpy')) category = 'Teaching';
-                else if (titleLower.includes('engineer') || titleLower.includes('gate') || titleLower.includes('psu')) category = 'PSU';
-
-                // Try to extract extra info from description
-                let qualification = 'Bachelor Degree'; // Default estimate
-                if (contentLower.includes('10th') || contentLower.includes('matric')) qualification = '10th Pass';
-                if (contentLower.includes('12th') || contentLower.includes('intermediate')) qualification = '12th Pass';
-                if (contentLower.includes('b.tech') || contentLower.includes('engineering')) qualification = 'B.E/B.Tech';
-                if (contentLower.includes('mba')) qualification = 'MBA';
-
-                // Create new job
                 await Job.create({
-                    title: cleanTitle + ' Recruitment 2026',
+                    title: item.title,
                     slug: slug,
-                    organization: source.name === 'India Govt Jobs' ? cleanTitle.split(' ')[0] : source.name, // Guess organization from first word
+                    organization: source.name,
                     category: category,
                     source: item.link,
-                    applyLink: item.link,
-                    description: item.contentSnippet || item.content || '',
-                    shortDescription: (item.contentSnippet || '').substring(0, 160) + '...',
-                    qualification: qualification,
+                    applyLink: item.link, // For news items, valid link is the news article itself
+                    description: item.contentSnippet || item.content || 'Read full details at source.',
                     status: 'PUBLISHED',
-                    telegramPosted: false,
-                    whatsappPosted: false,
-                    location: 'All India',
-                    isFeatured: Math.random() < 0.1, // Randomly feature 10% of jobs
-                    lastDate: new Date(Date.now() + 20 * 24 * 60 * 60 * 1000), // Default 20 days
-                    expiresAt: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000),
+                    location: 'India',
+                    lastDate: new Date(Date.now() + 15 * 24 * 60 * 60 * 1000), // Estimate 15 days
                 });
 
                 newJobsCount++;
-                console.log(`+ NEW: ${cleanTitle}`);
+                console.log(`+ NEW: ${item.title}`);
             }
         } catch (err: any) {
             console.error(`Error fetching from ${source.name}:`, err.message);
-            // Don't fail entire batch, just log
             errors.push(`${source.name}: ${err.message}`);
         }
     }
 
-    // 2. AUTO-EXPIRE OLD JOBS
-    // ... code remains same ... (Keeping it concise for this update)
-
-    console.log('=== AUTOMATION CYCLE COMPLETE ===');
-    console.log(`Summary: ${newJobsCount} new jobs added`);
-
-    return {
-        newJobs: newJobsCount,
-        errors: errors.length > 0 ? errors : undefined,
-    };
+    console.log(`=== CYLCE DONE. Added ${newJobsCount} jobs.`);
+    return { newJobs: newJobsCount, errors: errors.length > 0 ? errors : undefined };
 }
