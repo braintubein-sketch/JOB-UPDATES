@@ -3,6 +3,30 @@ import dbConnect from '@/lib/mongodb/dbConnect';
 import { Job } from '@/models/Job';
 import { postJobToSocial } from '@/lib/automation/social-poster';
 
+// DEBUGER:
+async function debugSendTelegram(job: any) {
+    const token = process.env.TELEGRAM_BOT_TOKEN;
+    const channel = process.env.TELEGRAM_CHANNEL_ID;
+    const text = "debug test";
+
+    console.log(`Debug attempting to send to ${channel} with token ${token?.substring(0, 10)}...`);
+
+    try {
+        const res = await fetch(`https://api.telegram.org/bot${token}/sendMessage`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                chat_id: channel,
+                text: `DEBUG TEST FOR ${job.title}`,
+            })
+        });
+        const data = await res.json();
+        return { success: data.ok, response: data };
+    } catch (e: any) {
+        return { success: false, error: e.message };
+    }
+}
+
 export const dynamic = 'force-dynamic';
 
 export async function GET(request: Request) {
@@ -15,23 +39,19 @@ export async function GET(request: Request) {
 
     try {
         await dbConnect();
-
-        // Fetch last 1 job to test
         const jobs = await Job.find({ status: 'PUBLISHED' }).sort({ createdAt: -1 }).limit(1);
-
         if (jobs.length === 0) return NextResponse.json({ msg: 'No jobs' });
 
-        const job = jobs[0];
-        console.log(`Force posting: ${job.title}`);
-
-        // This function uses the Env Vars and the Beautiful Format
-        const result = await postJobToSocial(job._id.toString());
+        // TRY DEBUG SEND
+        const debugResult = await debugSendTelegram(jobs[0]);
 
         return NextResponse.json({
-            success: true,
-            title: job.title,
-            telegram_status: result.telegram,
-            whatsapp_status: result.whatsapp
+            success: debugResult.success,
+            env_check: {
+                has_token: !!process.env.TELEGRAM_BOT_TOKEN,
+                channel_val: process.env.TELEGRAM_CHANNEL_ID
+            },
+            telegram_response: debugResult.response || debugResult.error
         });
     } catch (error: any) {
         return NextResponse.json({ success: false, error: error.message }, { status: 500 });
