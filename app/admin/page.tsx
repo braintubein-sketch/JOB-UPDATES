@@ -7,6 +7,7 @@ import {
 } from 'lucide-react';
 
 import ManualFetchButton from '@/components/admin/ManualFetchButton';
+import LogoutButton from '@/components/admin/LogoutButton';
 
 export const dynamic = 'force-dynamic';
 
@@ -32,10 +33,10 @@ export default async function AdminDashboard() {
             {/* 1. TOP STATS BAR */}
             <div className="flex flex-col md:flex-row justify-between items-center gap-8">
                 <div>
-                    <h1 className="text-4xl font-bold mb-2">Portal Control</h1>
-                    <p className="text-slate-500">Managing {total} verified recruitment entries.</p>
+                    <h1 className="text-4xl font-bold mb-2 text-slate-900 leading-tight">Portal Control</h1>
+                    <p className="text-slate-500 font-bold">Managing {total} verified recruitment entries.</p>
                 </div>
-                <div className="flex flex-wrap gap-4">
+                <div className="flex flex-wrap items-center gap-4">
                     <StatBox icon={<Database />} label="Total" value={total} />
                     <ManualFetchButton />
 
@@ -43,10 +44,12 @@ export default async function AdminDashboard() {
                     <Link
                         href="/api/cron/force-post?key=Raghu@2244"
                         target="_blank"
-                        className="btn-premium bg-green-600 text-white flex items-center gap-2 hover:bg-green-700"
+                        className="btn-action bg-green-600 text-white flex items-center gap-2 hover:bg-green-700 h-[52px] px-6 rounded-xl"
                     >
-                        <Send size={18} /> Push Telegram
+                        <Send size={18} /> Push TG
                     </Link>
+
+                    <LogoutButton />
                 </div>
             </div>
 
