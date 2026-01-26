@@ -19,7 +19,7 @@ function formatTelegramMessage(job: any): string {
     const jobUrl = `https://job-updates.onrender.com/jobs/${job.slug}`;
 
     const lines = [
-        `🔥 *New Job Alert*`,
+        `🔥 *NEW JOB NOTIFICATION*`,
         ``,
         `💼 *Role:* ${escapeMarkdown(job.title)}`,
         `🏢 *Company:* ${escapeMarkdown(job.organization)}`,
@@ -28,10 +28,10 @@ function formatTelegramMessage(job: any): string {
         job.location ? `📍 *Location:* ${escapeMarkdown(job.location)}` : '',
         job.salary ? `💰 *Salary:* ${escapeMarkdown(job.salary)}` : '',
         ``,
-        `👇 *Apply & Details Here:*`,
-        `🔗 [Click to View Full Details](${jobUrl})`,
-        ``,
-        `_Share with your friends!_`,
+        `━━━━━━━━━━━━━━━━━━`,
+        `👇 *APPLY & FULL DETAILS:*`,
+        `[Click Here to Apply & View Notification](${jobUrl})`,
+        `━━━━━━━━━━━━━━━━━━`,
     ].filter(line => line !== '');
 
     return lines.join('\n');
