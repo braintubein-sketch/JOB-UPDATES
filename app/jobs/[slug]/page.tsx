@@ -116,10 +116,10 @@ export default async function JobDetailPage({ params }: { params: { slug: string
                         {/* Right: Countdown Timer */}
                         {timeLeft && (
                             <div className={`shrink-0 p-6 rounded-2xl text-center min-w-[180px] ${timeLeft.expired
-                                    ? 'bg-red-50 dark:bg-red-900/20 text-red-700 dark:text-red-400'
-                                    : isUrgent
-                                        ? 'bg-amber-50 dark:bg-amber-900/20 text-amber-700 dark:text-amber-400'
-                                        : 'bg-green-50 dark:bg-green-900/20 text-green-700 dark:text-green-400'
+                                ? 'bg-red-50 dark:bg-red-900/20 text-red-700 dark:text-red-400'
+                                : isUrgent
+                                    ? 'bg-amber-50 dark:bg-amber-900/20 text-amber-700 dark:text-amber-400'
+                                    : 'bg-green-50 dark:bg-green-900/20 text-green-700 dark:text-green-400'
                                 }`}>
                                 <Clock size={24} className="mx-auto mb-2" />
                                 {timeLeft.expired ? (
@@ -197,18 +197,45 @@ export default async function JobDetailPage({ params }: { params: { slug: string
                             </div>
                         )}
 
-                        {/* CTA Buttons */}
+                        {/* CTA Buttons - Category Aware */}
                         <div className="flex flex-col sm:flex-row gap-4">
-                            {job.applyLink && (
+                            {job.category === 'Result' ? (
+                                // RESULT: View Result button
+                                job.applyLink && (
+                                    <a
+                                        href={job.applyLink}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className="btn bg-orange-500 hover:bg-orange-600 text-white flex-1 justify-center py-4 text-lg shadow-lg shadow-orange-500/20"
+                                    >
+                                        View Result
+                                        <ExternalLink size={20} className="ml-2" />
+                                    </a>
+                                )
+                            ) : job.category === 'Admit Card' ? (
+                                // ADMIT CARD: Download button
                                 <a
-                                    href={job.applyLink}
+                                    href={job.applyLink || job.notificationPdf || '#'}
                                     target="_blank"
                                     rel="noopener noreferrer"
-                                    className="btn-primary flex-1 justify-center py-4 text-lg"
+                                    className="btn bg-purple-600 hover:bg-purple-700 text-white flex-1 justify-center py-4 text-lg shadow-lg shadow-purple-600/20"
                                 >
-                                    Apply Now (Official)
-                                    <ExternalLink size={20} className="ml-2" />
+                                    Download Admit Card
+                                    <Download size={20} className="ml-2" />
                                 </a>
+                            ) : (
+                                // JOBS: Apply Now button
+                                job.applyLink && (
+                                    <a
+                                        href={job.applyLink}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className="btn-primary flex-1 justify-center py-4 text-lg"
+                                    >
+                                        Apply Now (Official)
+                                        <ExternalLink size={20} className="ml-2" />
+                                    </a>
+                                )
                             )}
                             {job.notificationPdf && (
                                 <a
@@ -225,15 +252,18 @@ export default async function JobDetailPage({ params }: { params: { slug: string
 
                         {/* Share */}
                         <div className="card">
-                            <h3 className="font-bold text-slate-900 dark:text-white mb-4">Share this Job</h3>
+                            <h3 className="font-bold text-slate-900 dark:text-white mb-4">
+                                Share this {job.category === 'Result' ? 'Result' : job.category === 'Admit Card' ? 'Admit Card' : 'Job'}
+                            </h3>
                             <CopyJobDetails job={{
                                 title: job.title,
                                 organization: job.organization,
                                 qualification: job.qualification,
                                 salary: job.salary,
                                 lastDate: job.lastDate?.toISOString(),
-                                applyLink: job.applyLink,
-                                location: job.location
+                                slug: job.slug,
+                                location: job.location,
+                                category: job.category
                             }} />
                         </div>
                     </div>
@@ -290,17 +320,22 @@ export default async function JobDetailPage({ params }: { params: { slug: string
                 </div>
             </div>
 
-            {/* Sticky Mobile Apply Bar */}
-            {job.applyLink && (
+            {/* Sticky Mobile CTA Bar - Category Aware */}
+            {(job.applyLink || job.notificationPdf) && (
                 <div className="lg:hidden fixed bottom-0 left-0 right-0 p-4 bg-white/95 dark:bg-slate-900/95 backdrop-blur-lg border-t border-slate-200 dark:border-slate-800 z-50">
                     <a
-                        href={job.applyLink}
+                        href={job.applyLink || job.notificationPdf}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="btn-primary w-full py-4 text-lg justify-center"
+                        className={`btn w-full py-4 text-lg justify-center ${job.category === 'Result'
+                                ? 'bg-orange-500 hover:bg-orange-600 text-white'
+                                : job.category === 'Admit Card'
+                                    ? 'bg-purple-600 hover:bg-purple-700 text-white'
+                                    : 'btn-primary'
+                            }`}
                     >
-                        Apply Now Online
-                        <ExternalLink size={20} className="ml-2" />
+                        {job.category === 'Result' ? 'View Result' : job.category === 'Admit Card' ? 'Download Admit Card' : 'Apply Now Online'}
+                        {job.category === 'Admit Card' ? <Download size={20} className="ml-2" /> : <ExternalLink size={20} className="ml-2" />}
                     </a>
                 </div>
             )}

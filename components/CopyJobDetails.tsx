@@ -10,16 +10,25 @@ interface CopyJobDetailsProps {
         qualification?: string;
         salary?: string;
         lastDate?: string;
-        applyLink?: string;
+        slug: string; // Added slug for website URL
         location?: string;
+        category?: string;
     };
 }
 
 export default function CopyJobDetails({ job }: CopyJobDetailsProps) {
     const [copied, setCopied] = useState(false);
 
+    // Always use your website URL
+    const jobUrl = `https://jobupdate.site/jobs/${job.slug}`;
+
     const formatJobText = () => {
+        const categoryEmoji = job.category === 'Result' ? '📊' : job.category === 'Admit Card' ? '🎫' : '💼';
+        const categoryLabel = job.category === 'Result' ? 'RESULT ANNOUNCED' : job.category === 'Admit Card' ? 'ADMIT CARD OUT' : 'NEW JOB ALERT';
+
         const lines = [
+            `${categoryEmoji} *${categoryLabel}*`,
+            ``,
             `📢 *${job.title}*`,
             ``,
             `🏢 Organization: ${job.organization}`,
@@ -28,10 +37,11 @@ export default function CopyJobDetails({ job }: CopyJobDetailsProps) {
             job.location ? `📍 Location: ${job.location}` : '',
             job.lastDate ? `📅 Last Date: ${new Date(job.lastDate).toLocaleDateString('en-IN')}` : '',
             ``,
-            job.applyLink ? `🔗 Apply: ${job.applyLink}` : '',
+            `🔗 *${job.category === 'Result' ? 'View Result' : job.category === 'Admit Card' ? 'Download' : 'Apply Online'}:*`,
+            jobUrl,
             ``,
             `━━━━━━━━━━━━━━━━━`,
-            `📱 More Jobs: jobupdate.site`,
+            `📱 More Updates: jobupdate.site`,
         ].filter(line => line !== '');
 
         return lines.join('\n');
@@ -54,14 +64,14 @@ export default function CopyJobDetails({ job }: CopyJobDetailsProps) {
 
     const handleTelegramShare = () => {
         const text = encodeURIComponent(formatJobText());
-        window.open(`https://t.me/share/url?url=&text=${text}`, '_blank');
+        window.open(`https://t.me/share/url?url=${encodeURIComponent(jobUrl)}&text=${text}`, '_blank');
     };
 
     return (
         <div className="flex flex-wrap gap-3">
             <button
                 onClick={handleCopy}
-                className={`btn-premium ${copied ? 'bg-green-600 text-white' : 'btn-secondary'} flex items-center gap-2`}
+                className={`btn ${copied ? 'bg-green-600 text-white' : 'btn-secondary'} flex items-center gap-2`}
             >
                 {copied ? (
                     <>
@@ -78,7 +88,7 @@ export default function CopyJobDetails({ job }: CopyJobDetailsProps) {
 
             <button
                 onClick={handleWhatsAppShare}
-                className="btn-premium bg-green-500 hover:bg-green-600 text-white flex items-center gap-2"
+                className="btn bg-green-500 hover:bg-green-600 text-white flex items-center gap-2"
             >
                 <Share2 size={18} />
                 WhatsApp
@@ -86,7 +96,7 @@ export default function CopyJobDetails({ job }: CopyJobDetailsProps) {
 
             <button
                 onClick={handleTelegramShare}
-                className="btn-premium bg-blue-500 hover:bg-blue-600 text-white flex items-center gap-2"
+                className="btn bg-blue-500 hover:bg-blue-600 text-white flex items-center gap-2"
             >
                 <Send size={18} />
                 Telegram
