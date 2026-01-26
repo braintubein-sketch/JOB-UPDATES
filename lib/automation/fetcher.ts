@@ -2,6 +2,7 @@ import RSSParser from 'rss-parser';
 import dbConnect from '../mongodb/dbConnect';
 import { Job } from '../../models/Job';
 import { generateSlug } from '../utils';
+import { autoPostNewJobs } from './social-poster';
 
 const parser = new RSSParser({
     headers: {
@@ -82,6 +83,14 @@ export async function automateContentFetch() {
         }
     }
 
+    // 3. AUTO-POST TO SOCIAL MEDIA
+    let postedCount = 0;
+    if (newJobsCount > 0) {
+        console.log('Triggering Social Media Auto-Post...');
+        postedCount = await autoPostNewJobs();
+        console.log(`Posted ${postedCount} updates to social media.`);
+    }
+
     console.log(`=== CYLCE DONE. Added ${newJobsCount} jobs.`);
-    return { newJobs: newJobsCount, errors: errors.length > 0 ? errors : undefined };
+    return { newJobs: newJobsCount, posted: postedCount, errors: errors.length > 0 ? errors : undefined };
 }
