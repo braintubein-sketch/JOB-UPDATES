@@ -3,91 +3,88 @@
 @tailwind utilities;
 
 :root {
-  --foreground-rgb: 0, 0, 0;
-  --background-start-rgb: 214, 219, 220;
-  --background-end-rgb: 255, 255, 255;
+  --primary: #1e40af;
+  /* Deep Blue - Trust */
+  --primary-hover: #1e3a8a;
+  --secondary: #f59e0b;
+  /* Amber - Action/Buttons */
+  --accent: #eff6ff;
+  --text-main: #0f172a;
+  --text-muted: #64748b;
+  --glass: rgba(255, 255, 255, 0.8);
 }
 
 @layer base {
   body {
-    @apply text-slate-900 bg-white;
-  }
-
-  h1,
-  h2,
-  h3,
-  h4,
-  h5,
-  h6 {
-    @apply font-display;
+    @apply bg-[#f8fafc] text-text-main font-sans antialiased;
+    -webkit-tap-highlight-color: transparent;
   }
 }
 
 @layer components {
-  .section-premium {
-    @apply py-16 md:py-24;
-  }
 
-  .container-premium {
-    @apply container mx-auto px-4 max-w-7xl;
-  }
-
-  .card-premium {
-    @apply bg-white border border-slate-200 rounded-xl p-6 transition-all duration-300 hover:shadow-lg hover:-translate-y-1;
-  }
-
-  .btn-premium {
-    @apply inline-flex items-center justify-center gap-2 px-6 py-3 rounded-xl font-bold transition-all duration-300 active:scale-95;
+  /* PREMIUM BUTTON SYSTEM */
+  .btn-action {
+    @apply relative inline-flex items-center justify-center px-6 py-3 font-bold rounded-xl transition-all duration-200 transform active:scale-95 cursor-pointer select-none;
   }
 
   .btn-primary {
-    @apply bg-primary-600 text-white hover:bg-primary-700 shadow-lg shadow-primary-500/30;
+    @apply bg-primary text-white shadow-lg shadow-blue-900/20 hover:bg-primary-hover hover:shadow-xl hover:-translate-y-0.5;
   }
 
   .btn-secondary {
-    @apply bg-slate-100 text-slate-900 hover:bg-slate-200;
+    @apply bg-secondary text-white shadow-lg shadow-amber-600/20 hover:bg-amber-600 hover:shadow-xl hover:-translate-y-0.5;
   }
 
   .btn-outline {
-    @apply border-2 border-slate-200 text-slate-700 hover:border-primary-600 hover:text-primary-600;
+    @apply border-2 border-slate-200 text-slate-600 hover:bg-slate-50 hover:border-primary hover:text-primary;
   }
 
-  .badge {
-    @apply inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider;
+  /* PREMIUM CARD SYSTEM */
+  .job-card {
+    @apply relative bg-white border border-slate-100 rounded-2xl p-6 transition-all duration-300 hover:shadow-[0_20px_50px_rgba(0, 0, 0, 0.05)] hover:border-primary/20 hover:-translate-y-1;
   }
 
-  .badge-govt {
-    @apply bg-blue-50 text-blue-700 border border-blue-100;
+  /* FULL-AREA CLICKABLE LINK */
+  .card-anchor::before {
+    content: "";
+    @apply absolute inset-0 z-[1];
   }
 
-  .badge-private {
-    @apply bg-orange-50 text-orange-700 border border-orange-100;
+  /* NAVIGATION */
+  .glass-header {
+    @apply sticky top-0 z-[100] w-full backdrop-blur-md bg-white/80 border-b border-slate-200;
   }
 
-  .badge-result {
-    @apply bg-green-50 text-green-700 border border-green-100;
+  .nav-link {
+    @apply relative px-1 py-2 text-sm font-bold text-slate-600 hover:text-primary transition-colors;
   }
 
-  .text-gradient {
-    @apply bg-clip-text text-transparent bg-gradient-to-r from-primary-600 to-purple-600;
+  .nav-link::after {
+    content: "";
+    @apply absolute bottom-0 left-0 w-0 h-0.5 bg-primary transition-all duration-300;
+  }
+
+  .nav-link:hover::after {
+    @apply w-full;
+  }
+
+  /* BADGES */
+  .badge-premium {
+    @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider mb-2;
   }
 }
 
-/* Animations */
+/* FIX: Ensure nothing blocks clicks */
+* {
+  pointer-events: auto;
+}
+
+/* ANIMATIONS */
 @keyframes fadeIn {
   from {
     opacity: 0;
-  }
-
-  to {
-    opacity: 1;
-  }
-}
-
-@keyframes slideUp {
-  from {
-    opacity: 0;
-    transform: translateY(20px);
+    transform: translateY(10px);
   }
 
   to {
@@ -96,10 +93,6 @@
   }
 }
 
-.animate-fade-in {
-  animation: fadeIn 0.5s ease-out forwards;
-}
-
-.animate-slide-up {
-  animation: slideUp 0.6s ease-out forwards;
+.animate-premium {
+  animation: fadeIn 0.4s ease-out forwards;
 }

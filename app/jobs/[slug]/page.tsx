@@ -306,6 +306,15 @@ export default async function JobDetailPage({ params }: { params: { slug: string
 
                 </div>
             </section>
+
+            {/* STICKY BOTTOM ACTION BAR (Mobile Only) */}
+            <div className="lg:hidden fixed bottom-0 left-0 right-0 p-4 bg-white/90 backdrop-blur-lg border-t border-slate-100 z-50 shadow-[0_-10px_20px_rgba(0,0,0,0.05)]">
+                {job.applyLink && (
+                    <a href={job.applyLink} target="_blank" rel="noopener noreferrer" className="btn-action btn-primary w-full py-4 text-lg">
+                        Apply Now Online <ExternalLink size={20} className="ml-2" />
+                    </a>
+                )}
+            </div>
         </div>
     );
 }
