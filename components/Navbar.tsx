@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Menu, X, Search, User, Bell, Briefcase, Building2, Award, FileText } from 'lucide-react';
+import { Menu, X, Search, User, Bell, Briefcase, Building2, Award, FileText, BookOpen } from 'lucide-react';
 import ThemeToggle from './ThemeToggle';
 
 const Navbar = () => {
@@ -15,6 +15,7 @@ const Navbar = () => {
         { name: 'Govt Jobs', href: '/govt-jobs', icon: Building2 },
         { name: 'Results', href: '/results', icon: Award },
         { name: 'Admit Cards', href: '/admit-cards', icon: FileText },
+        { name: 'Blog', href: '/blog', icon: BookOpen },
     ];
 
     return (
@@ -91,8 +92,8 @@ const Navbar = () => {
                                         href={item.href}
                                         onClick={() => setIsOpen(false)}
                                         className={`flex items-center gap-3 px-4 py-3 rounded-xl font-medium transition-colors ${pathname === item.href
-                                                ? 'bg-blue-50 text-blue-600 dark:bg-blue-900/20 dark:text-blue-400'
-                                                : 'text-slate-700 hover:bg-slate-100 dark:text-slate-300 dark:hover:bg-slate-800'
+                                            ? 'bg-blue-50 text-blue-600 dark:bg-blue-900/20 dark:text-blue-400'
+                                            : 'text-slate-700 hover:bg-slate-100 dark:text-slate-300 dark:hover:bg-slate-800'
                                             }`}
                                     >
                                         <item.icon size={20} className={pathname === item.href ? 'text-blue-600' : 'text-slate-400'} />

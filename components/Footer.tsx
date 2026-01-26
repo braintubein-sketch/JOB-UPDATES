@@ -11,7 +11,7 @@ const Footer = () => {
         { name: 'Government Jobs', href: '/govt-jobs' },
         { name: 'Private Jobs', href: '/private-jobs' },
         { name: 'Results', href: '/results' },
-        { name: 'Admit Cards', href: '/admit-cards' },
+        { name: 'Career Blog', href: '/blog' },
     ];
 
     const companyLinks = [

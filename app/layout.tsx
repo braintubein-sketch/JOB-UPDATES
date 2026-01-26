@@ -1,5 +1,7 @@
 import type { Metadata } from "next";
 import { Inter } from 'next/font/google';
+import Link from 'next/link';
+import Script from 'next/script';
 import "./globals.css";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
@@ -48,6 +50,17 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className={inter.variable} suppressHydrationWarning>
+      <head>
+        {/* GOOGLE ADSENSE - Replace with your actual Client ID */}
+        {/* 
+        <Script
+          async
+          src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-XXXXXXXXXXXXXXXX"
+          crossOrigin="anonymous"
+          strategy="afterInteractive"
+        />
+        */}
+      </head>
       <body className="font-sans antialiased">
         <ThemeProvider>
           <Navbar />
