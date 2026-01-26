@@ -79,7 +79,6 @@ const JobSchema = new mongoose.Schema({
 JobSchema.index({ category: 1, status: 1, createdAt: -1 });
 JobSchema.index({ lastDate: 1 });
 JobSchema.index({ isFeatured: 1, isTrending: 1 });
-JobSchema.index({ slug: 1 });
 
 export const Job = mongoose.models.Job || mongoose.model('Job', JobSchema);
 

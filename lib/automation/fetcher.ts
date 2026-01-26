@@ -12,10 +12,10 @@ const parser = new RSSParser({
 });
 
 const SOURCES = [
-    { url: 'https://www.jagranjosh.com/rss/josh/sarkari-naukri.xml', name: 'Jagran Josh Sarkari', defaultCategory: 'Govt' },
+    { url: 'https://www.indiatoday.in/rss/1206584', name: 'India Today Jobs', defaultCategory: 'Govt' },
     { url: 'https://www.hindustantimes.com/feeds/rss/education/employment-news/rssfeed.xml', name: 'HT Jobs', defaultCategory: 'Govt' },
     { url: 'https://timesofindia.indiatimes.com/rssfeeds/913168846.cms', name: 'TOI Education', defaultCategory: 'Private' },
-    { url: 'https://www.careerindia.com/rss/news-rss.xml', name: 'CareerIndia', defaultCategory: 'Private' },
+    { url: 'https://zeenews.india.com/rss/india-news.xml', name: 'Zee News Careers', defaultCategory: 'Govt' },
 ];
 
 /**
@@ -26,7 +26,8 @@ async function extractOfficialLink(newsUrl: string): Promise<string> {
         const response = await fetch(newsUrl, {
             headers: {
                 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36',
-                'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8'
+                'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8',
+                'Referer': 'https://www.google.com/'
             }
         });
 
