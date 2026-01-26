@@ -56,32 +56,35 @@ function formatWhatsAppMessage(job: any): string {
 // ============================================
 
 async function sendToWhatsApp(job: any): Promise<{ success: boolean, error?: string }> {
-    // These keys allow you to use services like UltraMsg to bypass Meta verification
-    const GATEWAY_URL = process.env.WHATSAPP_GATEWAY_URL;
-    const TOKEN = process.env.WHATSAPP_TOKEN;
+    const ACCESS_TOKEN = process.env.WHATSAPP_ACCESS_TOKEN;
+    const PHONE_NUMBER_ID = process.env.WHATSAPP_PHONE_NUMBER_ID;
     const CHANNEL_ID = process.env.WHATSAPP_CHANNEL_ID;
 
-    if (!GATEWAY_URL || !TOKEN || !CHANNEL_ID)
-        return { success: false, error: 'WhatsApp Gateway not configured' };
+    if (!ACCESS_TOKEN || !PHONE_NUMBER_ID || !CHANNEL_ID)
+        return { success: false, error: 'Official Meta WhatsApp API not configured' };
 
     try {
         const message = formatWhatsAppMessage(job);
 
-        // This logic works with 90% of WhatsApp API Gateways
-        const response = await fetch(GATEWAY_URL, {
+        // Official Meta Cloud API Endpoint
+        const response = await fetch(`https://graph.facebook.com/v18.0/${PHONE_NUMBER_ID}/messages`, {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
+            headers: {
+                'Authorization': `Bearer ${ACCESS_TOKEN}`,
+                'Content-Type': 'application/json'
+            },
             body: JSON.stringify({
-                token: TOKEN,
+                messaging_product: 'whatsapp',
                 to: CHANNEL_ID,
-                body: message
+                type: 'text',
+                text: { body: message }
             }),
         });
 
         const result = await response.json();
-        // Return success if the gateway accepts the request
-        if (result.sent || result.success || result.ok) return { success: true };
-        return { success: false, error: result.message || 'API Error' };
+        // Standard Meta success check
+        if (result.messages && result.messages[0]?.id) return { success: true };
+        return { success: false, error: result.error?.message || 'Meta API Error' };
     } catch (error: any) {
         return { success: false, error: error.message };
     }
