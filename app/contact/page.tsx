@@ -1,85 +1,83 @@
-import { Mail, MapPin, Send, MessageSquare } from 'lucide-react';
+import { Mail, MapPin, Phone, Send } from 'lucide-react';
 
 export default function ContactPage() {
     return (
-        <div className="container py-20">
-            <div className="max-w-5xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-16">
-                <div>
-                    <h1 className="text-4xl font-extrabold mb-6">Get in Touch</h1>
-                    <p className="text-secondary text-lg mb-10 leading-relaxed">
-                        Have questions about a job notification? Or want to report an error? We're here to help you.
-                    </p>
+        <div className="container-premium py-12 max-w-5xl">
+            <div className="text-center mb-12">
+                <h1 className="text-4xl font-bold mb-4">Contact Us</h1>
+                <p className="text-slate-600 max-w-2xl mx-auto">
+                    Have questions about a job listing or need technical support?
+                    Get in touch with the Job Updates team.
+                </p>
+            </div>
 
-                    <div className="space-y-8">
-                        <div className="flex gap-4">
-                            <div className="w-12 h-12 bg-primary/10 rounded-xl flex items-center justify-center text-primary shrink-0">
+            <div className="grid md:grid-cols-2 gap-12">
+                {/* Contact Details */}
+                <div className="space-y-8">
+                    <div className="card-premium">
+                        <div className="flex gap-4 items-start">
+                            <div className="w-12 h-12 rounded-xl bg-primary-50 flex items-center justify-center text-primary-600 shrink-0">
                                 <Mail size={24} />
                             </div>
                             <div>
-                                <h4 className="font-bold">Email Us</h4>
-                                <p className="text-secondary">support@jobupdates.india</p>
-                                <p className="text-xs text-secondary mt-1">Response time: within 24 hours</p>
+                                <h3 className="font-bold text-lg mb-1">Email Us</h3>
+                                <p className="text-slate-600 mb-2">For general inquiries and support:</p>
+                                <a href="mailto:support@jobupdate.site" className="text-primary-600 font-bold hover:underline">
+                                    support@jobupdate.site
+                                </a>
                             </div>
                         </div>
+                    </div>
 
-                        <div className="flex gap-4">
-                            <div className="w-12 h-12 bg-accent/10 rounded-xl flex items-center justify-center text-accent shrink-0">
-                                <MessageSquare size={24} />
+                    <div className="card-premium">
+                        <div className="flex gap-4 items-start">
+                            <div className="w-12 h-12 rounded-xl bg-green-50 flex items-center justify-center text-green-600 shrink-0">
+                                <Send size={24} />
                             </div>
                             <div>
-                                <h4 className="font-bold">WhatsApp Channel</h4>
-                                <p className="text-secondary">Join for instant alerts</p>
-                                <button className="text-xs font-bold text-accent mt-1 hover:underline">Join Now →</button>
+                                <h3 className="font-bold text-lg mb-1">Join Community</h3>
+                                <p className="text-slate-600 mb-2">Get instant alerts on Telegram:</p>
+                                <a href="https://t.me/jobupdatesite" target="_blank" className="text-green-600 font-bold hover:underline">
+                                    @jobupdatesite
+                                </a>
                             </div>
                         </div>
+                    </div>
 
-                        <div className="flex gap-4">
-                            <div className="w-12 h-12 bg-green-100 rounded-xl flex items-center justify-center text-green-600 shrink-0">
+                    <div className="card-premium">
+                        <div className="flex gap-4 items-start">
+                            <div className="w-12 h-12 rounded-xl bg-orange-50 flex items-center justify-center text-orange-600 shrink-0">
                                 <MapPin size={24} />
                             </div>
                             <div>
-                                <h4 className="font-bold">Registered Office</h4>
-                                <p className="text-secondary">New Delhi, India</p>
+                                <h3 className="font-bold text-lg mb-1">Our Location</h3>
+                                <p className="text-slate-600">
+                                    Hyderabad, Telangana<br />
+                                    India - 500033
+                                </p>
                             </div>
                         </div>
                     </div>
                 </div>
 
-                <div className="glass p-8 rounded-2xl border border-border shadow-2xl">
-                    <form className="space-y-5">
-                        <div className="grid grid-cols-2 gap-4">
-                            <div className="space-y-2">
-                                <label className="text-xs font-bold uppercase tracking-wider text-secondary">First Name</label>
-                                <input type="text" className="w-full p-3 bg-background border border-border rounded-lg outline-none focus:border-primary" />
-                            </div>
-                            <div className="space-y-2">
-                                <label className="text-xs font-bold uppercase tracking-wider text-secondary">Last Name</label>
-                                <input type="text" className="w-full p-3 bg-background border border-border rounded-lg outline-none focus:border-primary" />
-                            </div>
+                {/* Simple Form Placeholder */}
+                <div className="card-premium p-8">
+                    <h3 className="text-2xl font-bold mb-6">Send a Message</h3>
+                    <form className="space-y-4">
+                        <div>
+                            <label className="block text-sm font-bold text-slate-700 mb-2">Name</label>
+                            <input type="text" className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-primary-500" placeholder="Your Name" />
                         </div>
-
-                        <div className="space-y-2">
-                            <label className="text-xs font-bold uppercase tracking-wider text-secondary">Email Address</label>
-                            <input type="email" className="w-full p-3 bg-background border border-border rounded-lg outline-none focus:border-primary" />
+                        <div>
+                            <label className="block text-sm font-bold text-slate-700 mb-2">Email</label>
+                            <input type="email" className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-primary-500" placeholder="your@email.com" />
                         </div>
-
-                        <div className="space-y-2">
-                            <label className="text-xs font-bold uppercase tracking-wider text-secondary">Subject</label>
-                            <select className="w-full p-3 bg-background border border-border rounded-lg outline-none focus:border-primary">
-                                <option>Job Update Query</option>
-                                <option>Error Report</option>
-                                <option>AdSense/Advertising</option>
-                                <option>Other</option>
-                            </select>
+                        <div>
+                            <label className="block text-sm font-bold text-slate-700 mb-2">Message</label>
+                            <textarea rows={4} className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-primary-500" placeholder="How can we help?"></textarea>
                         </div>
-
-                        <div className="space-y-2">
-                            <label className="text-xs font-bold uppercase tracking-wider text-secondary">Message</label>
-                            <textarea rows={4} className="w-full p-3 bg-background border border-border rounded-lg outline-none focus:border-primary"></textarea>
-                        </div>
-
-                        <button type="submit" className="btn btn-primary w-full justify-center py-4 text-lg">
-                            Send Message <Send size={18} />
+                        <button type="button" className="btn-premium btn-primary w-full py-4 text-lg">
+                            Send Message
                         </button>
                     </form>
                 </div>

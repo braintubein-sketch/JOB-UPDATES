@@ -38,10 +38,16 @@ const Footer = () => {
                     <div>
                         <h4 className="font-display font-bold mb-6">Resources</h4>
                         <ul className="space-y-3">
-                            {['Latest Jobs', 'Government Jobs', 'Private Jobs', 'Results', 'Admit Cards'].map(item => (
-                                <li key={item}>
-                                    <Link href="#" className="text-slate-400 hover:text-white text-sm transition-colors">
-                                        {item}
+                            {[
+                                { name: 'Latest Jobs', href: '/latest-jobs' },
+                                { name: 'Government Jobs', href: '/govt-jobs' },
+                                { name: 'Private Jobs', href: '/private-jobs' },
+                                { name: 'Results', href: '/results' },
+                                { name: 'Admit Cards', href: '/admit-cards' }
+                            ].map(item => (
+                                <li key={item.name}>
+                                    <Link href={item.href} className="text-slate-400 hover:text-white text-sm transition-colors">
+                                        {item.name}
                                     </Link>
                                 </li>
                             ))}
@@ -52,10 +58,16 @@ const Footer = () => {
                     <div>
                         <h4 className="font-display font-bold mb-6">Authority</h4>
                         <ul className="space-y-3">
-                            {['About Us', 'Official Sources', 'Privacy Policy', 'Disclaimer', 'Contact Us'].map(item => (
-                                <li key={item}>
-                                    <Link href="#" className="text-slate-400 hover:text-white text-sm transition-colors">
-                                        {item}
+                            {[
+                                { name: 'About Us', href: '/about' },
+                                { name: 'Official Sources', href: '/sources' },
+                                { name: 'Privacy Policy', href: '/privacy' },
+                                { name: 'Disclaimer', href: '/disclaimer' },
+                                { name: 'Contact Us', href: '/contact' }
+                            ].map(item => (
+                                <li key={item.name}>
+                                    <Link href={item.href} className="text-slate-400 hover:text-white text-sm transition-colors">
+                                        {item.name}
                                     </Link>
                                 </li>
                             ))}
