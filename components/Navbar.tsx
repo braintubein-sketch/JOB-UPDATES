@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
-import { Menu, X, Bell, Briefcase, ChevronDown } from 'lucide-react';
+import { Menu, X, Bell, ChevronDown } from 'lucide-react';
 
 const Navbar = () => {
     const [isOpen, setIsOpen] = useState(false);
@@ -20,8 +20,8 @@ const Navbar = () => {
             <div className="container-premium flex items-center justify-between h-[80px]">
                 {/* BRAND LOGO - High click visibility */}
                 <Link href="/" className="flex items-center gap-3 active:scale-95 transition-transform">
-                    <div className="w-12 h-12 bg-primary rounded-xl flex items-center justify-center text-white shadow-lg shadow-blue-900/20">
-                        <Briefcase size={26} strokeWidth={2.5} />
+                    <div className="w-12 h-12 bg-white rounded-xl flex items-center justify-center shadow-lg shadow-slate-200/50 overflow-hidden border border-slate-100 p-1">
+                        <img src="/favicon.png" alt="Job Updates Logo" className="w-full h-full object-contain" />
                     </div>
                     <div className="flex flex-col">
                         <span className="text-2xl font-black tracking-tighter text-slate-900 leading-none">
