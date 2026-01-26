@@ -16,14 +16,16 @@ const WHATSAPP_CHANNEL_ID = process.env.WHATSAPP_CHANNEL_ID;
 
 function formatTelegramMessage(job: any): string {
     const jobUrl = `https://jobupdate.site/jobs/${job.slug}`;
-    const dateStr = job.lastDate ? new Date(job.lastDate).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' }) : 'Check Notice';
+    // Simple date format: 15 Feb 2026
+    const dateStr = job.lastDate ? new Date(job.lastDate).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' }) : 'Check Notice';
 
+    // We use .join('\n') so empty lines in array become blank lines in message
     const lines = [
         `🚨 NEW JOB ALERT 🚨`,
         ``,
         `📝 Organization: ${escapeMarkdown(job.organization)}`,
         `📌 Post: ${escapeMarkdown(job.title)}`,
-        `📊 Vacancies: ${escapeMarkdown(job.vacancies || 'Check Notice')}`,
+        `📊 Vacancies: ${escapeMarkdown(job.vacancies || 'See Notice')}`,
         `🎓 Qualification: ${escapeMarkdown(job.qualification || 'See Details')}`,
         `📅 Last Date: ${escapeMarkdown(dateStr)}`,
         ``,
@@ -31,7 +33,7 @@ function formatTelegramMessage(job: any): string {
         `${jobUrl}`,
         ``,
         `#${job.category?.toLowerCase() || 'job'} #governmentjobs #jobalert`,
-    ].filter(line => line !== '');
+    ].filter(line => line !== null); // Keep empty strings for spacing
 
     return lines.join('\n');
 }
