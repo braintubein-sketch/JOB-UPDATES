@@ -55,6 +55,40 @@ function formatWhatsAppMessage(job: any): string {
 // SENDING LOGIC
 // ============================================
 
+async function sendToWhatsApp(job: any): Promise<{ success: boolean, error?: string }> {
+    if (!WHATSAPP_ACCESS_TOKEN || !WHATSAPP_CHANNEL_ID) return { success: false, error: 'WhatsApp or Access Token not configured' };
+
+    try {
+        const message = formatWhatsAppMessage(job);
+
+        // This uses the Meta Business Cloud API
+        // For public "Channels", Meta currently requires a specific Newsletter API or a verified business
+        const response = await fetch(
+            `https://graph.facebook.com/v18.0/${WHATSAPP_CHANNEL_ID}/messages`,
+            {
+                method: 'POST',
+                headers: {
+                    'Authorization': `Bearer ${WHATSAPP_ACCESS_TOKEN}`,
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    messaging_product: 'whatsapp',
+                    recipient_type: 'individual',
+                    to: WHATSAPP_CHANNEL_ID, // In Business API, this is usually the target number or group ID
+                    type: 'text',
+                    text: { body: message }
+                }),
+            }
+        );
+
+        const result = await response.json();
+        if (!result.error) return { success: true };
+        return { success: false, error: result.error.message };
+    } catch (error: any) {
+        return { success: false, error: error.message };
+    }
+}
+
 async function sendToTelegram(job: any): Promise<{ success: boolean, error?: string }> {
     if (!TELEGRAM_BOT_TOKEN || !TELEGRAM_CHANNEL_ID) return { success: false, error: 'Missing Config' };
 
@@ -87,37 +121,61 @@ export async function autoPostNewJobs(): Promise<number> {
     // Increase limit to clear backlog faster
     const unpostedJobs = await Job.find({
         status: 'PUBLISHED',
-        telegramPosted: { $ne: true }
+        $or: [
+            { telegramPosted: { $ne: true } },
+            { whatsappPosted: { $ne: true } }
+        ]
     }).limit(10).sort({ createdAt: -1 });
 
     if (unpostedJobs.length === 0) return 0;
 
-    console.log(`🚀 Found ${unpostedJobs.length} unposted jobs. Triggering Telegram...`);
+    console.log(`🚀 Found ${unpostedJobs.length} jobs to process for social media...`);
 
     let postedCount = 0;
     for (const job of unpostedJobs) {
-        const res = await sendToTelegram(job);
-        if (res.success) {
-            console.log(`✅ Posted: ${job.title}`);
-            await Job.updateOne({ _id: job._id }, { telegramPosted: true, publishedAt: new Date() });
-            postedCount++;
-        } else {
-            console.error(`❌ TG Fail: ${job.title} | Error: ${res.error}`);
+        let tgRes = { success: job.telegramPosted || false };
+        let waRes = { success: job.whatsappPosted || false };
+
+        if (!job.telegramPosted) {
+            tgRes = await sendToTelegram(job);
+            if (tgRes.success) console.log(`✅ Posted TG: ${job.title}`);
         }
-        // Delay to avoid TG rate limits
-        await new Promise(r => setTimeout(r, 1000));
+
+        if (!job.whatsappPosted) {
+            waRes = await sendToWhatsApp(job);
+            if (waRes.success) console.log(`✅ Posted WA: ${job.title}`);
+        }
+
+        if (tgRes.success || waRes.success) {
+            await Job.updateOne({ _id: job._id }, {
+                telegramPosted: tgRes.success,
+                whatsappPosted: waRes.success,
+                publishedAt: new Date()
+            });
+            postedCount++;
+        }
+
+        await new Promise(r => setTimeout(r, 2000)); // Rate limit safety
     }
     return postedCount;
 }
 
-export async function postJobToSocial(jobId: string): Promise<{ telegram: boolean; error?: string }> {
+export async function postJobToSocial(jobId: string): Promise<{ telegram: boolean; whatsapp: boolean; error?: string }> {
     await dbConnect();
     const job = await Job.findById(jobId);
     if (!job) throw new Error('Job not found');
 
-    const res = await sendToTelegram(job);
-    if (res.success) {
-        await Job.updateOne({ _id: jobId }, { telegramPosted: true });
-    }
-    return { telegram: res.success, error: res.error };
+    const tgRes = await sendToTelegram(job);
+    const waRes = await sendToWhatsApp(job);
+
+    await Job.updateOne({ _id: jobId }, {
+        telegramPosted: tgRes.success,
+        whatsappPosted: waRes.success
+    });
+
+    return {
+        telegram: tgRes.success,
+        whatsapp: waRes.success,
+        error: tgRes.error || waRes.error
+    };
 }
