@@ -1,67 +1,66 @@
-import { ShieldCheck, Info, ExternalLink, Globe, CheckCircle } from 'lucide-react';
-
-const OFFICIAL_SOURCES = [
-    { name: 'UPSC', url: 'https://upsc.gov.in', description: 'Union Public Service Commission' },
-    { name: 'SSC', url: 'https://ssc.nic.in', description: 'Staff Selection Commission' },
-    { name: 'NCS', url: 'https://www.ncs.gov.in', description: 'National Career Service' },
-    { name: 'IBPS', url: 'https://ibps.in', description: 'Institute of Banking Personnel Selection' },
-    { name: 'RRB', url: 'https://indianrailways.gov.in', description: 'Railway Recruitment Board' },
-    { name: 'NTA', url: 'https://nta.ac.in', description: 'National Testing Agency' },
-];
+import { ExternalLink, Search, ShieldCheck } from 'lucide-react';
 
 export default function SourcesPage() {
+    const sources = [
+        { name: 'SSC', url: 'https://ssc.nic.in', label: 'Staff Selection Commission' },
+        { name: 'UPSC', url: 'https://upsc.gov.in', label: 'Union Public Service Commission' },
+        { name: 'Railway Recruitments', url: 'https://indianrailways.gov.in', label: 'RRB & RRC' },
+        { name: 'Banking', url: 'https://ibps.in', label: 'IBPS & RBI' },
+        { name: 'Defense', url: 'https://joinindianarmy.nic.in', label: 'Army, Navy, Airforce' },
+        { name: 'State PSCs', url: '#', label: 'All State Service Commissions' },
+    ];
+
     return (
-        <div className="section-premium">
-            <div className="container-premium max-w-4xl">
-                <div className="text-center mb-16">
-                    <div className="flex justify-center mb-8">
-                        <div className="w-20 h-20 bg-primary-50 rounded-3xl flex items-center justify-center text-primary-600">
-                            <ShieldCheck size={40} />
-                        </div>
-                    </div>
-                    <h1 className="text-4xl md:text-5xl font-bold font-display mb-6">Official Sources Policy</h1>
-                    <p className="text-slate-500 text-xl max-w-2xl mx-auto">
-                        Transparency is our core value. We fetch information ONLY from official Indian government portals and verified corporate websites.
+        <div className="min-h-screen bg-slate-50 dark:bg-slate-950 pb-20">
+            {/* Header */}
+            <div className="bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 py-16">
+                <div className="container-main text-center">
+                    <h1 className="text-4xl md:text-5xl font-bold text-slate-900 dark:text-white tracking-tight">
+                        Official <span className="text-blue-600">Sources</span>
+                    </h1>
+                    <p className="text-slate-600 dark:text-slate-400 text-lg mt-4 max-w-2xl mx-auto">
+                        Complete transparency. See where we fetch our recruitment alerts from.
                     </p>
                 </div>
+            </div>
 
-                <div className="card-premium space-y-12 p-8 md:p-12">
-                    <div className="flex flex-col md:flex-row gap-8">
-                        <div className="w-14 h-14 bg-blue-50 rounded-full flex items-center justify-center text-blue-600 shrink-0">
-                            <Info size={28} />
+            {/* Content Area */}
+            <div className="container-main py-16">
+                <div className="max-w-4xl mx-auto">
+                    <div className="card mb-8">
+                        <div className="flex items-center gap-4 mb-8">
+                            <div className="w-12 h-12 rounded-2xl bg-blue-100 dark:bg-blue-900/40 text-blue-600 dark:text-blue-400 flex items-center justify-center">
+                                <ShieldCheck size={24} />
+                            </div>
+                            <div>
+                                <h2 className="text-xl font-bold text-slate-900 dark:text-white">Our Verification Policy</h2>
+                                <p className="text-sm text-slate-500">We never use private blogs or unverified social media as primary sources.</p>
+                            </div>
                         </div>
-                        <div>
-                            <h3 className="text-2xl font-bold mb-4 text-slate-900">Our Data Integrity</h3>
-                            <p className="text-slate-600 leading-relaxed text-lg">
-                                Every single job post on jobupdate.site contains the direct source URL.
-                                We do not host or modify official notification PDFs. We only provide pointers
-                                to help applicants reach the official apply portals safely.
-                            </p>
-                        </div>
-                    </div>
 
-                    <div className="pt-12 border-t border-slate-200">
-                        <h4 className="font-bold uppercase tracking-widest text-xs text-slate-400 mb-8 flex items-center gap-2">
-                            <Globe size={14} /> Pillars of Content Verification
-                        </h4>
-                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-                            {OFFICIAL_SOURCES.map(source => (
-                                <a key={source.name} href={source.url} target="_blank" className="flex items-center justify-between p-5 border border-slate-200 rounded-xl hover:border-primary-500 hover:shadow-md transition-all group bg-slate-50/50">
-                                    <div className="flex flex-col gap-1">
-                                        <span className="font-bold text-slate-900 group-hover:text-primary-700 transition-colors">{source.name}</span>
-                                        <span className="text-[10px] uppercase font-bold text-slate-400 tracking-widest">{source.description}</span>
+                        <div className="grid sm:grid-cols-2 gap-4">
+                            {sources.map((source) => (
+                                <a
+                                    key={source.name}
+                                    href={source.url}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="p-4 rounded-xl border border-slate-100 dark:border-slate-800 hover:border-blue-200 hover:bg-blue-50 dark:hover:bg-blue-950 transition-all group flex items-center justify-between"
+                                >
+                                    <div>
+                                        <div className="font-bold text-slate-900 dark:text-white group-hover:text-blue-600">{source.name}</div>
+                                        <div className="text-xs text-slate-500">{source.label}</div>
                                     </div>
-                                    <ExternalLink size={16} className="text-slate-300 group-hover:text-primary-500 transition-all" />
+                                    <ExternalLink size={16} className="text-slate-300 group-hover:text-blue-600" />
                                 </a>
                             ))}
                         </div>
                     </div>
 
-                    <div className="bg-amber-50 border border-amber-100 rounded-xl p-6 text-center">
-                        <p className="text-sm font-semibold text-amber-800 flex items-center justify-center gap-2">
-                            <CheckCircle size={16} />
-                            If you find any link not pointing to an official domain, please report it to support@jobupdate.site immediately.
-                        </p>
+                    <div className="text-center bg-white dark:bg-slate-900 rounded-3xl p-8 border border-slate-200 dark:border-slate-800">
+                        <Search className="mx-auto text-blue-600 mb-4" size={32} />
+                        <h3 className="font-bold text-slate-900 dark:text-white mb-2">Notice a missing source?</h3>
+                        <p className="text-sm text-slate-500 max-w-md mx-auto">If you are an official department HR or would like us to track a specific portal, please let us know.</p>
                     </div>
                 </div>
             </div>

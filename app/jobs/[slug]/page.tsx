@@ -8,6 +8,7 @@ import {
     Clock, Briefcase, ChevronRight
 } from 'lucide-react';
 import CopyJobDetails from '@/components/CopyJobDetails';
+import JobTabs from '@/components/JobTabs';
 
 export const dynamic = 'force-dynamic';
 
@@ -154,51 +155,24 @@ export default async function JobDetailPage({ params }: { params: { slug: string
                             <InfoCard icon={<Calendar size={20} />} label="Last Date" value={job.lastDate ? new Date(job.lastDate).toLocaleDateString('en-IN') : 'Check PDF'} />
                         </div>
 
-                        {/* Overview */}
-                        <div className="card">
-                            <h2 className="text-xl font-bold text-slate-900 dark:text-white mb-4 flex items-center gap-2">
-                                <FileText className="text-blue-600" size={22} />
-                                Recruitment Overview
-                            </h2>
-                            <div className="prose prose-slate dark:prose-invert max-w-none">
-                                <p className="text-slate-600 dark:text-slate-400 leading-relaxed">
-                                    {job.description || `The ${job.organization} has officially released the notification for the post of ${job.postName || job.title}. Eligible candidates are invited to apply through official channels before the last date.`}
-                                </p>
-                            </div>
-                        </div>
-
-                        {/* Important Dates */}
-                        {(job.startDate || job.lastDate || job.examDate) && (
-                            <div className="card">
-                                <h2 className="text-xl font-bold text-slate-900 dark:text-white mb-4 flex items-center gap-2">
-                                    <Calendar className="text-blue-600" size={22} />
-                                    Important Dates
-                                </h2>
-                                <div className="divide-y divide-slate-100 dark:divide-slate-800">
-                                    {job.startDate && (
-                                        <div className="flex justify-between py-3">
-                                            <span className="text-slate-600 dark:text-slate-400">Application Start Date</span>
-                                            <span className="font-semibold text-slate-900 dark:text-white">{new Date(job.startDate).toLocaleDateString('en-IN')}</span>
-                                        </div>
-                                    )}
-                                    {job.lastDate && (
-                                        <div className={`flex justify-between py-3 ${isUrgent ? 'bg-red-50 dark:bg-red-900/10 -mx-6 px-6 rounded-lg' : ''}`}>
-                                            <span className="text-slate-600 dark:text-slate-400">Last Date to Apply</span>
-                                            <span className="font-bold text-red-600">{new Date(job.lastDate).toLocaleDateString('en-IN')}</span>
-                                        </div>
-                                    )}
-                                    {job.examDate && (
-                                        <div className="flex justify-between py-3">
-                                            <span className="text-slate-600 dark:text-slate-400">Exam Date</span>
-                                            <span className="font-semibold text-slate-900 dark:text-white">{new Date(job.examDate).toLocaleDateString('en-IN')}</span>
-                                        </div>
-                                    )}
-                                </div>
-                            </div>
-                        )}
+                        {/* Interactive Tabs Content */}
+                        <JobTabs job={{
+                            description: job.description,
+                            eligibility: job.eligibility,
+                            selectionProcess: job.selectionProcess,
+                            howToApply: job.howToApply,
+                            organization: job.organization,
+                            title: job.title,
+                            postName: job.postName,
+                            importantDates: [
+                                job.startDate && { label: 'Application Start Date', date: new Date(job.startDate).toLocaleDateString('en-IN') },
+                                job.lastDate && { label: 'Last Date to Apply', date: new Date(job.lastDate).toLocaleDateString('en-IN'), isUrgent },
+                                job.examDate && { label: 'Exam Date', date: new Date(job.examDate).toLocaleDateString('en-IN') }
+                            ].filter(Boolean) as any
+                        }} />
 
                         {/* CTA Buttons - Category Aware */}
-                        <div className="flex flex-col sm:flex-row gap-4">
+                        <div className="flex flex-col sm:flex-row gap-4 pt-4">
                             {job.category === 'Result' ? (
                                 // RESULT: View Result button
                                 job.applyLink && (
@@ -328,10 +302,10 @@ export default async function JobDetailPage({ params }: { params: { slug: string
                         target="_blank"
                         rel="noopener noreferrer"
                         className={`btn w-full py-4 text-lg justify-center ${job.category === 'Result'
-                                ? 'bg-orange-500 hover:bg-orange-600 text-white'
-                                : job.category === 'Admit Card'
-                                    ? 'bg-purple-600 hover:bg-purple-700 text-white'
-                                    : 'btn-primary'
+                            ? 'bg-orange-500 hover:bg-orange-600 text-white'
+                            : job.category === 'Admit Card'
+                                ? 'bg-purple-600 hover:bg-purple-700 text-white'
+                                : 'btn-primary'
                             }`}
                     >
                         {job.category === 'Result' ? 'View Result' : job.category === 'Admit Card' ? 'Download Admit Card' : 'Apply Now Online'}

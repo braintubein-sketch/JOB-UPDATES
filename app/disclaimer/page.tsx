@@ -1,22 +1,52 @@
+import { AlertTriangle, FileText, Info } from 'lucide-react';
+
 export default function DisclaimerPage() {
     return (
-        <div className="container-premium py-12 max-w-4xl">
-            <div className="card-premium p-8 md:p-12">
-                <h1 className="text-3xl font-bold mb-8 text-red-600">Disclaimer</h1>
-                <div className="prose prose-slate max-w-none">
-                    <p className="font-bold">Please read this disclaimer carefully before using Job Updates.</p>
+        <div className="min-h-screen bg-slate-50 dark:bg-slate-950 pb-20">
+            {/* Header */}
+            <div className="bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 py-16">
+                <div className="container-main text-center">
+                    <h1 className="text-4xl md:text-5xl font-bold text-slate-900 dark:text-white tracking-tight">
+                        Standard <span className="text-blue-600">Disclaimer</span>
+                    </h1>
+                    <p className="text-slate-600 dark:text-slate-400 text-lg mt-4 max-w-2xl mx-auto">
+                        Please read our professional terms and advisory regarding the job listings.
+                    </p>
+                </div>
+            </div>
 
-                    <h3>1. Not a Government Website</h3>
-                    <p><strong>Job Updates is NOT an official government website.</strong> We are a private information portal that aggregates job news from various official sources. We have no affiliation with any government ministry or department.</p>
+            {/* Content Area */}
+            <div className="container-main py-16">
+                <div className="max-w-4xl mx-auto">
+                    <div className="card md:p-12 mb-8 bg-amber-50 dark:bg-amber-900/10 border-amber-200 dark:border-amber-800">
+                        <div className="flex gap-4 mb-6">
+                            <AlertTriangle className="text-amber-600 shrink-0" size={32} />
+                            <div>
+                                <h2 className="text-xl font-bold text-slate-900 dark:text-white">Important Advisory</h2>
+                                <p className="text-slate-600 dark:text-slate-400 text-sm mt-1">Users are requested to verify notification details on official portals.</p>
+                            </div>
+                        </div>
 
-                    <h3>2. Information Accuracy</h3>
-                    <p>While we strive for accuracy, we cannot guarantee that every piece of information (dates, fees, vacancies) is 100% error-free. Recruitment rules change frequently. <strong>Always check the official URL</strong> provided in our job posts before making any payment or application.</p>
+                        <div className="prose prose-slate dark:prose-invert max-w-none text-sm space-y-6 text-slate-700 dark:text-slate-300">
+                            <p>
+                                JobUpdates is an independent job discovery platform. While we strive to provide 100% accurate and up-to-date information, we are not responsible for any inaccuracies or discrepancies in the job listings.
+                            </p>
 
-                    <h3>3. No Liability</h3>
-                    <p>We are not responsible for any loss, damage, or missed opportunity resulting from the use of this website. Users apply for jobs at their own risk.</p>
+                            <div className="flex gap-4">
+                                <Info className="text-blue-600 shrink-0" size={18} />
+                                <p><strong>Official Source Guarantee:</strong> We always provide the source link for every job. We strongly advise you to check the official notification PDF before applying or paying any application fees.</p>
+                            </div>
 
-                    <h3>4. External Links</h3>
-                    <p>Links to third-party websites (e.g., Application Forms) are provided for convenience. We do not control these sites and endorse their content solely for information purposes.</p>
+                            <p>
+                                Under no circumstances will JobUpdates or its team be liable for any loss or damage including without limitation, indirect or consequential loss or damage, or any loss or damage whatsoever arising from loss of data or profits arising out of, or in connection with, the use of this website.
+                            </p>
+
+                            <div className="flex gap-4">
+                                <FileText className="text-blue-600 shrink-0" size={18} />
+                                <p><strong>No Guarantee of Selection:</strong> Information on this site does not guarantee job selection or interview calls. We merely curate information from public domains.</p>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>

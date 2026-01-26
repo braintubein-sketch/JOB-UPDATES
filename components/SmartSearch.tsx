@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
-import { Search, X, Filter, ChevronDown } from 'lucide-react';
+import { Search, X, Filter, ChevronDown, SlidersHorizontal } from 'lucide-react';
 
 interface SmartSearchProps {
     onSearch: (query: string, filters: SearchFilters) => void;
@@ -34,7 +34,7 @@ export default function SmartSearch({ onSearch, categories = [], states = [] }: 
     useEffect(() => {
         const debounce = setTimeout(handleSearch, 300);
         return () => clearTimeout(debounce);
-    }, [query, handleSearch]);
+    }, [query, filters, handleSearch]);
 
     const clearSearch = () => {
         setQuery('');
@@ -44,20 +44,20 @@ export default function SmartSearch({ onSearch, categories = [], states = [] }: 
     return (
         <div className="w-full space-y-4">
             {/* Search Bar */}
-            <div className="flex gap-3">
+            <div className="flex flex-col md:flex-row gap-3">
                 <div className="flex-1 relative">
                     <Search size={20} className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" />
                     <input
                         type="text"
                         value={query}
                         onChange={(e) => setQuery(e.target.value)}
-                        placeholder="Search jobs by title, organization, or keywords..."
-                        className="w-full pl-12 pr-12 py-4 border border-slate-200 rounded-xl bg-white focus:ring-2 focus:ring-primary-500 focus:border-transparent outline-none text-base transition-all"
+                        placeholder="Search jobs, organizations, or keywords..."
+                        className="input pl-12 pr-12 py-4 text-base"
                     />
                     {query && (
                         <button
                             onClick={() => setQuery('')}
-                            className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600"
+                            className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200"
                         >
                             <X size={18} />
                         </button>
@@ -65,25 +65,27 @@ export default function SmartSearch({ onSearch, categories = [], states = [] }: 
                 </div>
                 <button
                     onClick={() => setShowFilters(!showFilters)}
-                    className={`px-5 py-4 border rounded-xl flex items-center gap-2 font-semibold transition-all ${showFilters ? 'bg-primary-600 text-white border-primary-600' : 'border-slate-200 hover:border-primary-500'
+                    className={`btn px-5 py-4 flex items-center gap-2 ${showFilters
+                            ? 'bg-blue-600 text-white shadow-lg shadow-blue-600/20'
+                            : 'btn-secondary border border-slate-200 dark:border-slate-800'
                         }`}
                 >
-                    <Filter size={18} />
+                    <SlidersHorizontal size={18} />
                     Filters
-                    <ChevronDown size={16} className={`transition-transform ${showFilters ? 'rotate-180' : ''}`} />
+                    <ChevronDown size={16} className={`transition-transform duration-300 ${showFilters ? 'rotate-180' : ''}`} />
                 </button>
             </div>
 
             {/* Filter Panel */}
             {showFilters && (
-                <div className="p-6 border border-slate-200 rounded-xl bg-slate-50 animate-fade-in">
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div className="card bg-slate-50 dark:bg-slate-900/50 border-slate-200 dark:border-slate-800 animate-fade-in-up">
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                         <div>
-                            <label className="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-2">Category</label>
+                            <label className="block text-xs font-bold uppercase tracking-widest text-slate-500 dark:text-slate-400 mb-3">Category</label>
                             <select
                                 value={filters.category}
                                 onChange={(e) => setFilters({ ...filters, category: e.target.value })}
-                                className="w-full p-3 border border-slate-200 rounded-lg bg-white focus:ring-2 focus:ring-primary-500"
+                                className="select text-sm"
                             >
                                 <option value="">All Categories</option>
                                 {(categories.length > 0 ? categories : defaultCategories).map(cat => (
@@ -92,11 +94,11 @@ export default function SmartSearch({ onSearch, categories = [], states = [] }: 
                             </select>
                         </div>
                         <div>
-                            <label className="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-2">State</label>
+                            <label className="block text-xs font-bold uppercase tracking-widest text-slate-500 dark:text-slate-400 mb-3">State</label>
                             <select
                                 value={filters.state}
                                 onChange={(e) => setFilters({ ...filters, state: e.target.value })}
-                                className="w-full p-3 border border-slate-200 rounded-lg bg-white focus:ring-2 focus:ring-primary-500"
+                                className="select text-sm"
                             >
                                 <option value="">All States</option>
                                 {(states.length > 0 ? states : defaultStates).map(state => (
@@ -105,11 +107,11 @@ export default function SmartSearch({ onSearch, categories = [], states = [] }: 
                             </select>
                         </div>
                         <div>
-                            <label className="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-2">Sort By</label>
+                            <label className="block text-xs font-bold uppercase tracking-widest text-slate-500 dark:text-slate-400 mb-3">Sort By</label>
                             <select
                                 value={filters.sortBy}
                                 onChange={(e) => setFilters({ ...filters, sortBy: e.target.value })}
-                                className="w-full p-3 border border-slate-200 rounded-lg bg-white focus:ring-2 focus:ring-primary-500"
+                                className="select text-sm"
                             >
                                 <option value="latest">Latest First</option>
                                 <option value="lastDate">Last Date Soon</option>
@@ -118,10 +120,10 @@ export default function SmartSearch({ onSearch, categories = [], states = [] }: 
                             </select>
                         </div>
                     </div>
-                    <div className="mt-4 flex justify-end">
+                    <div className="mt-6 pt-6 border-t border-slate-200 dark:border-slate-800 flex justify-end">
                         <button
                             onClick={clearSearch}
-                            className="text-sm font-semibold text-slate-500 hover:text-primary-600"
+                            className="text-sm font-bold text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300 transition-colors"
                         >
                             Clear All Filters
                         </button>
