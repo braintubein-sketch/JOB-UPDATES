@@ -15,23 +15,22 @@ const WHATSAPP_CHANNEL_ID = process.env.WHATSAPP_CHANNEL_ID;
 // ============================================
 
 function formatTelegramMessage(job: any): string {
-    // Drive traffic to OUR website
     const jobUrl = `https://jobupdate.site/jobs/${job.slug}`;
+    const dateStr = job.lastDate ? new Date(job.lastDate).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' }) : 'Check Notice';
 
     const lines = [
-        `🔥 *NEW JOB NOTIFICATION*`,
+        `🚨 NEW JOB ALERT 🚨`,
         ``,
-        `💼 *Role:* ${escapeMarkdown(job.title)}`,
-        `🏢 *Company:* ${escapeMarkdown(job.organization)}`,
+        `📝 Organization: ${escapeMarkdown(job.organization)}`,
+        `📌 Post: ${escapeMarkdown(job.title)}`,
+        `📊 Vacancies: ${escapeMarkdown(job.vacancies || 'Check Notice')}`,
+        `🎓 Qualification: ${escapeMarkdown(job.qualification || 'See Details')}`,
+        `📅 Last Date: ${escapeMarkdown(dateStr)}`,
         ``,
-        job.qualification ? `🎓 *Qualification:* ${escapeMarkdown(job.qualification)}` : '',
-        job.location ? `📍 *Location:* ${escapeMarkdown(job.location)}` : '',
-        job.salary ? `💰 *Salary:* ${escapeMarkdown(job.salary)}` : '',
+        `🔗 Apply Online:`,
+        `${jobUrl}`,
         ``,
-        `━━━━━━━━━━━━━━━━━━`,
-        `👇 *APPLY & FULL DETAILS:*`,
-        `[Click Here to Apply & View Notification](${jobUrl})`,
-        `━━━━━━━━━━━━━━━━━━`,
+        `#${job.category?.toLowerCase() || 'job'} #governmentjobs #jobalert`,
     ].filter(line => line !== '');
 
     return lines.join('\n');
