@@ -5,7 +5,7 @@ import Link from 'next/link';
 import {
     Building2, MapPin, GraduationCap, Calendar, Users, Banknote,
     ArrowLeft, ExternalLink, ShieldCheck, Download, FileText,
-    Clock, CheckCircle, AlertCircle, BookOpen, ClipboardList, Briefcase
+    Clock, Briefcase, ChevronRight
 } from 'lucide-react';
 import CopyJobDetails from '@/components/CopyJobDetails';
 
@@ -67,57 +67,59 @@ export default async function JobDetailPage({ params }: { params: { slug: string
                 "addressCountry": "IN"
             }
         },
-        "baseSalary": job.salary ? {
-            "@type": "MonetaryAmount",
-            "currency": "INR",
-            "value": {
-                "@type": "QuantitativeValue",
-                "value": job.salary
-            }
-        } : undefined
     };
 
     return (
-        <div className="flex flex-col w-full pb-20">
+        <div className="min-h-screen bg-slate-50 dark:bg-slate-950 pb-24 lg:pb-0">
             <script
                 type="application/ld+json"
                 dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
             />
 
-            {/* HEADER */}
-            <section className="bg-gradient-to-r from-slate-50 to-blue-50 border-b border-slate-200 py-12">
-                <div className="container-premium">
-                    <Link href="/latest-jobs" className="inline-flex items-center gap-2 text-sm font-semibold text-slate-500 hover:text-primary-600 mb-6 transition-colors">
-                        <ArrowLeft size={16} /> Back to All Jobs
+            {/* Header */}
+            <div className="bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800">
+                <div className="container-main py-6">
+                    <Link href="/latest-jobs" className="inline-flex items-center gap-2 text-sm font-medium text-slate-500 hover:text-blue-600 dark:text-slate-400 dark:hover:text-blue-400 mb-6 transition-colors">
+                        <ArrowLeft size={16} />
+                        Back to All Jobs
                     </Link>
 
-                    <div className="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-6">
-                        <div className="flex-1">
+                    <div className="flex flex-col lg:flex-row lg:items-start gap-6">
+                        {/* Left: Job Info */}
+                        <div className="flex-1 min-w-0">
+                            {/* Badges */}
                             <div className="flex flex-wrap items-center gap-2 mb-4">
-                                <span className={`badge ${job.category === 'Govt' ? 'badge-govt' : job.category === 'Result' ? 'badge-result' : 'badge-private'}`}>
+                                <span className={`badge ${job.category === 'Govt' ? 'badge-blue' : job.category === 'Result' ? 'badge-orange' : 'badge-green'}`}>
                                     <ShieldCheck size={12} />
                                     {job.category}
                                 </span>
                                 {job.isFeatured && (
-                                    <span className="badge bg-amber-100 text-amber-700">⭐ Featured</span>
+                                    <span className="badge bg-amber-100 text-amber-700 dark:bg-amber-900/40 dark:text-amber-400">⭐ Featured</span>
                                 )}
                                 {isUrgent && (
-                                    <span className="badge bg-red-100 text-red-700">🔥 Closing Soon</span>
+                                    <span className="badge-red">🔥 Closing Soon</span>
                                 )}
                             </div>
-                            <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold font-display leading-tight mb-4">
+
+                            {/* Title */}
+                            <h1 className="text-2xl md:text-3xl lg:text-4xl font-bold text-slate-900 dark:text-white mb-4 leading-tight">
                                 {job.title}
                             </h1>
-                            <p className="text-lg text-slate-600 flex items-center gap-2">
-                                <Building2 size={18} className="text-primary-600" />
-                                {job.organization}
-                            </p>
+
+                            {/* Organization */}
+                            <div className="flex items-center gap-2 text-lg text-slate-600 dark:text-slate-400">
+                                <Building2 size={20} className="text-blue-600" />
+                                <span className="font-medium">{job.organization}</span>
+                            </div>
                         </div>
 
-                        {/* Countdown Timer */}
+                        {/* Right: Countdown Timer */}
                         {timeLeft && (
-                            <div className={`p-6 rounded-2xl text-center min-w-[200px] ${timeLeft.expired ? 'bg-red-100 text-red-700' :
-                                isUrgent ? 'bg-amber-100 text-amber-700' : 'bg-green-100 text-green-700'
+                            <div className={`shrink-0 p-6 rounded-2xl text-center min-w-[180px] ${timeLeft.expired
+                                    ? 'bg-red-50 dark:bg-red-900/20 text-red-700 dark:text-red-400'
+                                    : isUrgent
+                                        ? 'bg-amber-50 dark:bg-amber-900/20 text-amber-700 dark:text-amber-400'
+                                        : 'bg-green-50 dark:bg-green-900/20 text-green-700 dark:text-green-400'
                                 }`}>
                                 <Clock size={24} className="mx-auto mb-2" />
                                 {timeLeft.expired ? (
@@ -125,125 +127,105 @@ export default async function JobDetailPage({ params }: { params: { slug: string
                                 ) : (
                                     <>
                                         <div className="text-3xl font-bold">{timeLeft.days}d {timeLeft.hours}h</div>
-                                        <div className="text-sm font-semibold">Time Left to Apply</div>
+                                        <div className="text-sm font-medium opacity-80">Time Left to Apply</div>
                                     </>
                                 )}
                             </div>
                         )}
                     </div>
                 </div>
-            </section>
+            </div>
 
-            {/* MAIN CONTENT */}
-            <section className="py-12">
-                <div className="container-premium grid lg:grid-cols-3 gap-12">
+            {/* Main Content */}
+            <div className="container-main py-8">
+                <div className="grid lg:grid-cols-3 gap-8">
 
-                    {/* LEFT COLUMN */}
-                    <div className="lg:col-span-2 space-y-8">
+                    {/* Left Column - Main Content */}
+                    <div className="lg:col-span-2 space-y-6">
 
-                        {/* KEY INFO CARDS */}
-                        <div className="grid grid-cols-2 md:grid-cols-3 and lg:grid-cols-4 gap-4">
-                            <InfoCard icon={<Users />} label="Vacancies" value={job.vacancies || 'Check PDF'} />
-                            <InfoCard icon={<GraduationCap />} label="Qualification" value={job.qualification || 'Refer PDF'} />
-                            <InfoCard icon={<Briefcase />} label="Experience" value={job.experience || 'Not Required'} />
-                            <InfoCard icon={<MapPin />} label="Location" value={job.location || 'All India'} />
-                            <InfoCard icon={<Banknote />} label="Salary" value={job.salary || 'As per norms'} />
-                            <InfoCard icon={<Calendar />} label="Age Limit" value={job.ageLimit || '18-35 Years'} />
-                            <InfoCard icon={<Calendar />} label="Last Date" value={job.lastDate ? new Date(job.lastDate).toLocaleDateString('en-IN') : 'Check PDF'} />
+                        {/* Key Info Cards */}
+                        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                            <InfoCard icon={<Users size={20} />} label="Vacancies" value={job.vacancies || 'Check PDF'} />
+                            <InfoCard icon={<GraduationCap size={20} />} label="Qualification" value={job.qualification || 'Refer PDF'} />
+                            <InfoCard icon={<Briefcase size={20} />} label="Experience" value={job.experience || 'Not Required'} />
+                            <InfoCard icon={<MapPin size={20} />} label="Location" value={job.location || 'All India'} />
+                            <InfoCard icon={<Banknote size={20} />} label="Salary" value={job.salary || 'As per norms'} />
+                            <InfoCard icon={<Calendar size={20} />} label="Age Limit" value={job.ageLimit || '18-35 Years'} />
+                            <InfoCard icon={<Calendar size={20} />} label="Last Date" value={job.lastDate ? new Date(job.lastDate).toLocaleDateString('en-IN') : 'Check PDF'} />
                         </div>
 
-                        {/* OVERVIEW */}
-                        <div className="card-premium">
-                            <h2 className="text-2xl font-bold mb-6 flex items-center gap-3">
-                                <FileText className="text-primary-600" size={24} /> Recruitment Overview
+                        {/* Overview */}
+                        <div className="card">
+                            <h2 className="text-xl font-bold text-slate-900 dark:text-white mb-4 flex items-center gap-2">
+                                <FileText className="text-blue-600" size={22} />
+                                Recruitment Overview
                             </h2>
-                            <div className="prose prose-slate max-w-none">
-                                <p className="text-slate-600 leading-relaxed text-lg">
+                            <div className="prose prose-slate dark:prose-invert max-w-none">
+                                <p className="text-slate-600 dark:text-slate-400 leading-relaxed">
                                     {job.description || `The ${job.organization} has officially released the notification for the post of ${job.postName || job.title}. Eligible candidates are invited to apply through official channels before the last date.`}
                                 </p>
                             </div>
                         </div>
 
-                        {/* IMPORTANT DATES */}
+                        {/* Important Dates */}
                         {(job.startDate || job.lastDate || job.examDate) && (
-                            <div className="card-premium">
-                                <h2 className="text-xl font-bold mb-6 flex items-center gap-3">
-                                    <Calendar className="text-primary-600" size={22} /> Important Dates
+                            <div className="card">
+                                <h2 className="text-xl font-bold text-slate-900 dark:text-white mb-4 flex items-center gap-2">
+                                    <Calendar className="text-blue-600" size={22} />
+                                    Important Dates
                                 </h2>
-                                <div className="overflow-x-auto">
-                                    <table className="w-full text-left">
-                                        <tbody className="divide-y divide-slate-100">
-                                            {job.startDate && (
-                                                <tr>
-                                                    <td className="py-3 text-slate-600">Application Start Date</td>
-                                                    <td className="py-3 font-semibold text-right">{new Date(job.startDate).toLocaleDateString('en-IN')}</td>
-                                                </tr>
-                                            )}
-                                            {job.lastDate && (
-                                                <tr className={isUrgent ? 'bg-red-50' : ''}>
-                                                    <td className="py-3 text-slate-600">Last Date to Apply</td>
-                                                    <td className="py-3 font-bold text-right text-red-600">{new Date(job.lastDate).toLocaleDateString('en-IN')}</td>
-                                                </tr>
-                                            )}
-                                            {job.examDate && (
-                                                <tr>
-                                                    <td className="py-3 text-slate-600">Exam Date</td>
-                                                    <td className="py-3 font-semibold text-right">{new Date(job.examDate).toLocaleDateString('en-IN')}</td>
-                                                </tr>
-                                            )}
-                                        </tbody>
-                                    </table>
+                                <div className="divide-y divide-slate-100 dark:divide-slate-800">
+                                    {job.startDate && (
+                                        <div className="flex justify-between py-3">
+                                            <span className="text-slate-600 dark:text-slate-400">Application Start Date</span>
+                                            <span className="font-semibold text-slate-900 dark:text-white">{new Date(job.startDate).toLocaleDateString('en-IN')}</span>
+                                        </div>
+                                    )}
+                                    {job.lastDate && (
+                                        <div className={`flex justify-between py-3 ${isUrgent ? 'bg-red-50 dark:bg-red-900/10 -mx-6 px-6 rounded-lg' : ''}`}>
+                                            <span className="text-slate-600 dark:text-slate-400">Last Date to Apply</span>
+                                            <span className="font-bold text-red-600">{new Date(job.lastDate).toLocaleDateString('en-IN')}</span>
+                                        </div>
+                                    )}
+                                    {job.examDate && (
+                                        <div className="flex justify-between py-3">
+                                            <span className="text-slate-600 dark:text-slate-400">Exam Date</span>
+                                            <span className="font-semibold text-slate-900 dark:text-white">{new Date(job.examDate).toLocaleDateString('en-IN')}</span>
+                                        </div>
+                                    )}
                                 </div>
                             </div>
                         )}
 
-                        {/* ELIGIBILITY */}
-                        {job.eligibility && (
-                            <div className="card-premium">
-                                <h2 className="text-xl font-bold mb-4 flex items-center gap-3">
-                                    <CheckCircle className="text-primary-600" size={22} /> Eligibility Criteria
-                                </h2>
-                                <p className="text-slate-600 whitespace-pre-line">{job.eligibility}</p>
-                            </div>
-                        )}
-
-                        {/* SELECTION PROCESS */}
-                        {job.selectionProcess && (
-                            <div className="card-premium">
-                                <h2 className="text-xl font-bold mb-4 flex items-center gap-3">
-                                    <ClipboardList className="text-primary-600" size={22} /> Selection Process
-                                </h2>
-                                <p className="text-slate-600 whitespace-pre-line">{job.selectionProcess}</p>
-                            </div>
-                        )}
-
-                        {/* HOW TO APPLY */}
-                        {job.howToApply && (
-                            <div className="card-premium">
-                                <h2 className="text-xl font-bold mb-4 flex items-center gap-3">
-                                    <BookOpen className="text-primary-600" size={22} /> How to Apply
-                                </h2>
-                                <p className="text-slate-600 whitespace-pre-line">{job.howToApply}</p>
-                            </div>
-                        )}
-
-                        {/* CTA BUTTONS */}
+                        {/* CTA Buttons */}
                         <div className="flex flex-col sm:flex-row gap-4">
                             {job.applyLink && (
-                                <a href={job.applyLink} target="_blank" rel="noopener noreferrer" className="btn-premium btn-primary flex-1 justify-center py-4 text-lg">
-                                    Apply Now (Official) <ExternalLink size={20} />
+                                <a
+                                    href={job.applyLink}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="btn-primary flex-1 justify-center py-4 text-lg"
+                                >
+                                    Apply Now (Official)
+                                    <ExternalLink size={20} className="ml-2" />
                                 </a>
                             )}
                             {job.notificationPdf && (
-                                <a href={job.notificationPdf} target="_blank" rel="noopener noreferrer" className="btn-premium btn-outline flex-1 justify-center py-4 text-lg">
-                                    Download PDF <Download size={20} />
+                                <a
+                                    href={job.notificationPdf}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="btn-secondary flex-1 justify-center py-4 text-lg"
+                                >
+                                    Download PDF
+                                    <Download size={20} className="ml-2" />
                                 </a>
                             )}
                         </div>
 
-                        {/* SHARE & COPY */}
-                        <div className="card-premium">
-                            <h3 className="font-bold mb-4">Share this Job</h3>
+                        {/* Share */}
+                        <div className="card">
+                            <h3 className="font-bold text-slate-900 dark:text-white mb-4">Share this Job</h3>
                             <CopyJobDetails job={{
                                 title: job.title,
                                 organization: job.organization,
@@ -254,77 +236,84 @@ export default async function JobDetailPage({ params }: { params: { slug: string
                                 location: job.location
                             }} />
                         </div>
-
                     </div>
 
-                    {/* RIGHT SIDEBAR */}
+                    {/* Right Sidebar */}
                     <aside className="space-y-6">
 
-                        {/* TRUST BANNER */}
-                        <div className="card-premium bg-gradient-to-br from-primary-600 to-primary-800 text-white border-none">
-                            <div className="flex items-center gap-3 mb-4">
+                        {/* Trust Banner */}
+                        <div className="card bg-gradient-to-br from-green-500 to-green-600 text-white border-none">
+                            <div className="flex items-center gap-3 mb-3">
                                 <ShieldCheck size={28} />
                                 <h3 className="text-xl font-bold">Trust Verified</h3>
                             </div>
-                            <p className="text-primary-100 text-sm leading-relaxed mb-4">
+                            <p className="text-green-100 text-sm leading-relaxed mb-4">
                                 This content is fetched directly from official government portals. We never modify dates, fees, or eligibility details.
                             </p>
-                            <Link href="/sources" className="text-white font-bold text-sm hover:underline flex items-center gap-1">
-                                View Source Policy <ArrowLeft size={14} className="rotate-180" />
+                            <Link href="/sources" className="text-white font-semibold text-sm hover:underline flex items-center gap-1">
+                                View Source Policy <ChevronRight size={16} />
                             </Link>
                         </div>
 
-                        {/* APPLICATION FEE */}
+                        {/* Application Fee */}
                         {job.applicationFee && (
-                            <div className="card-premium">
-                                <h3 className="font-bold mb-3">Application Fee</h3>
-                                <p className="text-slate-600 whitespace-pre-line text-sm">{job.applicationFee}</p>
+                            <div className="card">
+                                <h3 className="font-bold text-slate-900 dark:text-white mb-3">Application Fee</h3>
+                                <p className="text-slate-600 dark:text-slate-400 whitespace-pre-line text-sm">{job.applicationFee}</p>
                             </div>
                         )}
 
-                        {/* RELATED JOBS */}
+                        {/* Related Jobs */}
                         {relatedJobs.length > 0 && (
-                            <div className="card-premium">
-                                <h3 className="font-bold mb-4">Related Jobs</h3>
-                                <div className="space-y-4">
+                            <div className="card">
+                                <h3 className="font-bold text-slate-900 dark:text-white mb-4">Related Jobs</h3>
+                                <div className="space-y-3">
                                     {relatedJobs.map((relJob: any) => (
-                                        <Link key={relJob._id.toString()} href={`/jobs/${relJob.slug}`} className="block p-3 rounded-lg border border-slate-100 hover:border-primary-300 hover:bg-primary-50 transition-all">
-                                            <h4 className="font-semibold text-sm line-clamp-2">{relJob.title}</h4>
-                                            <p className="text-xs text-slate-500 mt-1">{relJob.organization}</p>
+                                        <Link
+                                            key={relJob._id.toString()}
+                                            href={`/jobs/${relJob.slug}`}
+                                            className="block p-3 rounded-xl border border-slate-100 dark:border-slate-800 hover:border-blue-200 dark:hover:border-blue-800 hover:bg-blue-50 dark:hover:bg-blue-900/10 transition-all"
+                                        >
+                                            <h4 className="font-semibold text-sm text-slate-900 dark:text-white line-clamp-2">{relJob.title}</h4>
+                                            <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">{relJob.organization}</p>
                                         </Link>
                                     ))}
                                 </div>
                             </div>
                         )}
 
-                        {/* AD PLACEHOLDER */}
-                        <div className="card-premium bg-slate-100 border-dashed text-center py-12">
-                            <p className="text-xs text-slate-400 uppercase tracking-wider">Advertisement</p>
+                        {/* Ad Placeholder */}
+                        <div className="ad-slot py-12">
+                            Advertisement
                         </div>
-
                     </aside>
-
                 </div>
-            </section>
-
-            {/* STICKY BOTTOM ACTION BAR (Mobile Only) */}
-            <div className="lg:hidden fixed bottom-0 left-0 right-0 p-4 bg-white/90 backdrop-blur-lg border-t border-slate-100 z-50 shadow-[0_-10px_20px_rgba(0,0,0,0.05)]">
-                {job.applyLink && (
-                    <a href={job.applyLink} target="_blank" rel="noopener noreferrer" className="btn-action btn-primary w-full py-4 text-lg">
-                        Apply Now Online <ExternalLink size={20} className="ml-2" />
-                    </a>
-                )}
             </div>
+
+            {/* Sticky Mobile Apply Bar */}
+            {job.applyLink && (
+                <div className="lg:hidden fixed bottom-0 left-0 right-0 p-4 bg-white/95 dark:bg-slate-900/95 backdrop-blur-lg border-t border-slate-200 dark:border-slate-800 z-50">
+                    <a
+                        href={job.applyLink}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="btn-primary w-full py-4 text-lg justify-center"
+                    >
+                        Apply Now Online
+                        <ExternalLink size={20} className="ml-2" />
+                    </a>
+                </div>
+            )}
         </div>
     );
 }
 
-function InfoCard({ icon, label, value }: { icon: any, label: string, value: string }) {
+function InfoCard({ icon, label, value }: { icon: React.ReactNode, label: string, value: string }) {
     return (
-        <div className="card-premium p-4 flex flex-col items-center text-center">
-            <div className="text-primary-600 mb-2">{icon}</div>
-            <span className="text-[10px] uppercase font-bold tracking-widest text-slate-400 mb-1">{label}</span>
-            <span className="font-bold text-sm">{value}</span>
+        <div className="card p-4 text-center">
+            <div className="text-blue-600 dark:text-blue-400 mb-2 flex justify-center">{icon}</div>
+            <span className="text-[10px] uppercase font-semibold tracking-wider text-slate-400 block mb-1">{label}</span>
+            <span className="font-bold text-sm text-slate-900 dark:text-white">{value}</span>
         </div>
     );
 }
