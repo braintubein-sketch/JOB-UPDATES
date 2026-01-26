@@ -26,13 +26,17 @@ export default async function JobDetailPage({ params }: { params: { slug: string
 
     try {
         await dbConnect();
+        console.log('Fetching job with slug:', params.slug);
         job = await Job.findOneAndUpdate(
             { slug: params.slug },
             { $inc: { views: 1 } },
             { new: true }
         ).lean();
 
-        if (job) {
+        if (!job) {
+            console.log('Job NOT found in DB for slug:', params.slug);
+        } else {
+            console.log('Job found:', job.title);
             relatedJobs = await Job.find({
                 _id: { $ne: job._id },
                 category: job.category,
