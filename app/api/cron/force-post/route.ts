@@ -16,24 +16,25 @@ export async function GET(request: Request) {
     try {
         await dbConnect();
 
-        // Fetch the 3 most recent published jobs
-        const jobs = await Job.find({ status: 'PUBLISHED' }).sort({ createdAt: -1 }).limit(3);
+        // Find last 5 jobs regardless of their posted status
+        const jobs = await Job.find({ status: 'PUBLISHED' }).sort({ createdAt: -1 }).limit(5);
 
-        if (jobs.length === 0) return NextResponse.json({ msg: 'No jobs found in database' });
+        if (jobs.length === 0) return NextResponse.json({ msg: 'No jobs in DB' });
 
         const results = [];
         for (const job of jobs) {
-            // Trigger the REAL production poster with beautiful formatting
-            const result = await postJobToSocial(job._id.toString());
+            console.log(`Manually pushing to Telegram: ${job.title}`);
+            const res = await postJobToSocial(job._id.toString());
             results.push({
                 title: job.title,
-                telegram: result.telegram
+                telegram: res.telegram,
+                whatsapp: res.whatsapp
             });
         }
 
         return NextResponse.json({
             success: true,
-            message: "Production format sent to Telegram",
+            message: `Force post for ${results.length} jobs triggered. Check Telegram now!`,
             results
         });
     } catch (error: any) {
