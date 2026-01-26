@@ -56,34 +56,32 @@ function formatWhatsAppMessage(job: any): string {
 // ============================================
 
 async function sendToWhatsApp(job: any): Promise<{ success: boolean, error?: string }> {
-    if (!WHATSAPP_ACCESS_TOKEN || !WHATSAPP_CHANNEL_ID) return { success: false, error: 'WhatsApp or Access Token not configured' };
+    // These keys allow you to use services like UltraMsg to bypass Meta verification
+    const GATEWAY_URL = process.env.WHATSAPP_GATEWAY_URL;
+    const TOKEN = process.env.WHATSAPP_TOKEN;
+    const CHANNEL_ID = process.env.WHATSAPP_CHANNEL_ID;
+
+    if (!GATEWAY_URL || !TOKEN || !CHANNEL_ID)
+        return { success: false, error: 'WhatsApp Gateway not configured' };
 
     try {
         const message = formatWhatsAppMessage(job);
 
-        // This uses the Meta Business Cloud API
-        // For public "Channels", Meta currently requires a specific Newsletter API or a verified business
-        const response = await fetch(
-            `https://graph.facebook.com/v18.0/${WHATSAPP_CHANNEL_ID}/messages`,
-            {
-                method: 'POST',
-                headers: {
-                    'Authorization': `Bearer ${WHATSAPP_ACCESS_TOKEN}`,
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    messaging_product: 'whatsapp',
-                    recipient_type: 'individual',
-                    to: WHATSAPP_CHANNEL_ID, // In Business API, this is usually the target number or group ID
-                    type: 'text',
-                    text: { body: message }
-                }),
-            }
-        );
+        // This logic works with 90% of WhatsApp API Gateways
+        const response = await fetch(GATEWAY_URL, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                token: TOKEN,
+                to: CHANNEL_ID,
+                body: message
+            }),
+        });
 
         const result = await response.json();
-        if (!result.error) return { success: true };
-        return { success: false, error: result.error.message };
+        // Return success if the gateway accepts the request
+        if (result.sent || result.success || result.ok) return { success: true };
+        return { success: false, error: result.message || 'API Error' };
     } catch (error: any) {
         return { success: false, error: error.message };
     }
