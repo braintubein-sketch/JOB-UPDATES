@@ -41,11 +41,14 @@ async function extractOfficialLink(newsUrl: string): Promise<string> {
             allLinks.push(match[1]);
         }
 
-        // 2. EXCLUDE NEWS DOMAINS (We don't want to redirect back to a competitor)
+        // 2. EXCLUDE NEWS & COMPETITOR DOMAINS (Ensure we NEVER redirect to a job board or news site)
         const newsDomains = [
             'timesofindia', 'indiatimes', 'hindustantimes', 'jagranjosh', 'careerindia',
-            'indiatoday', 'facebook.com', 'twitter.com', 't.me', 'google.com',
-            'whatsapp.com', 'youtube.com', 'linkedin.com', 'instagram.com'
+            'indiatoday', 'shiksha.com', 'collegedunia.com', 'sarkariresult', 'freejobalert',
+            'fresherslive', 'ambitionbox', 'glassdoor', 'naukri.com', 'monsterindia',
+            'facebook.com', 'twitter.com', 't.me', 'google.com', 'whatsapp.com',
+            'youtube.com', 'linkedin.com', 'instagram.com', 'entrancezone', 'aglasem',
+            'employmentnews', 'india.com', 'moneycontrol', 'ndtv'
         ];
 
         const potentialOfficialLinks = allLinks.filter(link => {
@@ -53,19 +56,27 @@ async function extractOfficialLink(newsUrl: string): Promise<string> {
             return !newsDomains.some(domain => lowerLink.includes(domain));
         });
 
-        // 3. PRIORITY 1: Government (.gov.in, .nic.in, .res.in, .ac.in, .edu.in)
+        // 3. PRIORITY 1: Government domains
         const govPatterns = [/\.gov\.in/i, /\.nic\.in/i, /\.res\.in/i, /\.ac\.in/i, /\.edu\.in/i, /ibps\.in/i];
         for (const pattern of govPatterns) {
             const found = potentialOfficialLinks.find(link => pattern.test(link));
             if (found) return found;
         }
 
-        // 4. PRIORITY 2: PDF Files (Usually notifications)
+        // 4. PRIORITY 2: Private Sector Career Portals (TCS, Infosys, Wipro, etc.)
+        // Look for Workday, SuccessFactors, Taleo or domains containing "careers"
+        const privatePatterns = [/careers\./i, /\.com\/careers/i, /tcs\.com/i, /infosys\.com/i, /wipro\.com/i, /myworkdayjobs/i, /successfactors/i, /taleo\.net/i];
+        for (const pattern of privatePatterns) {
+            const found = potentialOfficialLinks.find(link => pattern.test(link));
+            if (found) return found;
+        }
+
+        // 5. PRIORITY 3: PDF Files (Direct notifications)
         const pdfLink = potentialOfficialLinks.find(link => link.toLowerCase().endsWith('.pdf'));
         if (pdfLink) return pdfLink;
 
-        // 5. PRIORITY 3: Search for high-probability organizational patterns
-        const orgPatterns = [/recruitment/i, /apply/i, /login/i, /portal/i, /vacancy/i];
+        // 6. PRIORITY 4: General Organization patterns
+        const orgPatterns = [/recruitment/i, /apply/i, /login/i, /portal/i, /vacancy/i, /hiring/i];
         for (const pattern of orgPatterns) {
             const found = potentialOfficialLinks.find(link => pattern.test(link));
             if (found) return found;
