@@ -15,22 +15,23 @@ const WHATSAPP_CHANNEL_ID = process.env.WHATSAPP_CHANNEL_ID;
 // ============================================
 
 function formatTelegramMessage(job: any): string {
+    // Drive traffic to OUR website
+    const jobUrl = `https://job-updates.onrender.com/jobs/${job.slug}`;
+
     const lines = [
-        `📢 *${escapeMarkdown(job.title)}*`,
+        `🔥 *New Job Alert*`,
         ``,
-        `🏢 *Organization:* ${escapeMarkdown(job.organization)}`,
-        job.qualification ? `📚 *Qualification:* ${escapeMarkdown(job.qualification)}` : '',
+        `💼 *Role:* ${escapeMarkdown(job.title)}`,
+        `🏢 *Company:* ${escapeMarkdown(job.organization)}`,
+        ``,
+        job.qualification ? `🎓 *Qualification:* ${escapeMarkdown(job.qualification)}` : '',
+        job.location ? `📍 *Location:* ${escapeMarkdown(job.location)}` : '',
         job.salary ? `💰 *Salary:* ${escapeMarkdown(job.salary)}` : '',
-        job.vacancies ? `👥 *Vacancies:* ${escapeMarkdown(job.vacancies)}` : '',
-        job.location ? `📍 *Location:* ${escapeMarkdown(job.location || 'All India')}` : '',
-        job.lastDate ? `📅 *Last Date:* ${new Date(job.lastDate).toLocaleDateString('en-IN')}` : '',
         ``,
-        `━━━━━━━━━━━━━━━━━`,
+        `👇 *Apply & Details Here:*`,
+        `🔗 [Click to View Full Details](${jobUrl})`,
         ``,
-        job.applyLink ? `🔗 [Apply Now \\(Official\\)](${job.applyLink})` : '',
-        `📱 [More Jobs](https://jobupdate.site)`,
-        ``,
-        `📢 Join: @jobupdatesite`,
+        `_Share with your friends!_`,
     ].filter(line => line !== '');
 
     return lines.join('\n');
