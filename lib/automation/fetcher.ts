@@ -12,10 +12,11 @@ const parser = new RSSParser({
 });
 
 const SOURCES = [
-    { url: 'https://www.indiatoday.in/rss/1206584', name: 'India Today Jobs', defaultCategory: 'Govt' },
-    { url: 'https://www.hindustantimes.com/feeds/rss/education/employment-news/rssfeed.xml', name: 'HT Jobs', defaultCategory: 'Govt' },
-    { url: 'https://timesofindia.indiatimes.com/rssfeeds/913168846.cms', name: 'TOI Education', defaultCategory: 'Private' },
-    { url: 'https://zeenews.india.com/rss/india-news.xml', name: 'Zee News Careers', defaultCategory: 'Govt' },
+    { url: 'https://www.indiatoday.in/rss/1206584', name: 'India Today Education', defaultCategory: 'Govt' },
+    { url: 'https://www.hindustantimes.com/feeds/rss/education/employment-news/rssfeed.xml', name: 'HT Jobs Portal', defaultCategory: 'Govt' },
+    { url: 'https://timesofindia.indiatimes.com/rssfeeds/913168846.cms', name: 'TOI Jobs Feed', defaultCategory: 'Private' },
+    { url: 'https://www.financialexpress.com/jobs/feed/', name: 'Financial Express Careers', defaultCategory: 'Private' },
+    { url: 'https://www.indiatvnews.com/education/rss', name: 'IndiaTV Education', defaultCategory: 'Govt' },
 ];
 
 /**
@@ -96,7 +97,13 @@ function extractComprehensiveDetails(title: string, text: string) {
     const fullText = (title + " " + text).toLowerCase();
     const cleanText = text.replace(/<[^>]*>?/gm, '');
 
-    let postName = title.split('Recruitment')[0].split('hiring')[0].split('Vacancy')[0].split('Jobs')[0].trim();
+    // CLEAN TITLE LOGIC: Remove news clickbait phrases for a professional board look
+    const professionalTitle = title
+        .replace(/Notification|Released|Out Now|Declared|Apply Online|Online Registration|Closing Soon|Check|Details Here|Direct Link|Steps to Apply|How to Apply|@.*in/gi, '')
+        .replace(/:\s*$/g, '')
+        .trim();
+
+    let postName = professionalTitle.split('Recruitment')[0].split('hiring')[0].split('Vacancy')[0].split('Jobs')[0].trim();
 
     let experience = 'Freshers';
     const expMatch = fullText.match(/(\d+)\+?\s*years?\s*exp/i) || fullText.match(/exp(erience)?:\s*(\d+)/i);
@@ -113,7 +120,7 @@ function extractComprehensiveDetails(title: string, text: string) {
     const qualMap = {
         'btech': 'B.Tech', 'mtech': 'M.Tech', 'graduate': 'Any Graduate',
         'post graduate': 'Post Graduate', '10th': '10th Pass', '12th': '12th Pass',
-        'iti': 'ITI', 'diploma': 'Diploma', 'mba': 'MBA', 'mca': 'MCA', 'be': 'B.E'
+        'iti': 'ITI', 'diploma': 'Diploma', 'mba': 'MBA', 'mca': 'MCA', 'be': 'B.E', 'bcom': 'B.Com', 'bsc': 'B.Sc'
     };
     const foundQuals = Object.keys(qualMap).filter(k => fullText.includes(k));
     if (foundQuals.length > 0) qualification = foundQuals.map(k => (qualMap as any)[k]).join(', ');
@@ -150,7 +157,7 @@ function extractComprehensiveDetails(title: string, text: string) {
     const eligibility = sentences.find(s => s.toLowerCase().includes('eligible') || s.toLowerCase().includes('criteria'))?.trim() || 'Refer official website for full eligibility details.';
     const selection = sentences.find(s => s.toLowerCase().includes('selection') || s.toLowerCase().includes('interview') || s.toLowerCase().includes('exam'))?.trim() || 'Selection via Written Exam / Interview.';
 
-    return { vacancies, qualification, lastDate, location, postName, experience, eligibility, selection };
+    return { vacancies, qualification, lastDate, location, postName, experience, eligibility, selection, professionalTitle };
 }
 
 export async function automateContentFetch() {
@@ -167,52 +174,43 @@ export async function automateContentFetch() {
             for (const item of feed.items) {
                 if (!item.title || !item.link) continue;
 
-                const cleanTitle = item.title.replace(/Notification|Released|Out Now|Declared|Apply Online/gi, '').trim();
-                const slug = generateSlug(cleanTitle).substring(0, 80);
+                const originalTitle = item.title;
+                const titleLower = originalTitle.toLowerCase();
 
-                const existing = await Job.findOne({ slug });
-                if (existing) continue;
+                // 1. RELEVANCY GUARD
+                const essentialKeys = ['recruitment', 'vacancy', 'hiring', 'apply', 'admit', 'result', 'naukri', 'jobs', 'post'];
+                const isJobRelated = essentialKeys.some(key => titleLower.includes(key));
 
-                const snippet = item.contentSnippet || item.content || '';
-                const titleLower = cleanTitle.toLowerCase();
-
-                // 1. STRICT RELEVANCY FILTER (Job-specific)
-                const isJobRelated = ['recruitment', 'vacancy', 'hiring', 'apply', 'admit card', 'sarkari result', 'exam date', 'notification'].some(key => titleLower.includes(key));
-
-                // 2. NEGATIVE FILTER (Block Politics, News, Sports)
-                const negativeKeywords = ['modi', 'rahul gandhi', 'uddhav', 'thackeray', 'corporator', 'arrested', 'accident', 'movie', 'film', 'cricket', 'match', 'ipl', 'politics', 'election', 'viral', 'opinion', 'disappeared', 'happening in', 'dead', 'death'];
+                const negativeKeywords = ['modi', 'gandhi', 'uddhav', 'thackeray', 'corporator', 'arrested', 'dead', 'death', 'accident', 'politics', 'election', 'viral', 'opinion', 'disappeared', 'match', 'ipl', 'cricket', 'bollywood', 'movie', 'killed', 'protest', 'strike', 'pune', 'mumbai', 'police station', 'jail'];
                 const isIrrelevant = negativeKeywords.some(key => titleLower.includes(key));
 
                 if (!isJobRelated || isIrrelevant) continue;
 
-                // DEEP SCRAPE WITH IMPROVED DOMAIN FILTERING
-                console.log(`   🔍 Finding real gov portal for: ${cleanTitle}`);
+                // 2. DEEP LINK FETCHING
                 const officialLink = await extractOfficialLink(item.link);
 
-                // If deep scraping failed to find a portal and it's just a general news site, skip it
-                if (officialLink === item.link && !titleLower.includes('notification')) {
-                    const isGenericNews = ['indiatoday', 'zeenews', 'timesofindia', 'hindustantimes'].some(d => officialLink.includes(d));
-                    if (isGenericNews) continue;
-                }
+                // SKIPPING if we couldn't find a better link than the news site itself
+                // This ensures we NEVER point back to a news article as an 'Official Link'
+                const isNewsDomain = ['indiatoday', 'zeenews', 'timesofindia', 'hindustantimes', 'indiatvnews', 'financialexpress', 'jagranjosh'].some(d => officialLink.includes(d));
+                if (isNewsDomain) continue;
 
-                const details = extractComprehensiveDetails(cleanTitle, snippet);
+                const details = extractComprehensiveDetails(originalTitle, item.contentSnippet || item.content || '');
 
-                // 3. IMPROVED ORGANIZATION LOGIC
-                let realOrg = cleanTitle.split(' ')[0];
-                // Safety check for weird first words
-                if (['where', 'how', 'when', 'what', 'this', 'that', 'why'].includes(realOrg.toLowerCase())) {
-                    realOrg = cleanTitle.split(' ').slice(0, 3).join(' ');
-                }
+                const slug = generateSlug(details.professionalTitle).substring(0, 80);
+                const existing = await Job.findOne({ slug });
+                if (existing) continue;
+
+                // 3. ORG LOGIC
+                let realOrg = details.professionalTitle.split(' ')[0];
+                if (['where', 'how', 'when', 'what', 'why', 'this'].includes(realOrg.toLowerCase())) realOrg = details.professionalTitle.split(' ').slice(0, 2).join(' ');
 
                 if (titleLower.includes('railway')) realOrg = 'Indian Railways';
                 else if (titleLower.includes('bank')) realOrg = 'Banking Sector';
                 else if (titleLower.includes('ssc')) realOrg = 'Staff Selection Commission';
                 else if (titleLower.includes('upsc')) realOrg = 'UPSC';
-                else if (titleLower.includes('tcs')) realOrg = 'TCS';
-                else if (titleLower.includes('infosys')) realOrg = 'Infosys';
 
                 await Job.create({
-                    title: cleanTitle,
+                    title: details.professionalTitle,
                     slug: slug,
                     organization: realOrg,
                     postName: details.postName,
@@ -226,9 +224,9 @@ export async function automateContentFetch() {
                     category: titleLower.includes('result') ? 'Result' : titleLower.includes('admit') ? 'Admit Card' : source.defaultCategory,
                     source: item.link,
                     applyLink: officialLink,
-                    description: snippet,
+                    description: item.contentSnippet || details.professionalTitle,
                     status: 'PUBLISHED',
-                    howToApply: `Visit the official portal at ${officialLink} to complete your registration.`,
+                    howToApply: `Visit the official portal at ${officialLink} to complete registration.`,
                 });
 
                 newJobsCount++;
