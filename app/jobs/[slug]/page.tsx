@@ -176,34 +176,31 @@ export default async function JobDetailPage({ params }: { params: { slug: string
                             ].filter(Boolean) as any
                         }} />
 
-                        {/* CTA Buttons - Category Aware */}
+                        {/* CTA Buttons - Using DEEP SCRAPED Official Links */}
                         <div className="flex flex-col sm:flex-row gap-4 pt-4">
                             {job.category === 'Result' ? (
-                                // RESULT: View Result button
                                 job.applyLink && (
                                     <a
                                         href={job.applyLink}
                                         target="_blank"
                                         rel="noopener noreferrer"
-                                        className="btn bg-orange-500 hover:bg-orange-600 text-white flex-1 justify-center py-4 text-lg shadow-lg shadow-orange-500/20"
+                                        className="btn bg-orange-600 hover:bg-orange-700 text-white flex-1 justify-center py-4 text-lg shadow-lg shadow-orange-600/20"
                                     >
-                                        View Result
+                                        View Official Result
                                         <ExternalLink size={20} className="ml-2" />
                                     </a>
                                 )
                             ) : job.category === 'Admit Card' ? (
-                                // ADMIT CARD: Download button
                                 <a
-                                    href={job.applyLink || job.notificationPdf || '#'}
+                                    href={job.applyLink}
                                     target="_blank"
                                     rel="noopener noreferrer"
                                     className="btn bg-purple-600 hover:bg-purple-700 text-white flex-1 justify-center py-4 text-lg shadow-lg shadow-purple-600/20"
                                 >
-                                    Download Admit Card
+                                    Login to Download
                                     <Download size={20} className="ml-2" />
                                 </a>
                             ) : (
-                                // JOBS: Apply Now button
                                 job.applyLink && (
                                     <a
                                         href={job.applyLink}
@@ -211,20 +208,20 @@ export default async function JobDetailPage({ params }: { params: { slug: string
                                         rel="noopener noreferrer"
                                         className="btn-primary flex-1 justify-center py-4 text-lg"
                                     >
-                                        Apply Now (Official)
+                                        Direct Official Application
                                         <ExternalLink size={20} className="ml-2" />
                                     </a>
                                 )
                             )}
-                            {job.notificationPdf && (
+                            {job.source && (
                                 <a
-                                    href={job.notificationPdf}
+                                    href={job.source}
                                     target="_blank"
                                     rel="noopener noreferrer"
                                     className="btn-secondary flex-1 justify-center py-4 text-lg"
                                 >
-                                    Download PDF
-                                    <Download size={20} className="ml-2" />
+                                    News Source
+                                    <FileText size={20} className="ml-2" />
                                 </a>
                             )}
                         </div>
