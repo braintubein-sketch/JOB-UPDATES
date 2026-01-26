@@ -129,7 +129,12 @@
   }
 
   .card-hover {
-    @apply card hover:shadow-[0_10px_40px_rgba(0, 0, 0, 0.08)] hover:border-blue-200 hover:-translate-y-1 dark:hover:border-blue-800;
+    @apply card hover:border-blue-200 hover:-translate-y-1 dark:hover:border-blue-800;
+    transition: all 0.3s ease;
+  }
+
+  .card-hover:hover {
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.08);
   }
 
   .card-interactive {
