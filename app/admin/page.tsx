@@ -8,6 +8,7 @@ import {
 
 import ManualFetchButton from '@/components/admin/ManualFetchButton';
 import LogoutButton from '@/components/admin/LogoutButton';
+import WhatsAppIdFinder from '@/components/admin/WhatsAppIdFinder';
 
 export const dynamic = 'force-dynamic';
 
@@ -98,6 +99,9 @@ export default async function AdminDashboard() {
                     </table>
                 </div>
             </div>
+
+            {/* WHATSAPP CONFIG TOOL */}
+            <WhatsAppIdFinder />
         </div>
     );
 }
