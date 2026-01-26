@@ -4,7 +4,8 @@ import JobCard from '@/components/JobCard';
 import Link from 'next/link';
 import { ArrowRight, ChevronRight, Zap, ShieldCheck, Clock, TrendingUp, Briefcase, Award, Building2, Train, Landmark, Shield } from 'lucide-react';
 
-export const dynamic = 'force-dynamic';
+// Revalidate page every 60 seconds (ISR)
+export const revalidate = 60;
 
 export default async function HomePage() {
   let featuredJobs: any[] = [];
