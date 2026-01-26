@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { MapPin, Calendar, Building2, ChevronRight, Briefcase } from 'lucide-react';
+import { MapPin, Calendar, Building2, Banknote, Clock, Briefcase, ChevronRight } from 'lucide-react';
 
 interface JobCardProps {
     job: {
@@ -12,63 +12,87 @@ interface JobCardProps {
         category: string;
         qualification?: string;
         experience?: string;
+        salary?: string;
+        createdAt?: string | Date;
     };
-    showCountdown?: boolean;
 }
 
 export default function JobCard({ job }: JobCardProps) {
-    const formattedDate = job.lastDate ? new Date(job.lastDate).toLocaleDateString('en-IN', {
-        day: 'numeric',
-        month: 'short',
-        year: 'numeric'
-    }) : 'Click to see';
+    const formattedDate = job.lastDate
+        ? new Date(job.lastDate).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })
+        : null;
+
+    const postedDate = job.createdAt
+        ? new Date(job.createdAt).toLocaleDateString('en-IN', { day: 'numeric', month: 'short' })
+        : 'Recently';
+
+    const categoryColors: Record<string, string> = {
+        'Govt': 'badge-blue',
+        'Private': 'badge-green',
+        'Result': 'badge-orange',
+        'Admit Card': 'badge-red',
+    };
 
     return (
-        <div className="job-card group animate-premium overflow-hidden">
-            {/* Category Badge */}
-            <span className={`badge-premium ${job.category === 'Govt' ? 'bg-blue-50 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400' :
-                job.category === 'Private' ? 'bg-green-50 text-green-700 dark:bg-green-900/30 dark:text-green-400' : 'bg-orange-50 text-orange-700 dark:bg-orange-900/30 dark:text-orange-400'
-                }`}>
-                {job.category}
-            </span>
+        <Link href={`/jobs/${job.slug}`} className="job-card group block">
+            {/* Top Row: Category & Posted Date */}
+            <div className="flex items-center justify-between mb-4">
+                <span className={categoryColors[job.category] || 'badge-gray'}>
+                    {job.category}
+                </span>
+                <span className="text-xs text-slate-400 flex items-center gap-1">
+                    <Clock size={12} />
+                    {postedDate}
+                </span>
+            </div>
 
-            {/* Main Link - This makes the ENTIRE card clickable */}
-            <Link href={`/jobs/${job.slug}`} className="card-anchor">
-                <h3 className="text-lg font-extrabold text-slate-900 dark:text-slate-100 line-clamp-2 leading-snug group-hover:text-primary-600 dark:group-hover:text-primary-400 transition-colors mb-2">
-                    {job.title}
-                </h3>
-            </Link>
+            {/* Job Title */}
+            <h3 className="text-lg font-semibold text-slate-900 dark:text-white mb-2 line-clamp-2 group-hover:text-blue-600 transition-colors">
+                {job.title}
+            </h3>
 
-            <div className="flex flex-col gap-3 mt-4 text-sm text-slate-500 dark:text-slate-400">
+            {/* Organization */}
+            <div className="flex items-center gap-2 text-sm text-slate-600 dark:text-slate-400 mb-4">
+                <Building2 size={16} className="text-blue-600 shrink-0" />
+                <span className="font-medium truncate">{job.organization}</span>
+            </div>
+
+            {/* Details Grid */}
+            <div className="grid grid-cols-2 gap-3 text-sm text-slate-500 dark:text-slate-400 mb-5">
                 <div className="flex items-center gap-2">
-                    <Building2 size={16} className="text-primary-600 dark:text-primary-400" />
-                    <span className="font-bold uppercase tracking-tight text-slate-700 dark:text-slate-300">{job.organization}</span>
+                    <MapPin size={14} className="shrink-0" />
+                    <span className="truncate">{job.location || 'India'}</span>
                 </div>
-
-                <div className="grid grid-cols-2 gap-2">
-                    <div className="flex items-center gap-2">
-                        <MapPin size={16} className="shrink-0" />
-                        <span className="truncate">{job.location || 'India'}</span>
-                    </div>
-                    <div className="flex items-center gap-2">
-                        <Briefcase size={16} className="shrink-0" />
-                        <span className="truncate">{job.experience || 'Not Required'}</span>
-                    </div>
+                <div className="flex items-center gap-2">
+                    <Briefcase size={14} className="shrink-0" />
+                    <span className="truncate">{job.experience || 'Freshers'}</span>
                 </div>
+                {job.salary && (
+                    <div className="flex items-center gap-2 col-span-2">
+                        <Banknote size={14} className="shrink-0" />
+                        <span className="truncate">{job.salary}</span>
+                    </div>
+                )}
             </div>
 
-            <div className="mt-6 pt-4 border-t border-slate-50 dark:border-slate-800 flex items-center justify-between">
-                <div className="flex flex-col">
-                    <span className="text-[10px] font-bold uppercase text-slate-400">Last Date to Apply</span>
-                    <span className="text-sm font-bold text-red-500 dark:text-red-400 flex items-center gap-1">
-                        <Calendar size={14} /> {formattedDate}
-                    </span>
-                </div>
+            {/* Footer */}
+            <div className="flex items-center justify-between pt-4 border-t border-slate-100 dark:border-slate-800">
+                {formattedDate ? (
+                    <div className="flex flex-col">
+                        <span className="text-[10px] font-medium text-slate-400 uppercase tracking-wider">Last Date</span>
+                        <span className="text-sm font-semibold text-red-500 flex items-center gap-1">
+                            <Calendar size={12} />
+                            {formattedDate}
+                        </span>
+                    </div>
+                ) : (
+                    <span className="text-sm text-slate-400">View Details →</span>
+                )}
 
-                <div className="w-10 h-10 rounded-full bg-primary-600/5 dark:bg-primary-400/10 flex items-center justify-center text-primary-600 dark:text-primary-400 group-hover:bg-primary-600 dark:group-hover:bg-primary-400 group-hover:text-white dark:group-hover:text-slate-950 transition-all duration-300">
-                    <ChevronRight size={20} />
+                <div className="w-9 h-9 rounded-full bg-blue-50 dark:bg-blue-900/30 flex items-center justify-center text-blue-600 dark:text-blue-400 group-hover:bg-blue-600 group-hover:text-white dark:group-hover:bg-blue-600 transition-all">
+                    <ChevronRight size={18} />
                 </div>
             </div>
-        </div>
+        </Link>
     );
 }

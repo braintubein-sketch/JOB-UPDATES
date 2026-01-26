@@ -1,32 +1,49 @@
 export default function Loading() {
     return (
-        <div className="container-premium py-12">
+        <div className="min-h-screen bg-slate-50 dark:bg-slate-950 pb-20 lg:pb-0">
             {/* Header Skeleton */}
-            <div className="mb-12 animate-pulse">
-                <div className="w-32 h-6 bg-slate-200 rounded-full mb-4"></div>
-                <div className="w-1/2 h-12 bg-slate-200 rounded-2xl mb-2"></div>
-                <div className="w-2/3 h-6 bg-slate-100 rounded-xl"></div>
+            <div className="bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 py-8">
+                <div className="container-main">
+                    <div className="skeleton h-8 w-48 mb-2"></div>
+                    <div className="skeleton h-5 w-32"></div>
+                </div>
             </div>
 
-            {/* Grid Skeleton */}
-            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-                {[...Array(6)].map((_, i) => (
-                    <div key={i} className="bg-white border border-slate-100 rounded-[32px] p-6 animate-pulse">
-                        <div className="w-20 h-5 bg-slate-100 rounded-full mb-4"></div>
-                        <div className="w-full h-8 bg-slate-200 rounded-xl mb-3"></div>
-                        <div className="w-3/4 h-8 bg-slate-200 rounded-xl mb-6"></div>
+            {/* Content */}
+            <div className="container-main py-8">
+                <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    {[...Array(6)].map((_, i) => (
+                        <div key={i} className="card">
+                            {/* Badge */}
+                            <div className="flex justify-between mb-4">
+                                <div className="skeleton h-6 w-16 rounded-full"></div>
+                                <div className="skeleton h-4 w-20"></div>
+                            </div>
 
-                        <div className="space-y-3 mb-8">
-                            <div className="w-1/2 h-4 bg-slate-100 rounded-lg"></div>
-                            <div className="w-2/3 h-4 bg-slate-100 rounded-lg"></div>
-                        </div>
+                            {/* Title */}
+                            <div className="skeleton h-6 w-full mb-2"></div>
+                            <div className="skeleton h-6 w-3/4 mb-4"></div>
 
-                        <div className="pt-4 border-t border-slate-50 flex items-center justify-between">
-                            <div className="w-24 h-8 bg-slate-50 rounded-lg"></div>
-                            <div className="w-10 h-10 bg-slate-100 rounded-full"></div>
+                            {/* Org */}
+                            <div className="skeleton h-4 w-1/2 mb-6"></div>
+
+                            {/* Details */}
+                            <div className="grid grid-cols-2 gap-3 mb-6">
+                                <div className="skeleton h-4 w-full"></div>
+                                <div className="skeleton h-4 w-full"></div>
+                            </div>
+
+                            {/* Footer */}
+                            <div className="pt-4 border-t border-slate-100 dark:border-slate-800 flex justify-between items-center">
+                                <div>
+                                    <div className="skeleton h-3 w-16 mb-1"></div>
+                                    <div className="skeleton h-5 w-24"></div>
+                                </div>
+                                <div className="skeleton h-9 w-9 rounded-full"></div>
+                            </div>
                         </div>
-                    </div>
-                ))}
+                    ))}
+                </div>
             </div>
         </div>
     );

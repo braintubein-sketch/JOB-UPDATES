@@ -1,15 +1,43 @@
 import type { Metadata } from "next";
+import { Inter } from 'next/font/google';
 import "./globals.css";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { ThemeProvider } from "@/components/ThemeProvider";
 
+const inter = Inter({
+  subsets: ['latin'],
+  display: 'swap',
+  variable: '--font-inter',
+});
+
 export const metadata: Metadata = {
-  title: "Official Indian Job Updates | Verified Recruitment Portal",
-  description: "The most trusted source for 2026 Batch Indian Government and Private jobs. Official notifications, results, and admit cards fetched 24/7.",
-  keywords: "sarkari result, job updates, govt jobs, latest recruitments, official job portal",
+  title: "JobUpdates - Find Government & Private Jobs in India",
+  description: "India's trusted job portal for government and private job notifications. Access verified recruitment updates, results, and admit cards from official sources. Updated 24/7.",
+  keywords: "government jobs, private jobs, sarkari result, job updates, recruitment, admit cards, results, SSC, Railway, Bank Jobs",
+  authors: [{ name: "JobUpdates" }],
+  creator: "JobUpdates",
+  publisher: "JobUpdates",
   icons: {
     icon: '/favicon.png',
+    apple: '/favicon.png',
+  },
+  openGraph: {
+    type: 'website',
+    locale: 'en_IN',
+    url: 'https://jobupdate.site',
+    siteName: 'JobUpdates',
+    title: 'JobUpdates - Find Government & Private Jobs in India',
+    description: 'Access verified government and private job notifications. Updated 24/7 from official sources.',
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'JobUpdates - Find Government & Private Jobs in India',
+    description: 'Access verified government and private job notifications. Updated 24/7 from official sources.',
+  },
+  robots: {
+    index: true,
+    follow: true,
   },
 };
 
@@ -19,11 +47,11 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" suppressHydrationWarning>
-      <body className="transition-colors duration-300 dark:bg-slate-950">
+    <html lang="en" className={inter.variable} suppressHydrationWarning>
+      <body className="font-sans antialiased">
         <ThemeProvider>
           <Navbar />
-          <main className="pt-[100px] min-h-screen">
+          <main className="min-h-screen pt-16">
             {children}
           </main>
           <Footer />
