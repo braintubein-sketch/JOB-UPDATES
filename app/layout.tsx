@@ -13,6 +13,12 @@ const inter = Inter({
   variable: '--font-inter',
 });
 
+export const viewport = {
+  width: 'device-width',
+  initialScale: 1,
+  maximumScale: 1,
+};
+
 export const metadata: Metadata = {
   title: "JobUpdates - Find Government & Private Jobs in India",
   description: "India's trusted job portal for government and private job notifications. Access verified recruitment updates, results, and admit cards from official sources. Updated 24/7.",
