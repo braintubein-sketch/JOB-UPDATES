@@ -144,7 +144,9 @@ export default async function HomePage() {
                       Join our Telegram channel for real-time job notifications. Never miss an opportunity!
                     </p>
                     <a
-                      href="#"
+                      href="https://t.me/jobupdatesite"
+                      target="_blank"
+                      rel="noopener noreferrer"
                       className="inline-flex items-center gap-2 px-6 py-3 bg-white text-blue-700 font-semibold rounded-xl hover:bg-blue-50 transition-colors"
                     >
                       Join Telegram Channel

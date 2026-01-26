@@ -26,7 +26,7 @@ const Footer = () => {
         { icon: Twitter, href: '#', label: 'Twitter' },
         { icon: Linkedin, href: '#', label: 'LinkedIn' },
         { icon: Youtube, href: '#', label: 'YouTube' },
-        { icon: Send, href: '#', label: 'Telegram' },
+        { icon: Send, href: 'https://t.me/jobupdatesite', label: 'Telegram' },
     ];
 
     return (
