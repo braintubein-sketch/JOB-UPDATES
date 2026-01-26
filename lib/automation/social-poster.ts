@@ -84,18 +84,27 @@ async function sendToTelegram(job: any): Promise<{ success: boolean, error?: str
 
 export async function autoPostNewJobs(): Promise<number> {
     await dbConnect();
+    // Increase limit to clear backlog faster
     const unpostedJobs = await Job.find({
         status: 'PUBLISHED',
         telegramPosted: { $ne: true }
-    }).limit(5).sort({ createdAt: -1 });
+    }).limit(10).sort({ createdAt: -1 });
+
+    if (unpostedJobs.length === 0) return 0;
+
+    console.log(`🚀 Found ${unpostedJobs.length} unposted jobs. Triggering Telegram...`);
 
     let postedCount = 0;
     for (const job of unpostedJobs) {
         const res = await sendToTelegram(job);
         if (res.success) {
+            console.log(`✅ Posted: ${job.title}`);
             await Job.updateOne({ _id: job._id }, { telegramPosted: true, publishedAt: new Date() });
             postedCount++;
+        } else {
+            console.error(`❌ TG Fail: ${job.title} | Error: ${res.error}`);
         }
+        // Delay to avoid TG rate limits
         await new Promise(r => setTimeout(r, 1000));
     }
     return postedCount;

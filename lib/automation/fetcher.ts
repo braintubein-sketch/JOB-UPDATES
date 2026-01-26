@@ -76,11 +76,9 @@ export async function automateContentFetch() {
         }
     }
 
-    // AUTO-POST IF NEW JOBS
-    let posted = 0;
-    if (newJobsCount > 0) {
-        posted = await autoPostNewJobs();
-    }
+    // ALWAYS TRY TO POST UNPOSTED JOBS
+    // This ensures jobs from previous failed cycles eventually get posted
+    const posted = await autoPostNewJobs();
 
     return { newJobs: newJobsCount, posted };
 }
