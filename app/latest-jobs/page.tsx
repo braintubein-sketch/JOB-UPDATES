@@ -1,7 +1,7 @@
 import dbConnect from '@/lib/mongodb/dbConnect';
 import { Job } from '@/models/Job';
 import JobCard from '@/components/JobCard';
-import { Search, Filter } from 'lucide-react';
+import { Search, Filter, Sparkles } from 'lucide-react';
 
 export const dynamic = 'force-dynamic';
 
@@ -10,48 +10,58 @@ export default async function LatestJobsPage() {
 
     try {
         await dbConnect();
-        jobs = await Job.find({ status: 'APPROVED' }).sort({ createdAt: -1 }).limit(50).lean();
+        // Updated to use PUBLISHED status and lean() for performance
+        jobs = await Job.find({ status: 'PUBLISHED' }).sort({ createdAt: -1 }).limit(100).lean();
     } catch (error) {
         console.error('Latest jobs page error:', error);
     }
 
     return (
-        <div className="section-premium">
-            <div className="container-premium">
+        <div className="container-premium py-12">
 
-                <div className="flex flex-col md:flex-row justify-between items-start md:items-end mb-12 gap-6">
-                    <div>
-                        <h1 className="text-4xl font-bold mb-2">Latest Recruitments</h1>
-                        <p className="text-slate-500 text-lg">Daily curated official updates from across Indian departments.</p>
+            {/* PAGE HEADER */}
+            <div className="flex flex-col md:flex-row justify-between items-start md:items-end mb-12 gap-8">
+                <div>
+                    <div className="inline-flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-primary-600 bg-primary-50 px-3 py-1 rounded-full mb-3">
+                        <Sparkles size={12} /> Live Database
                     </div>
-
-                    <div className="flex w-full md:w-auto gap-3">
-                        <div className="flex-1 md:w-80 flex items-center px-4 border border-slate-200 rounded-xl bg-white">
-                            <Search size={18} className="text-slate-400" />
-                            <input
-                                type="text"
-                                placeholder="Filter results..."
-                                className="w-full py-3 text-sm bg-transparent outline-none ml-3"
-                            />
-                        </div>
-                        <button className="w-12 h-12 border border-slate-200 rounded-xl flex items-center justify-center hover:bg-slate-50">
-                            <Filter size={18} />
-                        </button>
-                    </div>
+                    <h1 className="text-4xl md:text-5xl font-black text-slate-900 tracking-tight leading-tight">Latest Openings</h1>
+                    <p className="text-slate-500 font-medium text-lg mt-1">Official notifications from Central & State portals.</p>
                 </div>
 
-                <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-                    {jobs.map((job: any) => (
-                        <JobCard key={job._id.toString()} job={{ ...job, id: job._id.toString() }} />
-                    ))}
-                    {jobs.length === 0 && (
-                        <div className="col-span-3 card-premium py-16 text-center border-dashed border-2">
-                            <p className="text-slate-500">No jobs found. The automation will populate this section.</p>
-                        </div>
-                    )}
+                <div className="w-full md:w-auto flex flex-col sm:flex-row gap-4">
+                    <div className="relative flex-1 md:w-[350px]">
+                        <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" size={18} />
+                        <input
+                            type="text"
+                            placeholder="Search organization or post..."
+                            className="w-full pl-12 pr-4 py-4 bg-white border border-slate-200 rounded-2xl focus:ring-4 focus:ring-primary-100 outline-none transition-all font-bold text-sm"
+                        />
+                    </div>
+                    <button className="btn-action bg-white border border-slate-200 text-slate-600 h-[60px] px-6">
+                        <Filter size={20} className="mr-2" /> Filters
+                    </button>
                 </div>
-
             </div>
+
+            {/* LISTINGS GRID */}
+            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+                {jobs.length > 0 ? (
+                    jobs.map((job: any) => (
+                        <JobCard key={job._id.toString()} job={{ ...job, id: job._id.toString() }} />
+                    ))
+                ) : (
+                    <div className="col-span-full py-32 text-center bg-white border-2 border-dashed border-slate-200 rounded-[40px]">
+                        <div className="w-20 h-20 bg-slate-50 rounded-full flex items-center justify-center mx-auto mb-6">
+                            <Search size={32} className="text-slate-300" />
+                        </div>
+                        <h2 className="text-2xl font-black text-slate-900">No matching updates.</h2>
+                        <p className="text-slate-500 font-bold mt-2">The automated scanner is checking official signals 24/7.</p>
+                        <Link href="/api/cron/fetch" className="btn-action btn-primary mt-8 px-8">Trigger Scan Now</Link>
+                    </div>
+                )}
+            </div>
+
         </div>
     );
 }

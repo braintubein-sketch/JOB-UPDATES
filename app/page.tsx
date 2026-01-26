@@ -20,13 +20,9 @@ export default async function HomePage() {
   try {
     await dbConnect();
 
-    // Featured Jobs
     featuredJobs = await Job.find({ status: 'PUBLISHED', isFeatured: true })
-      .sort({ priority: -1, createdAt: -1 })
-      .limit(3)
-      .lean();
+      .sort({ priority: -1, createdAt: -1 }).limit(3).lean();
 
-    // Today's Jobs (posted today)
     const todayStart = new Date();
     todayStart.setHours(0, 0, 0, 0);
     todayJobs = await Job.find({
@@ -34,344 +30,171 @@ export default async function HomePage() {
       createdAt: { $gte: todayStart }
     }).sort({ createdAt: -1 }).limit(6).lean();
 
-    // Urgent Jobs (last date within 3 days)
-    const threeDaysFromNow = new Date(Date.now() + 3 * 24 * 60 * 60 * 1000);
-    urgentJobs = await Job.find({
-      status: 'PUBLISHED',
-      lastDate: { $gte: new Date(), $lte: threeDaysFromNow }
-    }).sort({ lastDate: 1 }).limit(4).lean();
-
-    // Latest Jobs
     latestJobs = await Job.find({ status: 'PUBLISHED' })
-      .sort({ createdAt: -1 })
-      .limit(6)
-      .lean();
+      .sort({ createdAt: -1 }).limit(6).lean();
 
-    // Government Jobs
     govtJobs = await Job.find({ status: 'PUBLISHED', category: 'Govt' })
-      .sort({ createdAt: -1 })
-      .limit(4)
-      .lean();
+      .sort({ createdAt: -1 }).limit(4).lean();
 
-    // Private Jobs
     privateJobs = await Job.find({ status: 'PUBLISHED', category: 'Private' })
-      .sort({ createdAt: -1 })
-      .limit(4)
-      .lean();
+      .sort({ createdAt: -1 }).limit(4).lean();
 
-    // Results
     results = await Job.find({ status: 'PUBLISHED', category: 'Result' })
-      .sort({ createdAt: -1 })
-      .limit(4)
-      .lean();
+      .sort({ createdAt: -1 }).limit(4).lean();
 
-    // Admit Cards
     admitCards = await Job.find({ status: 'PUBLISHED', category: 'Admit Card' })
-      .sort({ createdAt: -1 })
-      .limit(4)
-      .lean();
+      .sort({ createdAt: -1 }).limit(4).lean();
 
   } catch (error) {
     console.error('Home page DB error:', error);
   }
 
   const categories = [
-    { name: 'Central Govt', icon: Landmark, href: '/govt-jobs', color: 'text-blue-600 bg-blue-50' },
-    { name: 'Banking', icon: Building2, href: '/category/banking', color: 'text-green-600 bg-green-50' },
-    { name: 'Railway', icon: Train, href: '/category/railway', color: 'text-orange-600 bg-orange-50' },
-    { name: 'Defence', icon: Shield, href: '/category/defence', color: 'text-red-600 bg-red-50' },
-    { name: 'Teaching', icon: Award, href: '/category/teaching', color: 'text-purple-600 bg-purple-50' },
-    { name: 'Private', icon: Briefcase, href: '/private-jobs', color: 'text-amber-600 bg-amber-50' },
+    { name: 'Govt Jobs', icon: Landmark, href: '/govt-jobs', bg: 'bg-blue-50', text: 'text-blue-600' },
+    { name: 'Banking', icon: Building2, href: '/category/banking', bg: 'bg-emerald-50', text: 'text-emerald-600' },
+    { name: 'Railway', icon: Train, href: '/category/railway', bg: 'bg-orange-50', text: 'text-orange-600' },
+    { name: 'Defence', icon: Shield, href: '/category/defence', bg: 'bg-red-50', text: 'text-red-600' },
+    { name: 'Teaching', icon: Award, href: '/category/teaching', bg: 'bg-purple-50', text: 'text-purple-600' },
+    { name: 'Private', icon: Briefcase, href: '/private-jobs', bg: 'bg-amber-50', text: 'text-amber-600' },
   ];
 
   return (
-    <div className="flex flex-col w-full">
+    <div className="w-full flex flex-col gap-20 pb-20">
 
       {/* HERO SECTION */}
-      <section className="relative min-h-[80vh] flex items-center overflow-hidden bg-gradient-to-br from-slate-50 to-blue-50">
-        <div className="absolute top-0 right-0 w-[600px] h-[600px] bg-gradient-to-br from-primary-500/10 to-purple-500/10 rounded-full blur-3xl -mr-48 -mt-48" />
-        <div className="absolute bottom-0 left-0 w-[400px] h-[400px] bg-gradient-to-tr from-amber-500/10 to-orange-500/10 rounded-full blur-3xl -ml-48 -mb-48" />
+      <section className="relative pt-10 overflow-hidden">
+        <div className="container-premium relative z-10 flex flex-col items-center text-center">
+          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-blue-50 border border-blue-100 mb-6">
+            <Zap size={14} className="text-blue-600 fill-blue-600" />
+            <span className="text-[11px] font-black uppercase tracking-widest text-blue-700">Official 2026 Updates</span>
+          </div>
 
-        <div className="container-premium relative z-10 py-20">
-          <div className="max-w-4xl mx-auto text-center">
-            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary-50 border border-primary-100 mb-8 animate-fade-in">
-              <Zap size={14} className="text-primary-600" />
-              <span className="text-xs font-bold uppercase tracking-widest text-primary-700">
-                Official 2026 Updates
-              </span>
-            </div>
+          <h1 className="text-5xl md:text-7xl font-black tracking-tight text-slate-900 mb-6 leading-[1.1]">
+            Find Your <span className="text-primary-600 italic">Dream Career</span> <br />
+            in the Official Portals.
+          </h1>
 
-            <h1 className="text-5xl md:text-6xl lg:text-7xl font-display font-bold tracking-tight mb-6 animate-slide-up">
-              Your Trusted Path to{' '}
-              <span className="text-gradient">Official Indian Jobs</span>
-            </h1>
+          <p className="max-w-2xl text-lg text-slate-500 mb-10 font-medium leading-relaxed font-sans">
+            Verified sarkari results, private openings, and admit cards fetched 24/7
+            directly from 500+ government sources. No fake ads, only official links.
+          </p>
 
-            <p className="text-lg md:text-xl text-slate-600 max-w-2xl mx-auto mb-10 animate-slide-up" style={{ animationDelay: '0.1s' }}>
-              We monitor 500+ official government portals 24/7. Verified recruitments,
-              exams, and results delivered directly from the source. No spam, only official links.
-            </p>
-
-            <div className="flex flex-col sm:flex-row items-center justify-center gap-4 animate-slide-up" style={{ animationDelay: '0.2s' }}>
-              <Link href="/latest-jobs" className="btn-premium btn-primary px-8 py-4 text-base">
-                Browse All Jobs <ArrowRight size={18} />
-              </Link>
-              <Link href="/results" className="btn-premium btn-outline px-8 py-4 text-base">
-                Check Results
-              </Link>
-            </div>
+          <div className="flex flex-col sm:flex-row gap-4 w-full sm:w-auto">
+            <Link href="/latest-jobs" className="btn-action btn-primary px-10 h-16 text-lg">
+              Explore All Jobs <ArrowRight className="ml-2" size={20} />
+            </Link>
+            <Link href="/results" className="btn-action btn-outline px-10 h-16 text-lg">
+              Check Results
+            </Link>
           </div>
         </div>
       </section>
 
-      {/* QUICK CATEGORIES */}
-      <section className="py-12 border-b border-slate-100 bg-white">
+      {/* QUICK GRID */}
+      <section>
         <div className="container-premium">
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
-            {categories.map((cat, i) => (
-              <Link key={i} href={cat.href} className="card-premium flex flex-col items-center gap-3 p-5 text-center hover:border-primary-500">
-                <div className={`w-14 h-14 rounded-2xl flex items-center justify-center ${cat.color}`}>
-                  <cat.icon size={24} />
+            {categories.map((cat) => (
+              <Link key={cat.name} href={cat.href} className="job-card flex flex-col items-center gap-4 py-8 group">
+                <div className={`w-14 h-14 rounded-2xl flex items-center justify-center ${cat.bg} ${cat.text} group-hover:scale-110 transition-transform`}>
+                  <cat.icon size={26} />
                 </div>
-                <span className="font-bold text-sm">{cat.name}</span>
+                <span className="font-black text-sm text-slate-800">{cat.name}</span>
               </Link>
             ))}
           </div>
         </div>
       </section>
 
-      {/* URGENT - LAST DATE SOON */}
-      {urgentJobs.length > 0 && (
-        <section className="section-premium bg-gradient-to-r from-red-50 to-amber-50">
-          <div className="container-premium">
-            <div className="flex items-center gap-3 mb-8">
-              <div className="w-12 h-12 rounded-full bg-red-100 flex items-center justify-center animate-pulse">
-                <Clock size={24} className="text-red-600" />
-              </div>
-              <div>
-                <h2 className="text-2xl font-display font-bold">⏰ Apply Now - Last Date Soon!</h2>
-                <p className="text-sm text-slate-600">These jobs are closing within 3 days. Don't miss out!</p>
-              </div>
-            </div>
-            <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
-              {urgentJobs.map((job: any) => (
-                <JobCard key={job._id.toString()} job={{ ...job, id: job._id.toString() }} showCountdown={true} />
-              ))}
-            </div>
-          </div>
-        </section>
-      )}
-
-      {/* TODAY'S JOBS */}
+      {/* TODAY JOBS */}
       {todayJobs.length > 0 && (
-        <section className="section-premium bg-white">
+        <section>
           <div className="container-premium">
             <div className="flex items-center justify-between mb-8">
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-full bg-green-100 flex items-center justify-center">
-                  <Zap size={20} className="text-green-600" />
-                </div>
-                <h2 className="text-2xl font-display font-bold">🆕 Today's Fresh Updates</h2>
-              </div>
-              <Link href="/latest-jobs" className="text-sm font-semibold text-primary-600 hover:text-primary-700 flex items-center gap-1">
-                View All <ChevronRight size={16} />
-              </Link>
+              <h2 className="text-3xl font-black text-slate-900 flex items-center gap-3">
+                <Zap className="text-amber-500 fill-amber-500" size={28} /> Fresh Today
+              </h2>
+              <Link href="/latest-jobs" className="nav-link font-black text-primary-600">View All</Link>
             </div>
             <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {todayJobs.map((job: any) => (
-                <JobCard key={job._id.toString()} job={{ ...job, id: job._id.toString() }} />
-              ))}
+              {todayJobs.map(job => <JobCard key={job._id} job={{ ...job, id: job._id.toString() }} />)}
             </div>
           </div>
         </section>
       )}
 
-      {/* FEATURED JOBS */}
-      {featuredJobs.length > 0 && (
-        <section className="section-premium bg-gradient-to-r from-primary-50 to-purple-50">
-          <div className="container-premium">
-            <div className="flex items-center gap-3 mb-8">
-              <div className="w-10 h-10 rounded-full bg-amber-100 flex items-center justify-center">
-                <Award size={20} className="text-amber-600" />
-              </div>
-              <h2 className="text-2xl font-display font-bold">⭐ Featured Opportunities</h2>
-            </div>
-            <div className="grid md:grid-cols-3 gap-6">
-              {featuredJobs.map((job: any) => (
-                <JobCard key={job._id.toString()} job={{ ...job, id: job._id.toString() }} />
-              ))}
-            </div>
-          </div>
-        </section>
-      )}
-
-      {/* LATEST JOBS */}
-      <section className="section-premium bg-white">
+      {/* LATEST UPDATES */}
+      <section>
         <div className="container-premium">
           <div className="flex items-center justify-between mb-8">
-            <h2 className="text-3xl font-display font-bold">
-              Latest <span className="text-primary-600">Live</span> Updates
+            <h2 className="text-3xl font-black text-slate-900 flex items-center gap-3">
+              <ShieldCheck className="text-blue-600" size={28} /> Latest Live Updates
             </h2>
-            <Link href="/latest-jobs" className="hidden md:flex items-center gap-2 text-sm font-semibold text-primary-600 hover:text-primary-700">
-              View All <ChevronRight size={16} />
-            </Link>
           </div>
-
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {latestJobs.length > 0 ? latestJobs.map((job: any) => (
-              <JobCard key={job._id.toString()} job={{ ...job, id: job._id.toString() }} />
-            )) : (
-              <div className="col-span-3 card-premium text-center py-16 border-dashed border-2">
-                <p className="text-slate-500 mb-4">Connecting to official database...</p>
-                <Link href="/api/cron/fetch" className="btn-premium btn-secondary">
-                  Refresh Data
-                </Link>
+            {latestJobs.length > 0 ? (
+              latestJobs.map(job => <JobCard key={job._id} job={{ ...job, id: job._id.toString() }} />)
+            ) : (
+              <div className="col-span-full py-20 text-center bg-white rounded-3xl border border-dashed border-slate-200">
+                <p className="text-slate-400 font-bold mb-4 italic">Waiting for official signals...</p>
+                <Link href="/api/cron/fetch" className="btn-action btn-outline py-2.5 px-6 text-sm">Refresh Data</Link>
               </div>
             )}
           </div>
         </div>
       </section>
 
-      {/* GOVERNMENT JOBS */}
-      {govtJobs.length > 0 && (
-        <section className="section-premium bg-slate-50">
-          <div className="container-premium">
-            <div className="flex items-center justify-between mb-8">
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center">
-                  <ShieldCheck size={20} className="text-blue-600" />
-                </div>
-                <h2 className="text-2xl font-display font-bold">🏛️ Government Jobs</h2>
-              </div>
-              <Link href="/govt-jobs" className="text-sm font-semibold text-primary-600 flex items-center gap-1">
-                View All <ChevronRight size={16} />
-              </Link>
-            </div>
-            <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
-              {govtJobs.map((job: any) => (
-                <JobCard key={job._id.toString()} job={{ ...job, id: job._id.toString() }} />
-              ))}
-            </div>
-          </div>
-        </section>
-      )}
-
-      {/* PRIVATE JOBS */}
-      {privateJobs.length > 0 && (
-        <section className="section-premium bg-white">
-          <div className="container-premium">
-            <div className="flex items-center justify-between mb-8">
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-full bg-green-100 flex items-center justify-center">
-                  <Briefcase size={20} className="text-green-600" />
-                </div>
-                <h2 className="text-2xl font-display font-bold">💼 Private Sector</h2>
-              </div>
-              <Link href="/private-jobs" className="text-sm font-semibold text-primary-600 flex items-center gap-1">
-                View All <ChevronRight size={16} />
-              </Link>
-            </div>
-            <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
-              {privateJobs.map((job: any) => (
-                <JobCard key={job._id.toString()} job={{ ...job, id: job._id.toString() }} />
-              ))}
-            </div>
-          </div>
-        </section>
-      )}
-
-      {/* RESULTS & ADMIT CARDS GRID */}
-      <section className="section-premium bg-slate-50">
+      {/* RESULTS GRID */}
+      <section className="bg-slate-900 py-24 -mx-10 px-10 text-white">
         <div className="container-premium">
-          <div className="grid md:grid-cols-2 gap-8">
+          <div className="grid lg:grid-cols-2 gap-16">
             {/* Results */}
             <div>
-              <div className="flex items-center justify-between mb-6">
-                <h2 className="text-xl font-display font-bold flex items-center gap-2">
-                  📊 Latest Results
-                </h2>
-                <Link href="/results" className="text-sm font-semibold text-primary-600">View All →</Link>
-              </div>
-              <div className="space-y-4">
-                {results.length > 0 ? results.map((job: any) => (
-                  <Link key={job._id.toString()} href={`/jobs/${job.slug}`} className="card-premium flex items-center gap-4 p-4 hover:border-primary-500">
-                    <div className="w-12 h-12 rounded-xl bg-green-100 flex items-center justify-center text-green-600 shrink-0">
-                      <TrendingUp size={20} />
+              <h3 className="text-2xl font-black mb-8 flex items-center gap-3 text-emerald-400">
+                <TrendingUp size={24} /> Official Results
+              </h3>
+              <div className="grid gap-4">
+                {results.map(job => (
+                  <Link key={job._id} href={`/jobs/${job.slug}`} className="group flex items-center p-5 bg-slate-800/50 border border-slate-700/50 rounded-2xl hover:border-emerald-500/50 transition-all">
+                    <div className="flex-1">
+                      <h4 className="font-bold text-slate-200 group-hover:text-white transition-colors">{job.title}</h4>
+                      <p className="text-xs font-black uppercase text-slate-500 mt-1">{job.organization}</p>
                     </div>
-                    <div className="flex-1 min-w-0">
-                      <h3 className="font-bold text-sm truncate">{job.title}</h3>
-                      <p className="text-xs text-slate-500 truncate">{job.organization}</p>
-                    </div>
+                    <ChevronRight className="text-slate-600 group-hover:text-emerald-400 transform group-hover:translate-x-1 transition-all" size={20} />
                   </Link>
-                )) : (
-                  <p className="text-slate-500 text-sm text-center py-8">No results available</p>
-                )}
+                ))}
               </div>
             </div>
 
             {/* Admit Cards */}
             <div>
-              <div className="flex items-center justify-between mb-6">
-                <h2 className="text-xl font-display font-bold flex items-center gap-2">
-                  🎫 Admit Cards
-                </h2>
-                <Link href="/admit-cards" className="text-sm font-semibold text-primary-600">View All →</Link>
-              </div>
-              <div className="space-y-4">
-                {admitCards.length > 0 ? admitCards.map((job: any) => (
-                  <Link key={job._id.toString()} href={`/jobs/${job.slug}`} className="card-premium flex items-center gap-4 p-4 hover:border-primary-500">
-                    <div className="w-12 h-12 rounded-xl bg-purple-100 flex items-center justify-center text-purple-600 shrink-0">
-                      <Award size={20} />
+              <h3 className="text-2xl font-black mb-8 flex items-center gap-3 text-primary-400">
+                <Award size={24} /> Exam Hall Tickets
+              </h3>
+              <div className="grid gap-4">
+                {admitCards.map(job => (
+                  <Link key={job._id} href={`/jobs/${job.slug}`} className="group flex items-center p-5 bg-slate-800/50 border border-slate-700/50 rounded-2xl hover:border-primary-500/50 transition-all">
+                    <div className="flex-1">
+                      <h4 className="font-bold text-slate-200 group-hover:text-white transition-colors">{job.title}</h4>
+                      <p className="text-xs font-black uppercase text-slate-500 mt-1">{job.organization}</p>
                     </div>
-                    <div className="flex-1 min-w-0">
-                      <h3 className="font-bold text-sm truncate">{job.title}</h3>
-                      <p className="text-xs text-slate-500 truncate">{job.organization}</p>
-                    </div>
+                    <ChevronRight className="text-slate-600 group-hover:text-primary-400 transform group-hover:translate-x-1 transition-all" size={20} />
                   </Link>
-                )) : (
-                  <p className="text-slate-500 text-sm text-center py-8">No admit cards available</p>
-                )}
+                ))}
               </div>
             </div>
           </div>
         </div>
       </section>
 
-      {/* STATE-WISE */}
-      <section className="section-premium bg-white">
-        <div className="container-premium">
-          <h2 className="text-3xl font-display font-bold text-center mb-10">
-            Explore by State
-          </h2>
-          <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 gap-3">
-            {['Andhra Pradesh', 'Delhi', 'Gujarat', 'Karnataka', 'Maharashtra', 'Punjab', 'Tamil Nadu', 'Uttar Pradesh', 'West Bengal', 'Madhya Pradesh', 'Kerala', 'Bihar'].map((state, i) => (
-              <Link
-                key={i}
-                href={`/state-wise/${state.toLowerCase().replace(' ', '-')}`}
-                className="card-premium p-4 text-center hover:border-primary-500 hover:text-primary-600"
-              >
-                <span className="font-semibold text-sm">{state}</span>
-              </Link>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* CTA SECTION */}
-      <section className="py-20 bg-gradient-to-r from-primary-600 to-primary-800 text-white">
-        <div className="container-premium text-center">
-          <h2 className="text-3xl md:text-4xl font-display font-bold mb-4">
-            Never Miss a Sarkari Notification
-          </h2>
-          <p className="text-primary-100 text-lg mb-8 max-w-2xl mx-auto">
-            Join 500,000+ applicants who get real-time job alerts. Verified sources only.
-          </p>
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-            <Link href="/latest-jobs" className="btn-premium bg-white text-primary-700 hover:bg-primary-50 px-8 py-4">
-              Browse All Jobs
-            </Link>
-            <a href="https://t.me/jobupdatesite" target="_blank" className="btn-premium bg-primary-700 text-white hover:bg-primary-800 border border-primary-500 px-8 py-4">
-              📢 Join Telegram
-            </a>
+      {/* CTA */}
+      <section className="container-premium">
+        <div className="relative bg-primary-600 rounded-[40px] p-12 md:p-20 overflow-hidden text-center text-white shadow-2xl shadow-primary-900/40">
+          <h2 className="relative z-10 text-4xl md:text-5xl font-black mb-6">Never Miss an Official Update.</h2>
+          <p className="relative z-10 text-lg text-primary-100 max-w-xl mx-auto mb-10 font-bold opacity-80"> Join 500,000+ job seekers receiving real-time alerts. Guaranteed no spam. </p>
+          <div className="relative z-10 flex flex-col sm:flex-row gap-4 justify-center">
+            <Link href="/latest-jobs" className="btn-action bg-white text-primary-700 h-16 px-10 text-lg hover:bg-slate-50 ring-4 ring-white/10">Browse Jobs</Link>
+            <a href="https://t.me/jobupdatesite" target="_blank" className="btn-action bg-primary-900 text-white h-16 px-10 text-lg hover:bg-slate-950 ring-4 ring-black/10">📢 Join Telegram</a>
           </div>
         </div>
       </section>
