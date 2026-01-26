@@ -1,28 +1,23 @@
 export default function DisclaimerPage() {
     return (
-        <div className="container py-20 max-w-3xl">
-            <h1 className="text-3xl font-bold mb-8 text-red-600">Disclaimer</h1>
-            <div className="prose prose-slate max-w-none space-y-6 text-secondary leading-relaxed">
-                <p>Last Updated: {new Date().toLocaleDateString()}</p>
+        <div className="container-premium py-12 max-w-4xl">
+            <div className="card-premium p-8 md:p-12">
+                <h1 className="text-3xl font-bold mb-8 text-red-600">Disclaimer</h1>
+                <div className="prose prose-slate max-w-none">
+                    <p className="font-bold">Please read this disclaimer carefully before using Job Updates.</p>
 
-                <section className="bg-red-50 p-6 rounded-xl border border-red-100 italic">
-                    <p className="text-red-900">Job Updates India is an independent information portal. We are NOT affiliated with any government department, UPSC, SSC, or any other official recruitment body.</p>
-                </section>
+                    <h3>1. Not a Government Website</h3>
+                    <p><strong>Job Updates is NOT an official government website.</strong> We are a private information portal that aggregates job news from various official sources. We have no affiliation with any government ministry or department.</p>
 
-                <section>
-                    <h2 className="text-xl font-bold text-foreground mb-4">No Guarantee of Accuracy</h2>
-                    <p>While we make every effort to verify information from official sources, we do not guarantee the completeness, reliability, or accuracy of the information. Users are strongly advised to cross-check all details with the official government notification before taking any action.</p>
-                </section>
+                    <h3>2. Information Accuracy</h3>
+                    <p>While we strive for accuracy, we cannot guarantee that every piece of information (dates, fees, vacancies) is 100% error-free. Recruitment rules change frequently. <strong>Always check the official URL</strong> provided in our job posts before making any payment or application.</p>
 
-                <section>
-                    <h2 className="text-xl font-bold text-foreground mb-4">Official Sources</h2>
-                    <p>All trademarks and logos of government departments used on this site are the property of their respective owners. We use them for informational purposes only to help candidates identify the official source of the job update.</p>
-                </section>
+                    <h3>3. No Liability</h3>
+                    <p>We are not responsible for any loss, damage, or missed opportunity resulting from the use of this website. Users apply for jobs at their own risk.</p>
 
-                <section>
-                    <h2 className="text-xl font-bold text-foreground mb-4">Limitation of Liability</h2>
-                    <p>In no event shall Job Updates India be liable for any loss or damage including without limitation, indirect or consequential loss or damage, or any loss or damage whatsoever arising from loss of data or profits arising out of, or in connection with, the use of this website.</p>
-                </section>
+                    <h3>4. External Links</h3>
+                    <p>Links to third-party websites (e.g., Application Forms) are provided for convenience. We do not control these sites and endorse their content solely for information purposes.</p>
+                </div>
             </div>
         </div>
     );
