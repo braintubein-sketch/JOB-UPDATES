@@ -7,6 +7,9 @@ export const metadata: Metadata = {
   title: "Official Indian Job Updates | Verified Recruitment Portal",
   description: "The most trusted source for 2026 Batch Indian Government and Private jobs. Official notifications, results, and admit cards fetched 24/7.",
   keywords: "sarkari result, job updates, govt jobs, latest recruitments, official job portal",
+  icons: {
+    icon: '/favicon.png',
+  },
 };
 
 export default function RootLayout({
