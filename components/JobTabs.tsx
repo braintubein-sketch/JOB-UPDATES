@@ -12,6 +12,7 @@ interface JobTabsProps {
         organization: string;
         title: string;
         postName?: string;
+        notificationPdf?: string;
         importantDates?: Array<{ label: string; date: string; isUrgent?: boolean }>;
     };
 }
@@ -24,6 +25,7 @@ export default function JobTabs({ job }: JobTabsProps) {
         { id: 'eligibility', label: 'Eligibility', icon: CheckCircle },
         { id: 'selection', label: 'Selection Process', icon: ClipboardList },
         { id: 'dates', label: 'Important Dates', icon: Calendar },
+        { id: 'official', label: 'Official Notice', icon: Info },
     ];
 
     const renderContent = () => {
@@ -31,21 +33,41 @@ export default function JobTabs({ job }: JobTabsProps) {
             case 'description':
                 return (
                     <div className="animate-fade-in-up">
-                        <h2 className="text-xl font-bold text-slate-900 dark:text-white mb-4">Job Description</h2>
+                        <h2 className="text-xl font-bold text-slate-900 dark:text-white mb-4">Job Summary</h2>
                         <p className="text-slate-600 dark:text-slate-400 leading-relaxed whitespace-pre-line">
-                            {job.description || `The ${job.organization} has officially released the notification for the post of ${job.postName || job.title}. Eligible candidates are invited to apply through official channels before the last date.`}
+                            {job.description || `The ${job.organization} has officially released the notification for ${job.postName || job.title}. Eligible candidates are invited to apply through official channels before the last date.`}
                         </p>
-                        {job.howToApply && (
-                            <div className="mt-8">
-                                <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-3">How to Apply</h3>
-                                <p className="text-slate-600 dark:text-slate-400 leading-relaxed whitespace-pre-line">
-                                    {job.howToApply}
-                                </p>
-                            </div>
-                        )}
+                        <div className="mt-8 p-4 bg-slate-50 dark:bg-slate-800/50 rounded-2xl border border-slate-100 dark:border-slate-800">
+                            <h3 className="font-bold text-slate-900 dark:text-white mb-2">Key Highlights:</h3>
+                            <ul className="list-disc list-inside text-sm text-slate-600 dark:text-slate-400 space-y-2">
+                                <li>Organization: {job.organization}</li>
+                                <li>Post: {job.postName}</li>
+                                <li>Official Website: {job.organization.toLowerCase().split(' ').join('')}.gov.in</li>
+                            </ul>
+                        </div>
+                    </div>
+                );
+            case 'official':
+                return (
+                    <div className="animate-fade-in-up">
+                        <h2 className="text-xl font-bold text-slate-900 dark:text-white mb-4">Official Notification Details</h2>
+                        <div className="p-8 border-2 border-dashed border-slate-200 dark:border-slate-800 rounded-2xl text-center">
+                            <Info className="mx-auto text-blue-600 mb-4" size={40} />
+                            <h3 className="font-bold text-lg mb-2">View Official Document</h3>
+                            <p className="text-slate-500 text-sm mb-6">Click below to view the official recruitment notification from {job.organization}.</p>
+                            <a
+                                href={job.notificationPdf}
+                                target="_blank"
+                                className="btn-primary inline-flex items-center gap-2"
+                            >
+                                <FileText size={18} />
+                                Open Official Link
+                            </a>
+                        </div>
                     </div>
                 );
             case 'eligibility':
+                // ... (rest of the cases remain the same but I'll paste the full switches to be safe)
                 return (
                     <div className="animate-fade-in-up">
                         <h2 className="text-xl font-bold text-slate-900 dark:text-white mb-4">Eligibility Criteria</h2>
@@ -56,7 +78,7 @@ export default function JobTabs({ job }: JobTabsProps) {
                         ) : (
                             <div className="p-4 bg-blue-50 dark:bg-blue-900/20 rounded-xl flex gap-3 text-blue-700 dark:text-blue-400">
                                 <Info size={20} className="shrink-0" />
-                                <p className="text-sm font-medium">Please refer to the official notification PDF for detailed eligibility criteria including age relaxations and specific educational requirements.</p>
+                                <p className="text-sm font-medium">Please refer to the official notification for detailed eligibility criteria.</p>
                             </div>
                         )}
                     </div>
@@ -72,7 +94,7 @@ export default function JobTabs({ job }: JobTabsProps) {
                         ) : (
                             <div className="p-4 bg-slate-50 dark:bg-slate-800/50 rounded-xl flex gap-3 text-slate-600 dark:text-slate-400">
                                 <Info size={20} className="shrink-0" />
-                                <p className="text-sm">The selection typically involves a Written Exam, Interview, and Document Verification. Refer to the official PDF for the exact sequence.</p>
+                                <p className="text-sm">Selection involves Written Exam, Interview, and Verification. Refer to the notice for the exact sequence.</p>
                             </div>
                         )}
                     </div>
@@ -90,9 +112,6 @@ export default function JobTabs({ job }: JobTabsProps) {
                                     </span>
                                 </div>
                             ))}
-                            {(!job.importantDates || job.importantDates.length === 0) && (
-                                <p className="text-slate-500 py-4 italic">No specific dates listed. Please check the official notification.</p>
-                            )}
                         </div>
                     </div>
                 );
@@ -110,8 +129,8 @@ export default function JobTabs({ job }: JobTabsProps) {
                         key={tab.id}
                         onClick={() => setActiveTab(tab.id)}
                         className={`flex items-center gap-2 px-6 py-4 text-sm font-bold whitespace-nowrap transition-all relative ${activeTab === tab.id
-                                ? 'text-blue-600 dark:text-blue-400'
-                                : 'text-slate-500 hover:text-slate-700 dark:text-slate-500 dark:hover:text-slate-300'
+                            ? 'text-blue-600 dark:text-blue-400'
+                            : 'text-slate-500 hover:text-slate-700 dark:text-slate-500 dark:hover:text-slate-300'
                             }`}
                     >
                         <tab.icon size={16} />

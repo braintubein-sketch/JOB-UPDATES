@@ -168,6 +168,7 @@ export default async function JobDetailPage({ params }: { params: { slug: string
                             organization: job.organization,
                             title: job.title,
                             postName: job.postName,
+                            notificationPdf: job.notificationPdf || job.source || job.applyLink,
                             importantDates: [
                                 job.startDate && { label: 'Application Start Date', date: new Date(job.startDate).toLocaleDateString('en-IN') },
                                 job.lastDate && { label: 'Last Date to Apply', date: new Date(job.lastDate).toLocaleDateString('en-IN'), isUrgent },
