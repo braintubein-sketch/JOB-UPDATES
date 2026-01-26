@@ -54,7 +54,7 @@ export default function ContactPage() {
                                 </div>
                                 <div>
                                     <h3 className="font-bold text-slate-900 dark:text-white">Call Hours</h3>
-                                    <p className="text-slate-500">+91 9000 000 000</p>
+                                    <p className="text-slate-500">+91 88846 24741</p>
                                 </div>
                             </div>
 
