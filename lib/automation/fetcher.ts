@@ -11,16 +11,9 @@ const parser = new RSSParser({
     timeout: 10000,
 });
 
-// ULTIMATE SOURCE LIST - Mix of News & Direct Portals
 const SOURCES = [
-    // Times of India (Education/Jobs) - Very Reliable
     { url: 'https://timesofindia.indiatimes.com/rssfeeds/913168846.cms', name: 'Times of India Jobs', category: 'Private' },
-    // Hindustan Times (Education)
     { url: 'https://www.hindustantimes.com/feeds/rss/education/employment-news/rssfeed.xml', name: 'Hindustan Times', category: 'Govt' },
-    // Zee News (Employment)
-    { url: 'https://zeenews.india.com/rss/employment.xml', name: 'Zee News Employment', category: 'Govt' },
-    // Indian Express (Jobs)
-    { url: 'https://indianexpress.com/section/jobs/feed/', name: 'Indian Express Jobs', category: 'Govt' }
 ];
 
 export async function automateContentFetch() {
@@ -28,7 +21,6 @@ export async function automateContentFetch() {
     console.log('=== AUTOMATION CYCLE STARTED ===');
 
     let newJobsCount = 0;
-    let errors: string[] = [];
 
     for (const source of SOURCES) {
         try {
@@ -38,78 +30,57 @@ export async function automateContentFetch() {
             for (const item of feed.items) {
                 if (!item.title || !item.link) continue;
 
-                // 1. FILTER: Only keep actual job-related news
-                const titleLower = item.title.toLowerCase();
-
-                // CLEAN TITLE: Remove junk
+                // 1. CLEAN TITLE
                 const cleanTitle = item.title
                     .replace(/\(Apply Online\)/gi, '')
                     .replace(/Notification/gi, '')
                     .replace(/Recruitment/gi, '')
                     .trim();
 
+                const titleLower = cleanTitle.toLowerCase();
                 const isJobRelated = titleLower.includes('recruitment') ||
                     titleLower.includes('vacancy') ||
                     titleLower.includes('apply') ||
                     titleLower.includes('hiring') ||
-                    titleLower.includes('jobs') ||
-                    titleLower.includes('admit card') ||
-                    titleLower.includes('result');
+                    titleLower.includes('jobs');
 
                 if (!isJobRelated) continue;
 
-                const slug = generateSlug(item.title);
+                const slug = generateSlug(cleanTitle);
                 const existing = await Job.findOne({ slug });
                 if (existing) continue;
 
-                // 2. CATEGORIZE
-                let category = source.category;
-                if (titleLower.includes('result')) category = 'Result';
-                else if (titleLower.includes('admit card')) category = 'Admit Card';
-                else if (titleLower.includes('bank')) category = 'Banking';
-                else if (titleLower.includes('railway')) category = 'Railway';
-
-                // Extract Real Organization from Title (e.g. "SBI Recruitment 2026..." -> "SBI")
+                // 2. EXTRACT ORG
                 let realOrg = cleanTitle.split(' ')[0];
                 if (cleanTitle.includes('Railway')) realOrg = 'Indian Railways';
                 else if (cleanTitle.includes('Bank')) realOrg = 'Banking Sector';
-                else if (source.name.includes('Times') || source.name.includes('Hindustan')) {
-                    // For news feeds, we must guess broadly if we can't find specific org
-                    if (realOrg.length < 3) realOrg = 'Govt Recruitment';
-                } else {
-                    realOrg = source.name;
-                }
+                else if (realOrg.length < 3) realOrg = 'Govt of India';
 
                 await Job.create({
                     title: cleanTitle,
                     slug: slug,
                     organization: realOrg,
-                    category: category,
+                    category: source.category,
                     source: item.link,
                     applyLink: item.link,
-                    description: item.contentSnippet || item.content || 'Read full details at source.',
+                    description: item.contentSnippet || item.content || 'Official notification details.',
                     status: 'PUBLISHED',
                     location: 'India',
-                    lastDate: new Date(Date.now() + 25 * 24 * 60 * 60 * 1000),
+                    lastDate: new Date(Date.now() + 20 * 24 * 60 * 60 * 1000),
                 });
 
                 newJobsCount++;
-                console.log(`+ NEW: ${item.title}`);
             }
         } catch (err: any) {
             console.error(`Error fetching from ${source.name}:`, err.message);
-            errors.push(`${source.name}: ${err.message}`);
         }
     }
 
-    // 3. AUTO-POST TO SOCIAL MEDIA
-    let postedCount = 0;
+    // AUTO-POST IF NEW JOBS
+    let posted = 0;
     if (newJobsCount > 0) {
-        console.log('Triggering Social Media Auto-Post...');
-        postedCount = await autoPostNewJobs();
-        console.log(`Posted ${postedCount} updates to social media.`);
+        posted = await autoPostNewJobs();
     }
 
-    console.log(`=== CYLCE DONE. Added ${newJobsCount} jobs.`);
-    return { newJobs: newJobsCount, posted: postedCount, errors: errors.length > 0 ? errors : undefined };
+    return { newJobs: newJobsCount, posted };
 }

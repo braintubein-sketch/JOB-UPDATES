@@ -5,74 +5,58 @@ import { Job, ActivityLog } from '../../models/Job';
 const TELEGRAM_BOT_TOKEN = process.env.TELEGRAM_BOT_TOKEN;
 const TELEGRAM_CHANNEL_ID = process.env.TELEGRAM_CHANNEL_ID;
 
-// WhatsApp Configuration (Meta Business API)
+// WhatsApp Configuration
 const WHATSAPP_ACCESS_TOKEN = process.env.WHATSAPP_ACCESS_TOKEN;
-const WHATSAPP_PHONE_NUMBER_ID = process.env.WHATSAPP_PHONE_NUMBER_ID;
 const WHATSAPP_CHANNEL_ID = process.env.WHATSAPP_CHANNEL_ID;
 
 // ============================================
-// MESSAGE FORMATTERS
+// MESSAGE FORMATTERS (Using HTML for reliability)
 // ============================================
 
 function formatTelegramMessage(job: any): string {
     const jobUrl = `https://jobupdate.site/jobs/${job.slug}`;
     const dateStr = job.lastDate ? new Date(job.lastDate).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' }) : 'Check Notice';
 
-    const lines = [
-        `🚨 NEW JOB ALERT 🚨`,
+    // HTML format is much cleaner and less likely to fail than Markdown
+    return [
+        `🚨 <b>NEW JOB ALERT</b> 🚨`,
         ``,
-        `📝 Organization: ${escapeMarkdown(job.organization)}`,
-        `📌 Post: ${escapeMarkdown(job.title)}`,
-        `📊 Vacancies: ${escapeMarkdown(job.vacancies || 'See Notice')}`,
-        `🎓 Qualification: ${escapeMarkdown(job.qualification || 'See Details')}`,
-        job.experience ? `💼 Experience: ${escapeMarkdown(job.experience)}` : '',
-        `📍 Location: ${escapeMarkdown(job.location || 'India')}`,
-        `📅 Last Date: ${escapeMarkdown(dateStr)}`,
+        `📝 <b>Organization:</b> ${job.organization}`,
+        `📌 <b>Post:</b> ${job.title}`,
+        `📊 <b>Vacancies:</b> ${job.vacancies || 'See Notice'}`,
+        `🎓 <b>Qualification:</b> ${job.qualification || 'See Details'}`,
+        job.experience ? `💼 <b>Experience:</b> ${job.experience}` : '',
+        `📍 <b>Location:</b> ${job.location || 'India'}`,
+        `📅 <b>Last Date:</b> ${dateStr}`,
         ``,
-        `🔗 Apply Online:`,
+        `🔗 <b>Apply Online:</b>`,
         `${jobUrl}`,
         ``,
         `#${job.category?.toLowerCase() || 'job'} #governmentjobs #jobalert`,
-    ].filter(line => line !== null);
-
-    return lines.join('\n');
+    ].join('\n');
 }
 
 function formatWhatsAppMessage(job: any): string {
-    const lines = [
-        `📢 *${job.title}*`,
+    const jobUrl = `https://jobupdate.site/jobs/${job.slug}`;
+    return [
+        `📢 *NEW JOB ALERT*`,
         ``,
-        `🏢 Organization: ${job.organization}`,
-        job.qualification ? `📚 Qualification: ${job.qualification}` : '',
-        job.salary ? `💰 Salary: ${job.salary}` : '',
-        job.vacancies ? `👥 Vacancies: ${job.vacancies}` : '',
-        job.location ? `📍 Location: ${job.location || 'All India'}` : '',
-        job.lastDate ? `📅 Last Date: ${new Date(job.lastDate).toLocaleDateString('en-IN')}` : '',
+        `*Organization:* ${job.organization}`,
+        `*Post:* ${job.title}`,
+        `*Qualification:* ${job.qualification}`,
+        `*Location:* ${job.location || 'India'}`,
         ``,
-        `━━━━━━━━━━━━━━━━━━`,
-        ``,
-        job.applyLink ? `🔗 Apply: ${job.applyLink}` : '',
-        ``,
-        `📱 More Jobs: jobupdate.site`,
-    ].filter(line => line !== '');
-
-    return lines.join('\n');
-}
-
-function escapeMarkdown(text: string): string {
-    if (!text) return '';
-    return text.replace(/([_*\[\]()~`>#+\-=|{}.!])/g, '\\$1');
+        `🔗 *Details & Apply:*`,
+        `${jobUrl}`,
+    ].join('\n');
 }
 
 // ============================================
-// TELEGRAM POSTING
+// SENDING LOGIC
 // ============================================
 
-async function sendToTelegram(job: any): Promise<boolean> {
-    if (!TELEGRAM_BOT_TOKEN || !TELEGRAM_CHANNEL_ID) {
-        console.log('⚠️ Telegram not configured');
-        return false;
-    }
+async function sendToTelegram(job: any): Promise<{ success: boolean, error?: string }> {
+    if (!TELEGRAM_BOT_TOKEN || !TELEGRAM_CHANNEL_ID) return { success: false, error: 'Missing Config' };
 
     try {
         const message = formatTelegramMessage(job);
@@ -84,199 +68,47 @@ async function sendToTelegram(job: any): Promise<boolean> {
                 body: JSON.stringify({
                     chat_id: TELEGRAM_CHANNEL_ID,
                     text: message,
-                    parse_mode: 'MarkdownV2',
+                    parse_mode: 'HTML',
                     disable_web_page_preview: false,
                 }),
             }
         );
 
         const result = await response.json();
-        if (result.ok) {
-            console.log(`✅ Telegram: ${job.title.substring(0, 40)}...`);
-            return true;
-        } else {
-            console.error('❌ Telegram error:', result.description);
-            return false;
-        }
-    } catch (error) {
-        console.error('❌ Telegram failed:', error);
-        return false;
+        if (result.ok) return { success: true };
+        return { success: false, error: result.description };
+    } catch (error: any) {
+        return { success: false, error: error.message };
     }
 }
-
-// ============================================
-// WHATSAPP CHANNEL POSTING
-// ============================================
-
-async function sendToWhatsAppChannel(job: any): Promise<boolean> {
-    if (!WHATSAPP_ACCESS_TOKEN || !WHATSAPP_CHANNEL_ID) {
-        console.log('⚠️ WhatsApp not configured');
-        return false;
-    }
-
-    try {
-        const message = formatWhatsAppMessage(job);
-
-        // WhatsApp Channels API (Newsletter API)
-        const response = await fetch(
-            `https://graph.facebook.com/v18.0/${WHATSAPP_CHANNEL_ID}/messages`,
-            {
-                method: 'POST',
-                headers: {
-                    'Authorization': `Bearer ${WHATSAPP_ACCESS_TOKEN}`,
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    messaging_product: 'whatsapp',
-                    type: 'text',
-                    text: { body: message }
-                }),
-            }
-        );
-
-        const result = await response.json();
-        if (!result.error) {
-            console.log(`✅ WhatsApp: ${job.title.substring(0, 40)}...`);
-            return true;
-        } else {
-            console.error('❌ WhatsApp error:', result.error?.message);
-            return false;
-        }
-    } catch (error) {
-        console.error('❌ WhatsApp failed:', error);
-        return false;
-    }
-}
-
-// ============================================
-// MAIN AUTO-POST FUNCTION
-// ============================================
 
 export async function autoPostNewJobs(): Promise<number> {
     await dbConnect();
-
-    // Find published jobs not yet posted to social media
     const unpostedJobs = await Job.find({
         status: 'PUBLISHED',
-        $or: [
-            { telegramPosted: { $ne: true } },
-            { whatsappPosted: { $ne: true } }
-        ]
-    }).limit(10).sort({ createdAt: -1 });
-
-    console.log(`📤 Found ${unpostedJobs.length} jobs to post...`);
+        telegramPosted: { $ne: true }
+    }).limit(5).sort({ createdAt: -1 });
 
     let postedCount = 0;
-
     for (const job of unpostedJobs) {
-        let telegramSuccess = job.telegramPosted || false;
-        let whatsappSuccess = job.whatsappPosted || false;
-
-        // Post to Telegram if not already posted
-        if (!job.telegramPosted) {
-            telegramSuccess = await sendToTelegram(job);
-            if (telegramSuccess) postedCount++;
-            // Small delay to avoid rate limiting
-            await new Promise(resolve => setTimeout(resolve, 1000));
+        const res = await sendToTelegram(job);
+        if (res.success) {
+            await Job.updateOne({ _id: job._id }, { telegramPosted: true, publishedAt: new Date() });
+            postedCount++;
         }
-
-        // Post to WhatsApp if not already posted
-        if (!job.whatsappPosted) {
-            whatsappSuccess = await sendToWhatsAppChannel(job);
-            await new Promise(resolve => setTimeout(resolve, 1000));
-        }
-
-        // Update job status
-        await Job.updateOne(
-            { _id: job._id },
-            {
-                telegramPosted: telegramSuccess,
-                whatsappPosted: whatsappSuccess,
-                publishedAt: new Date(),
-            }
-        );
-
-        // Log activity
-        await ActivityLog.create({
-            action: 'SOCIAL_POST',
-            entity: 'Job',
-            entityId: job._id,
-            details: `TG: ${telegramSuccess ? '✅' : '❌'} | WA: ${whatsappSuccess ? '✅' : '❌'}`,
-            status: (telegramSuccess || whatsappSuccess) ? 'SUCCESS' : 'FAILED',
-        });
+        await new Promise(r => setTimeout(r, 1000));
     }
-
     return postedCount;
 }
 
-// ============================================
-// REPOST URGENT JOBS (Last Date Reminder)
-// ============================================
-
-export async function repostUrgentJobs(): Promise<number> {
+export async function postJobToSocial(jobId: string): Promise<{ telegram: boolean; error?: string }> {
     await dbConnect();
-
-    const twoDaysFromNow = new Date(Date.now() + 2 * 24 * 60 * 60 * 1000);
-    const yesterday = new Date(Date.now() - 24 * 60 * 60 * 1000);
-
-    const urgentJobs = await Job.find({
-        status: 'PUBLISHED',
-        lastDate: { $gte: new Date(), $lte: twoDaysFromNow },
-        $or: [
-            { lastRepostedAt: { $lt: yesterday } },
-            { lastRepostedAt: { $exists: false } }
-        ]
-    }).limit(5);
-
-    console.log(`⏰ Found ${urgentJobs.length} urgent jobs to remind...`);
-
-    for (const job of urgentJobs) {
-        const reminderPrefix = `⏰ *LAST DATE REMINDER\\!*\n\n`;
-
-        if (TELEGRAM_BOT_TOKEN && TELEGRAM_CHANNEL_ID) {
-            const message = reminderPrefix + formatTelegramMessage(job);
-
-            await fetch(
-                `https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`,
-                {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        chat_id: TELEGRAM_CHANNEL_ID,
-                        text: message,
-                        parse_mode: 'MarkdownV2',
-                    }),
-                }
-            );
-        }
-
-        await Job.updateOne({ _id: job._id }, { lastRepostedAt: new Date() });
-        await new Promise(resolve => setTimeout(resolve, 2000));
-    }
-
-    return urgentJobs.length;
-}
-
-// ============================================
-// MANUAL POST SINGLE JOB
-// ============================================
-
-export async function postJobToSocial(jobId: string): Promise<{ telegram: boolean; whatsapp: boolean }> {
-    await dbConnect();
-
     const job = await Job.findById(jobId);
     if (!job) throw new Error('Job not found');
 
-    const telegramResult = await sendToTelegram(job);
-    const whatsappResult = await sendToWhatsAppChannel(job);
-
-    await Job.updateOne(
-        { _id: jobId },
-        {
-            telegramPosted: telegramResult,
-            whatsappPosted: whatsappResult,
-        }
-    );
-
-    return { telegram: telegramResult, whatsapp: whatsappResult };
+    const res = await sendToTelegram(job);
+    if (res.success) {
+        await Job.updateOne({ _id: jobId }, { telegramPosted: true });
+    }
+    return { telegram: res.success, error: res.error };
 }

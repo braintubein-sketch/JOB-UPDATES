@@ -15,26 +15,23 @@ export async function GET(request: Request) {
 
     try {
         await dbConnect();
+        const jobs = await Job.find({ status: 'PUBLISHED' }).sort({ createdAt: -1 }).limit(3);
 
-        // Find last 5 jobs regardless of their posted status
-        const jobs = await Job.find({ status: 'PUBLISHED' }).sort({ createdAt: -1 }).limit(5);
-
-        if (jobs.length === 0) return NextResponse.json({ msg: 'No jobs in DB' });
+        if (jobs.length === 0) return NextResponse.json({ msg: 'No jobs found' });
 
         const results = [];
         for (const job of jobs) {
-            console.log(`Manually pushing to Telegram: ${job.title}`);
-            const res = await postJobToSocial(job._id.toString());
+            const result = await postJobToSocial(job._id.toString());
             results.push({
                 title: job.title,
-                telegram: res.telegram,
-                whatsapp: res.whatsapp
+                telegram: result.telegram,
+                error: result.error
             });
         }
 
         return NextResponse.json({
             success: true,
-            message: `Force post for ${results.length} jobs triggered. Check Telegram now!`,
+            message: "Telegram attempt complete. Check results below.",
             results
         });
     } catch (error: any) {
