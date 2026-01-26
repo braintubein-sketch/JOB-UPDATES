@@ -57,15 +57,13 @@ export default function RootLayout({
   return (
     <html lang="en" className={inter.variable} suppressHydrationWarning>
       <head>
-        {/* GOOGLE ADSENSE - Replace with your actual Client ID */}
-        {/* 
+        {/* GOOGLE ADSENSE */}
         <Script
           async
-          src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-XXXXXXXXXXXXXXXX"
+          src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2703338145574896"
           crossOrigin="anonymous"
           strategy="afterInteractive"
         />
-        */}
       </head>
       <body className="font-sans antialiased">
         <ThemeProvider>
