@@ -17,9 +17,59 @@ function formatTelegramMessage(job: any): string {
     const jobUrl = `https://jobupdate.site/jobs/${job.slug}`;
     const dateStr = job.lastDate ? new Date(job.lastDate).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' }) : 'Check Notice';
 
-    // HTML format is much cleaner and less likely to fail than Markdown
+    if (job.category === 'Result') {
+        return [
+            `🚨 <b>RESULT OUT</b> 🚨`,
+            ``,
+            `📝 <b>Organization:</b> ${job.organization}`,
+            `📌 <b>Exam Result:</b> ${job.postName || job.title}`,
+            `✅ <b>Status:</b> DECLARED / RELEASED`,
+            `📅 <b>Announced On:</b> ${dateStr}`,
+            ``,
+            `🔗 <b>Check Result / Download List:</b>`,
+            `${jobUrl}`,
+            ``,
+            `#result #career #examresult #governmentjobs #jobupdates`,
+        ].join('\n');
+    }
+
+    if (job.category === 'Admit Card') {
+        return [
+            `🛂 <b>ADMIT CARD RELEASED</b> 🛂`,
+            ``,
+            `📝 <b>Organization:</b> ${job.organization}`,
+            `📌 <b>Exam Name:</b> ${job.postName || job.title}`,
+            `✅ <b>Status:</b> Available for Download`,
+            `📅 <b>Exam Date:</b> ${job.examDate ? new Date(job.examDate).toLocaleDateString('en-GB') : 'See Details'}`,
+            ``,
+            `🔗 <b>Download Link / Full Notice:</b>`,
+            `${jobUrl}`,
+            ``,
+            `#admitcard #hallticket #examupdate #governmentjobs`,
+        ].join('\n');
+    }
+
+    if (job.category === 'IT') {
+        return [
+            `💻 <b>IT JOB ALERT (MNC)</b> 💻`,
+            ``,
+            `🏢 <b>Company:</b> ${job.organization}`,
+            `👨‍💻 <b>Role:</b> ${job.postName || job.title}`,
+            `💰 <b>Salary/Stipend:</b> ${job.salary || 'Best in Industry'}`,
+            `💼 <b>Experience:</b> ${job.experience || 'Freshers'}`,
+            `🎓 <b>Skills:</b> ${job.qualification || 'Developer'}`,
+            `📍 <b>Location:</b> ${job.location || 'India'}`,
+            ``,
+            `🔗 <b>Apply on Official Portal:</b>`,
+            `${jobUrl}`,
+            ``,
+            `#ITJobs #SoftwareJobs #Hiring #MNC #TCS #Infosys #Wipro`,
+        ].join('\n');
+    }
+
+    // Default Govt Job Format
     return [
-        `🚨 <b>NEW JOB ALERT</b> 🚨`,
+        `🚨 <b>NEW GOVT JOB ALERT</b> 🚨`,
         ``,
         `📝 <b>Organization:</b> ${job.organization}`,
         `📌 <b>Post:</b> ${job.postName || job.title}`,
@@ -39,6 +89,33 @@ function formatTelegramMessage(job: any): string {
 
 function formatWhatsAppMessage(job: any): string {
     const jobUrl = `https://jobupdate.site/jobs/${job.slug}`;
+
+    if (job.category === 'Result') {
+        return [
+            `📢 *RESULT OUT*`,
+            ``,
+            `📝 *Organization:* ${job.organization}`,
+            `📌 *Exam Result:* ${job.postName || job.title}`,
+            `✅ *Status:* DECLARED`,
+            ``,
+            `🔗 *Check Result:*`,
+            `${jobUrl}`,
+        ].join('\n');
+    }
+
+    if (job.category === 'Admit Card') {
+        return [
+            `📢 *ADMIT CARD RELEASED*`,
+            ``,
+            `📝 *Organization:* ${job.organization}`,
+            `📌 *Exam:* ${job.postName || job.title}`,
+            `🛂 *Status:* Download Now`,
+            ``,
+            `🔗 *Download Link:*`,
+            `${jobUrl}`,
+        ].join('\n');
+    }
+
     return [
         `📢 *NEW JOB ALERT*`,
         ``,
