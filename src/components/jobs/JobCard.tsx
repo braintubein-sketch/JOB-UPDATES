@@ -64,7 +64,7 @@ export default function JobCard({ job, index = 0, featured = false }: JobCardPro
                 </div>
 
                 <div className="flex flex-col items-end gap-2">
-                    {job.isNew && (
+                    {job.isRecent && (
                         <div className="flex items-center gap-1.5 px-3 py-1 bg-primary text-white text-[10px] font-black uppercase tracking-widest rounded-full shadow-lg shadow-primary/20">
                             <Zap className="w-3 h-3 fill-white" />
                             New

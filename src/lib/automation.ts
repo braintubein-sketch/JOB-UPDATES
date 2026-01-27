@@ -87,13 +87,13 @@ async function updateJobStatuses() {
         const sevenDaysAgo = new Date();
         sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
 
-        // Mark jobs older than 7 days as not new
+        // Mark jobs older than 7 days as not recent
         const result = await Job.updateMany(
-            { isNew: true, postedDate: { $lt: sevenDaysAgo } },
-            { $set: { isNew: false } }
+            { isRecent: true, postedDate: { $lt: sevenDaysAgo } },
+            { $set: { isRecent: false } }
         );
 
-        console.log(`[Cron] Updated ${result.modifiedCount} jobs to not new`);
+        console.log(`[Cron] Updated ${result.modifiedCount} jobs to not recent`);
     } catch (error) {
         console.error('[Cron] Error updating job statuses:', error);
     }

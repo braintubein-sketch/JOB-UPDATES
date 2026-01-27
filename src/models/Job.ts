@@ -30,7 +30,7 @@ export interface IJob extends Document {
     isVerified: boolean;
     isActive: boolean;
     isFeatured: boolean;
-    isNew: boolean;
+    isRecent: boolean;
     views: number;
     clicks: number;
     source: 'manual' | 'automated' | 'api';
@@ -154,7 +154,7 @@ const JobSchema = new Schema<IJob>(
             type: Boolean,
             default: false,
         },
-        isNew: {
+        isRecent: {
             type: Boolean,
             default: true,
         },
@@ -197,10 +197,10 @@ JobSchema.pre('save', function (this: any, next: any) {
         this.slug = `${baseSlug}-${Date.now()}`;
     }
 
-    // Mark as new if posted within 7 days
+    // Mark as recent if posted within 7 days
     const sevenDaysAgo = new Date();
     sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
-    this.isNew = this.postedDate >= sevenDaysAgo;
+    this.isRecent = this.postedDate >= sevenDaysAgo;
 
     next();
 });

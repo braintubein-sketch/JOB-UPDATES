@@ -28,7 +28,7 @@ export interface Job {
     isVerified: boolean;
     isActive: boolean;
     isFeatured: boolean;
-    isNew: boolean;
+    isRecent: boolean;
     views: number;
     clicks: number;
     source: 'manual' | 'automated' | 'api';

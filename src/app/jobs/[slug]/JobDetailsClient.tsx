@@ -121,7 +121,7 @@ export default function JobDetailsClient({ slug }: { slug: string }) {
                             <div>
                                 <div className="flex items-center gap-2 mb-3">
                                     <span className="text-sm font-black text-primary tracking-widest uppercase">{job.company}</span>
-                                    {job.isNew && (
+                                    {job.isRecent && (
                                         <div className="px-2 py-0.5 bg-primary text-white text-[10px] font-black uppercase rounded-full">NEW</div>
                                     )}
                                 </div>
