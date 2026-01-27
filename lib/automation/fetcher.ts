@@ -17,6 +17,7 @@ const SOURCES = [
     { url: 'https://timesofindia.indiatimes.com/rssfeeds/913168846.cms', name: 'TOI Jobs Feed', defaultCategory: 'Private' },
     { url: 'https://www.financialexpress.com/jobs/feed/', name: 'Financial Express Careers', defaultCategory: 'Private' },
     { url: 'https://www.indiatvnews.com/education/rss', name: 'IndiaTV Education', defaultCategory: 'Govt' },
+    { url: 'https://www.apna.co/blog/feed/', name: 'Apna Jobs Blog', defaultCategory: 'Private' },
 ];
 
 /**
@@ -48,7 +49,7 @@ async function extractOfficialLink(newsUrl: string): Promise<string> {
             'timesofindia', 'indiatimes', 'hindustantimes', 'jagranjosh', 'careerindia',
             'indiatoday', 'shiksha.com', 'collegedunia.com', 'sarkariresult', 'freejobalert',
             'fresherslive', 'ambitionbox', 'glassdoor', 'naukri.com', 'monsterindia',
-            'facebook.com', 'twitter.com', 't.me', 'google.com', 'whatsapp.com',
+            'indiatvnews', 'facebook.com', 'twitter.com', 't.me', 'google.com', 'whatsapp.com',
             'youtube.com', 'linkedin.com', 'instagram.com', 'entrancezone', 'aglasem',
             'employmentnews', 'india.com', 'moneycontrol', 'ndtv'
         ];
