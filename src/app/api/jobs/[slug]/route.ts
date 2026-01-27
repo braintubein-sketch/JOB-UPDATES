@@ -336,7 +336,7 @@ export async function POST(
                     );
                 }
 
-                const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://techhirehub.com';
+                const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://jobupdate.site';
                 const messageId = await postJobToTelegram(job.toObject() as any, siteUrl);
 
                 if (messageId) {
