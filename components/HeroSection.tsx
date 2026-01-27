@@ -28,13 +28,8 @@ export default function HeroSection() {
         <section className="bg-white dark:bg-slate-950 border-b border-slate-100 dark:border-slate-900 py-16 lg:py-20">
             <div className="container-main text-center">
 
-                {/* Badge */}
-                <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 text-xs font-bold uppercase tracking-wider mb-6">
-                    <TrendingUp size={14} />
-                    Latest Verification Updates 2026
-                </div>
-
                 {/* Headline */}
+
                 <h1 className="text-3xl md:text-5xl font-bold text-slate-900 dark:text-white mb-6 tracking-tight">
                     Find Government & Private <br className="hidden md:block" />
                     <span className="text-blue-600">Jobs in India</span>
