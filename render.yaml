@@ -20,5 +20,3 @@ services:
         value: https://job-updates-portal.onrender.com
       - key: NEXT_PUBLIC_SITE_NAME
         value: JOB UPDATES
-      - key: NODE_ENV
-        value: production
