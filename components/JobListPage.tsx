@@ -1,47 +1,111 @@
-import dbConnect from '@/lib/mongodb/dbConnect';
-import { Job } from '@/models/Job';
-import JobCard from '@/components/JobCard';
+import { mockJobs } from '@/lib/mock-data';
+import JobListItem from '@/components/JobListItem';
 
 export const dynamic = 'force-dynamic';
 
 interface JobListPageProps {
     title: string;
-    description: string;
-    category?: string;
-    type?: string;
+    description?: string;
+    category?: string; // 'Govt', 'Private', 'Bank', etc. to filter
 }
 
-export default async function JobListPage({ title, description, category, type }: JobListPageProps) {
-    let jobs: any[] = [];
+export default function JobListPage({ title, description, category }: JobListPageProps) {
+    // Filter mock jobs
+    let jobs = mockJobs;
+    if (category) {
+        jobs = mockJobs.filter(job => job.category === category);
+    }
 
-    try {
-        await dbConnect();
-        const query: any = { status: 'APPROVED' };
-        if (category) query.category = category;
-        jobs = await Job.find(query).sort({ createdAt: -1 }).limit(50).lean();
-    } catch (error) {
-        console.error('Job list page error:', error);
+    // Also support 'IT' mapped to 'Private' if needed, or stick to exact match
+    if (category === 'IT') {
+        jobs = mockJobs.filter(job => job.category === 'Private' || job.title.includes('Software') || job.title.includes('Engineer'));
     }
 
     return (
-        <div className="section-premium">
-            <div className="container-premium">
-                <div className="mb-12">
-                    <h1 className="text-4xl font-bold mb-2">{title}</h1>
-                    <p className="text-slate-500 text-lg">{description}</p>
-                </div>
-
-                <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-                    {jobs.map((job: any) => (
-                        <JobCard key={job._id.toString()} job={{ ...job, id: job._id.toString() }} />
-                    ))}
-                    {jobs.length === 0 && (
-                        <div className="col-span-3 card-premium py-16 text-center border-dashed border-2">
-                            <p className="text-slate-500">No listings available. Check back soon!</p>
-                        </div>
+        <div className="min-h-screen bg-slate-50 dark:bg-slate-950 pb-20">
+            {/* Header */}
+            <div className="bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 py-12">
+                <div className="container-main text-center">
+                    <h1 className="text-3xl md:text-4xl font-bold text-slate-900 dark:text-white mb-3">
+                        {title}
+                    </h1>
+                    {description && (
+                        <p className="text-slate-500 dark:text-slate-400 max-w-2xl mx-auto text-lg">
+                            {description}
+                        </p>
                     )}
+                </div>
+            </div>
+
+            {/* List Content */}
+            <div className="container-main py-10">
+                <div className="grid grid-cols-1 lg:grid-cols-12 gap-10">
+
+                    {/* Main List */}
+                    <div className="lg:col-span-8">
+                        <div className="list-item-container shadow-sm">
+                            {jobs.map((job: any) => (
+                                <JobListItem key={job.id} job={job} />
+                            ))}
+                            {jobs.length === 0 && (
+                                <div className="p-12 text-center text-slate-500">
+                                    No jobs found in this category.
+                                </div>
+                            )}
+                        </div>
+
+                        {/* Pagination Placeholder */}
+                        {jobs.length > 0 && (
+                            <div className="mt-8 flex justify-center gap-2">
+                                <button className="btn-secondary btn-sm" disabled>Previous</button>
+                                <button className="btn-primary btn-sm">1</button>
+                                <button className="btn-secondary btn-sm">2</button>
+                                <button className="btn-secondary btn-sm">3</button>
+                                <button className="btn-secondary btn-sm">Next</button>
+                            </div>
+                        )}
+                    </div>
+
+                    {/* Sidebar Filters (Mock Visual) */}
+                    <div className="lg:col-span-4 space-y-6">
+                        <div className="card sticky top-24">
+                            <h3 className="font-bold mb-4 text-slate-900 dark:text-white">Filter Jobs</h3>
+
+                            <div className="space-y-4">
+                                <div>
+                                    <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">Location</label>
+                                    <select className="select w-full text-sm">
+                                        <option>All India</option>
+                                        <option>Delhi</option>
+                                        <option>Mumbai</option>
+                                        <option>Bangalore</option>
+                                    </select>
+                                </div>
+
+                                <div>
+                                    <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">Qualification</label>
+                                    <select className="select w-full text-sm">
+                                        <option>All</option>
+                                        <option>10th Pass</option>
+                                        <option>12th Pass</option>
+                                        <option>Graduate</option>
+                                        <option>Post Graduate</option>
+                                    </select>
+                                </div>
+
+                                <button className="btn-primary w-full mt-2">Apply Filters</button>
+                            </div>
+                        </div>
+
+                        {/* Ad Slot */}
+                        <div className="w-full h-[300px] bg-slate-100 dark:bg-slate-900 rounded-lg border-2 border-dashed border-slate-300 dark:border-slate-800 flex items-center justify-center text-slate-400">
+                            Ad Space
+                        </div>
+                    </div>
+
                 </div>
             </div>
         </div>
     );
 }
+

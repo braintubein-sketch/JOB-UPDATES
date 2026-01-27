@@ -1,79 +1,53 @@
 'use client';
 
 import Link from 'next/link';
-import { Briefcase, Mail, MapPin, Phone, Twitter, Linkedin, Youtube, Send, ExternalLink } from 'lucide-react';
+import { Briefcase, Mail, MapPin, Phone, Send, ExternalLink, ShieldCheck, FileText, Info } from 'lucide-react';
 
 const Footer = () => {
     const currentYear = new Date().getFullYear();
 
-    const quickLinks = [
-        { name: 'Latest Jobs', href: '/latest-jobs' },
-        { name: 'Government Jobs', href: '/govt-jobs' },
-        { name: 'Private Jobs', href: '/private-jobs' },
-        { name: 'Results', href: '/results' },
-        { name: 'Career Blog', href: '/blog' },
-    ];
-
-    const companyLinks = [
-        { name: 'About Us', href: '/about' },
-        { name: 'Contact Us', href: '/contact' },
-        { name: 'Privacy Policy', href: '/privacy' },
-        { name: 'Terms of Service', href: '/disclaimer' },
-        { name: 'Official Sources', href: '/sources' },
-    ];
-
-    const socialLinks = [
-        { icon: Twitter, href: '#', label: 'Twitter' },
-        { icon: Linkedin, href: '#', label: 'LinkedIn' },
-        { icon: Youtube, href: '#', label: 'YouTube' },
-        { icon: Send, href: 'https://t.me/jobupdatesite', label: 'Telegram' },
-    ];
-
     return (
-        <footer className="bg-slate-900 text-white pt-16 pb-8 hidden lg:block">
+        <footer className="bg-white dark:bg-slate-900 border-t border-slate-200 dark:border-slate-800 pt-16 pb-8">
             <div className="container-main">
-                {/* Main Footer */}
-                <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-12 mb-12">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 mb-12">
 
-                    {/* Brand */}
-                    <div>
-                        <Link href="/" className="flex items-center gap-3 mb-6">
-                            <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-blue-700 rounded-xl flex items-center justify-center">
-                                <Briefcase size={24} />
+                    {/* Brand & Mission */}
+                    <div className="space-y-4">
+                        <Link href="/" className="flex items-center gap-2">
+                            <div className="w-8 h-8 bg-blue-600 rounded flex items-center justify-center text-white font-bold">
+                                J
                             </div>
-                            <div>
-                                <span className="text-xl font-bold">JobUpdates</span>
-                                <span className="block text-xs text-slate-400">Official Portal</span>
-                            </div>
+                            <span className="text-xl font-bold text-slate-900 dark:text-white">
+                                Job<span className="text-blue-600">Updates</span>
+                            </span>
                         </Link>
-                        <p className="text-slate-400 text-sm leading-relaxed mb-6">
-                            India's trusted platform for verified government and private job notifications. Updated 24/7 from official sources.
+                        <p className="text-slate-500 dark:text-slate-400 text-sm leading-relaxed">
+                            India's leading platform for verified job alerts. We provide authentic information collected from official government gazettes and corporate career portals.
                         </p>
-                        <div className="flex gap-3">
-                            {socialLinks.map(({ icon: Icon, href, label }) => (
-                                <a
-                                    key={label}
-                                    href={href}
-                                    aria-label={label}
-                                    className="w-10 h-10 rounded-xl bg-slate-800 hover:bg-blue-600 flex items-center justify-center transition-colors"
-                                >
-                                    <Icon size={18} />
-                                </a>
-                            ))}
+                        <div className="flex gap-4">
+                            <a href="https://t.me/jobupdatesite" className="text-blue-600 hover:text-blue-700 transition-colors">
+                                <Send size={20} />
+                            </a>
+                            <a href="#" className="text-slate-400 hover:text-blue-600 transition-colors">
+                                <ShieldCheck size={20} />
+                            </a>
                         </div>
                     </div>
 
-                    {/* Quick Links */}
+                    {/* Career Links */}
                     <div>
-                        <h4 className="font-semibold text-lg mb-6">Quick Links</h4>
+                        <h4 className="font-bold text-slate-900 dark:text-white mb-6 uppercase text-xs tracking-widest">Job Categories</h4>
                         <ul className="space-y-3">
-                            {quickLinks.map((link) => (
+                            {[
+                                { name: 'Latest Jobs', href: '/latest-jobs' },
+                                { name: 'Govt Jobs', href: '/govt-jobs' },
+                                { name: 'Private Jobs', href: '/private-jobs' },
+                                { name: 'Results', href: '/results' },
+                                { name: 'Admit Cards', href: '/admit-cards' },
+                            ].map((link) => (
                                 <li key={link.name}>
-                                    <Link
-                                        href={link.href}
-                                        className="text-slate-400 hover:text-white text-sm transition-colors flex items-center gap-2"
-                                    >
-                                        <ExternalLink size={14} />
+                                    <Link href={link.href} className="text-slate-500 dark:text-slate-400 hover:text-blue-600 text-sm flex items-center gap-2 transition-colors">
+                                        <ChevronRight size={12} />
                                         {link.name}
                                     </Link>
                                 </li>
@@ -81,16 +55,19 @@ const Footer = () => {
                         </ul>
                     </div>
 
-                    {/* Company */}
+                    {/* Resources */}
                     <div>
-                        <h4 className="font-semibold text-lg mb-6">Company</h4>
+                        <h4 className="font-bold text-slate-900 dark:text-white mb-6 uppercase text-xs tracking-widest">Resources</h4>
                         <ul className="space-y-3">
-                            {companyLinks.map((link) => (
+                            {[
+                                { name: 'About Us', href: '/about' },
+                                { name: 'Contact Info', href: '/contact' },
+                                { name: 'Privacy Policy', href: '/privacy' },
+                                { name: 'Terms & Disclaimer', href: '/disclaimer' },
+                                { name: 'Sitemap', href: '/sitemap.xml' },
+                            ].map((link) => (
                                 <li key={link.name}>
-                                    <Link
-                                        href={link.href}
-                                        className="text-slate-400 hover:text-white text-sm transition-colors"
-                                    >
+                                    <Link href={link.href} className="text-slate-500 dark:text-slate-400 hover:text-blue-600 text-sm transition-colors">
                                         {link.name}
                                     </Link>
                                 </li>
@@ -98,50 +75,39 @@ const Footer = () => {
                         </ul>
                     </div>
 
-                    {/* Contact */}
+                    {/* Contact Info */}
                     <div>
-                        <h4 className="font-semibold text-lg mb-6">Contact Us</h4>
+                        <h4 className="font-bold text-slate-900 dark:text-white mb-6 uppercase text-xs tracking-widest">Support</h4>
                         <div className="space-y-4 text-sm">
-                            <div className="flex items-start gap-3">
-                                <MapPin className="text-blue-500 shrink-0 mt-0.5" size={18} />
-                                <span className="text-slate-400">
-                                    Hyderabad, Telangana<br />India - 500033
-                                </span>
+                            <div className="flex items-start gap-3 text-slate-500 dark:text-slate-400">
+                                <Mail className="text-blue-600 shrink-0" size={18} />
+                                <span>support@jobupdates.site</span>
                             </div>
-                            <div className="flex items-center gap-3">
-                                <Mail className="text-blue-500" size={18} />
-                                <span className="text-slate-400">jobupdates.site@gmail.com</span>
-                            </div>
-                            <div className="flex items-center gap-3">
-                                <Phone className="text-blue-500" size={18} />
-                                <span className="text-slate-400">+91 88846 24741</span>
+                            <div className="flex items-start gap-3 text-slate-500 dark:text-slate-400">
+                                <Info className="text-blue-600 shrink-0" size={18} />
+                                <span>Verified updates served 24/7 across India.</span>
                             </div>
                         </div>
                     </div>
                 </div>
 
-                {/* Divider */}
-                <div className="border-t border-slate-800 pt-8">
-                    <div className="flex flex-col md:flex-row justify-between items-center gap-4">
-                        <p className="text-slate-500 text-sm">
-                            © {currentYear} JobUpdates. All rights reserved. Built with ❤️ for Indian job seekers.
-                        </p>
-                        <div className="flex gap-6 text-sm">
-                            <Link href="/sitemap.xml" className="text-slate-500 hover:text-white transition-colors">
-                                Sitemap
-                            </Link>
-                            <Link href="/privacy" className="text-slate-500 hover:text-white transition-colors">
-                                Privacy
-                            </Link>
-                            <Link href="/disclaimer" className="text-slate-500 hover:text-white transition-colors">
-                                Terms
-                            </Link>
-                        </div>
+                {/* Bottom Bar */}
+                <div className="border-t border-slate-100 dark:border-slate-800 pt-8 flex flex-col md:flex-row justify-between items-center gap-4">
+                    <p className="text-slate-400 text-xs text-center md:text-left">
+                        © {currentYear} JobUpdates. The information provided here is for educational purposes. Please verify with official notifications.
+                    </p>
+                    <div className="flex gap-6">
+                        <span className="text-[10px] font-bold text-slate-300 dark:text-slate-600 uppercase">Made with ❤️ for aspirants</span>
                     </div>
                 </div>
             </div>
         </footer>
     );
 };
+
+// Internal minimal icon for footer
+const ChevronRight = ({ size }: { size: number }) => (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m9 18 6-6-6-6" /></svg>
+);
 
 export default Footer;

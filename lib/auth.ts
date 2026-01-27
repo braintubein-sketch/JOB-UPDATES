@@ -1,6 +1,5 @@
 import CredentialsProvider from 'next-auth/providers/credentials';
-import bcrypt from 'bcryptjs';
-import dbConnect from './mongodb/dbConnect';
+
 // In a real app, we'd have a User model. For this rebuild, we'll use env variables for admin.
 // const User = ...
 

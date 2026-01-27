@@ -1,218 +1,181 @@
-import dbConnect from '@/lib/mongodb/dbConnect';
-import { Job } from '@/models/Job';
-import JobCard from '@/components/JobCard';
+import { mockJobs, mockResults, mockAdmitCards } from '@/lib/mock-data';
+import JobListItem from '@/components/JobListItem';
 import HeroSection from '@/components/HeroSection';
 import Link from 'next/link';
-import { ArrowRight, Briefcase, Building2, Award, FileText, Smartphone, TrendingUp } from 'lucide-react';
+import { ArrowRight, Briefcase, Building2, Award, FileText, Smartphone, TrendingUp, ChevronRight, Calendar } from 'lucide-react';
 
 export const dynamic = 'force-dynamic';
 
 export default async function HomePage() {
-  let featuredJobs: any[] = [];
-  let govtJobs: any[] = [];
-  let itJobs: any[] = [];
-  let latestResults: any[] = [];
-
-  try {
-    await dbConnect();
-    featuredJobs = await Job.find({ status: 'PUBLISHED' }).sort({ createdAt: -1 }).limit(6).lean();
-    govtJobs = await Job.find({ status: 'PUBLISHED', category: 'Govt' }).sort({ createdAt: -1 }).limit(4).lean();
-    itJobs = await Job.find({ status: 'PUBLISHED', category: 'IT' }).sort({ createdAt: -1 }).limit(4).lean();
-    latestResults = await Job.find({ status: 'PUBLISHED', category: 'Result' }).sort({ createdAt: -1 }).limit(3).lean();
-  } catch (error) {
-    console.error('Home page error:', error);
-  }
+  // Use mock data directly as requested for the frontend rebuild
+  const featuredJobs = mockJobs;
+  const govtJobs = mockJobs.filter(j => j.category === 'Govt');
+  const privateJobs = mockJobs.filter(j => j.category === 'Private');
+  const latestResults = mockResults;
+  const admitCards = mockAdmitCards;
 
   return (
-    <div className="pb-20 lg:pb-0">
+    <div className="pb-20 lg:pb-0 bg-white dark:bg-slate-950">
       {/* Hero Section */}
       <HeroSection />
 
-      {/* Featured Jobs Section */}
+      {/* Latest Job Updates Section */}
       <section className="section">
         <div className="container-main">
-          <div className="flex items-center justify-between mb-8">
+          <div className="flex items-center justify-between mb-6 border-b border-slate-200 dark:border-slate-800 pb-4">
             <div>
               <h2 className="flex items-center gap-2 text-slate-900 dark:text-white">
-                <TrendingUp className="text-blue-600" size={28} />
+                <TrendingUp className="text-blue-600" size={24} />
                 Latest Job Updates
               </h2>
-              <p className="text-slate-500 dark:text-slate-400 mt-1">Fresh opportunities updated hourly</p>
             </div>
-            <Link href="/latest-jobs" className="btn-secondary btn-sm hidden md:inline-flex items-center gap-2">
-              View All <ArrowRight size={16} />
+            <Link href="/latest-jobs" className="btn-secondary btn-sm hidden md:inline-flex items-center gap-2 text-xs">
+              View All <ArrowRight size={14} />
             </Link>
           </div>
 
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {featuredJobs.map((job: any, index: number) => (
-              <div key={job._id.toString()} className={`animate-fade-in-up stagger-${index + 1}`}>
-                <JobCard job={{ ...job, id: job._id.toString() }} />
-              </div>
+          <div className="list-item-container">
+            {featuredJobs.map((job: any) => (
+              <JobListItem key={job.id} job={job} />
             ))}
             {featuredJobs.length === 0 && (
-              <div className="col-span-full text-center py-16">
-                <Briefcase className="mx-auto text-slate-300 dark:text-slate-700 mb-4" size={48} />
-                <p className="text-slate-500 dark:text-slate-400">No jobs available. Check back soon!</p>
+              <div className="p-8 text-center">
+                <p className="text-slate-500">No updates available at the moment.</p>
               </div>
             )}
           </div>
 
-          <div className="mt-8 text-center md:hidden">
-            <Link href="/latest-jobs" className="btn-secondary inline-flex items-center gap-2">
-              View All Jobs <ArrowRight size={16} />
+          <div className="mt-6 text-center md:hidden">
+            <Link href="/latest-jobs" className="btn-secondary w-full justify-center">
+              View All Updates
             </Link>
           </div>
         </div>
       </section>
 
-      {/* Government Jobs Section */}
+      {/* Govt & Private Jobs Split */}
       <section className="section-gray">
         <div className="container-main">
-          <div className="flex items-center justify-between mb-8">
+          <div className="grid lg:grid-cols-2 gap-10">
+            {/* Govt Jobs */}
             <div>
-              <h2 className="flex items-center gap-2 text-slate-900 dark:text-white">
-                <Building2 className="text-blue-600" size={28} />
-                Government Jobs
-              </h2>
-              <p className="text-slate-500 dark:text-slate-400 mt-1">Central & State recruitment notifications</p>
-            </div>
-            <Link href="/govt-jobs" className="btn-secondary btn-sm hidden md:inline-flex items-center gap-2">
-              View All <ArrowRight size={16} />
-            </Link>
-          </div>
-
-          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
-            {govtJobs.map((job: any) => (
-              <JobCard key={job._id.toString()} job={{ ...job, id: job._id.toString() }} />
-            ))}
-            {govtJobs.length === 0 && (
-              <div className="col-span-full text-center py-12">
-                <p className="text-slate-500 dark:text-slate-400">No government jobs available.</p>
-              </div>
-            )}
-          </div>
-        </div>
-      </section>
-
-      {/* IT Jobs Section */}
-      <section className="section">
-        <div className="container-main">
-          <div className="flex items-center justify-between mb-8">
-            <div>
-              <h2 className="flex items-center gap-2 text-slate-900 dark:text-white">
-                <Smartphone className="text-blue-600" size={28} />
-                Freshers & IT Jobs
-              </h2>
-              <p className="text-slate-500 dark:text-slate-400 mt-1">Top MNCs, Startups and Software Engineer roles</p>
-            </div>
-            <Link href="/it-jobs" className="btn-secondary btn-sm hidden md:inline-flex items-center gap-2">
-              View All <ArrowRight size={16} />
-            </Link>
-          </div>
-
-          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
-            {itJobs.map((job: any) => (
-              <JobCard key={job._id.toString()} job={{ ...job, id: job._id.toString() }} />
-            ))}
-            {itJobs.length === 0 && (
-              <div className="col-span-full text-center py-12">
-                <p className="text-slate-500 dark:text-slate-400">No IT jobs available.</p>
-              </div>
-            )}
-          </div>
-        </div>
-      </section>
-
-      {/* Results & Admit Cards */}
-      <section className="section">
-        <div className="container-main">
-          <div className="grid lg:grid-cols-2 gap-12">
-            {/* Results */}
-            <div>
-              <div className="flex items-center justify-between mb-6">
-                <h3 className="flex items-center gap-2 text-xl font-bold text-slate-900 dark:text-white">
-                  <Award className="text-orange-500" size={24} />
-                  Latest Results
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="flex items-center gap-2 text-slate-900 dark:text-white">
+                  <Building2 className="text-blue-600" size={20} />
+                  Govt Jobs
                 </h3>
-                <Link href="/results" className="text-sm font-medium text-blue-600 hover:underline">
-                  View All →
-                </Link>
+                <Link href="/govt-jobs" className="text-sm font-bold text-blue-600 hover:underline">View All</Link>
               </div>
-              <div className="space-y-4">
-                {latestResults.length > 0 ? latestResults.map((result: any) => (
-                  <Link
-                    key={result._id.toString()}
-                    href={`/jobs/${result.slug}`}
-                    className="card-hover p-4 flex items-center gap-4 group"
-                  >
-                    <div className="w-12 h-12 rounded-xl bg-orange-100 dark:bg-orange-900/30 flex items-center justify-center text-orange-600 dark:text-orange-400 shrink-0">
-                      <Award size={24} />
-                    </div>
-                    <div className="min-w-0">
-                      <h4 className="font-semibold text-slate-900 dark:text-white truncate group-hover:text-blue-600 transition-colors">
-                        {result.title}
-                      </h4>
-                      <p className="text-sm text-slate-500 dark:text-slate-400">{result.organization}</p>
-                    </div>
-                  </Link>
-                )) : (
-                  <p className="text-slate-500 dark:text-slate-400 py-8 text-center">No results available.</p>
+              <div className="list-item-container">
+                {govtJobs.slice(0, 3).map((job: any) => (
+                  <JobListItem key={job.id} job={job} />
+                ))}
+              </div>
+            </div>
+
+            {/* Private Jobs */}
+            <div>
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="flex items-center gap-2 text-slate-900 dark:text-white">
+                  <Smartphone className="text-green-600" size={20} />
+                  Private Jobs
+                </h3>
+                <Link href="/private-jobs" className="text-sm font-bold text-blue-600 hover:underline">View All</Link>
+              </div>
+              <div className="list-item-container">
+                {privateJobs.slice(0, 3).map((job: any) => (
+                  <JobListItem key={job.id} job={job} />
+                ))}
+                {privateJobs.length === 0 && (
+                  <div className="p-8 text-center border border-slate-200 rounded-lg bg-white dark:bg-slate-900">
+                    <p className="text-slate-500">No private jobs listed yet.</p>
+                  </div>
                 )}
               </div>
             </div>
+          </div>
+        </div>
+      </section>
 
-            {/* App Download Banner */}
-            <div>
-              <div className="card bg-gradient-to-br from-blue-600 to-blue-800 text-white p-8 rounded-3xl">
-                <div className="flex items-start gap-4">
-                  <div className="w-16 h-16 bg-white/20 rounded-2xl flex items-center justify-center shrink-0">
-                    <Smartphone size={32} />
-                  </div>
-                  <div>
-                    <h3 className="text-2xl font-bold mb-2">Get Instant Alerts</h3>
-                    <p className="text-blue-100 mb-6">
-                      Join our Telegram channel for real-time job notifications. Never miss an opportunity!
-                    </p>
-                    <a
-                      href="https://t.me/jobupdatesite"
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="inline-flex items-center gap-2 px-6 py-3 bg-white text-blue-700 font-semibold rounded-xl hover:bg-blue-50 transition-colors"
-                    >
-                      Join Telegram Channel
-                      <ArrowRight size={18} />
-                    </a>
-                  </div>
-                </div>
+      {/* Results & Admit Cards Split */}
+      <section className="section">
+        <div className="container-main">
+          <div className="grid md:grid-cols-2 gap-10">
+            {/* Results */}
+            <div className="card border-l-4 border-l-orange-500">
+              <div className="flex items-center justify-between mb-6 pb-4 border-b border-slate-100 dark:border-slate-800">
+                <h3 className="flex items-center gap-2 text-slate-900 dark:text-white">
+                  <Award className="text-orange-500" size={24} />
+                  Latest Results
+                </h3>
+                <Link href="/results" className="btn-sm btn-outline text-xs">View All</Link>
               </div>
+              <ul className="space-y-3">
+                {latestResults.map((result) => (
+                  <li key={result.id}>
+                    <Link href={`/jobs/${result.slug}`} className="block group">
+                      <span className="text-sm font-bold text-slate-800 dark:text-slate-200 group-hover:text-blue-600 transition-colors block mb-1">
+                        {result.title}
+                      </span>
+                      <span className="text-xs text-slate-500 flex items-center gap-1">
+                        <Calendar size={12} /> Declared on {result.date}
+                      </span>
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </div>
+
+            {/* Admit Cards */}
+            <div className="card border-l-4 border-l-red-500">
+              <div className="flex items-center justify-between mb-6 pb-4 border-b border-slate-100 dark:border-slate-800">
+                <h3 className="flex items-center gap-2 text-slate-900 dark:text-white">
+                  <FileText className="text-red-500" size={24} />
+                  Admit Cards
+                </h3>
+                <Link href="/admit-cards" className="btn-sm btn-outline text-xs">View All</Link>
+              </div>
+              <ul className="space-y-3">
+                {admitCards.map((card) => (
+                  <li key={card.id}>
+                    <Link href={`/jobs/${card.slug}`} className="block group">
+                      <span className="text-sm font-bold text-slate-800 dark:text-slate-200 group-hover:text-blue-600 transition-colors block mb-1">
+                        {card.title}
+                      </span>
+                      <span className="text-xs text-slate-500 flex items-center gap-1">
+                        <Calendar size={12} /> Released on {card.date}
+                      </span>
+                    </Link>
+                  </li>
+                ))}
+              </ul>
             </div>
           </div>
         </div>
       </section>
 
-      {/* Quick Links */}
+      {/* Useful Links / Categories */}
       <section className="section-gray">
         <div className="container-main">
-          <h2 className="text-center mb-10 text-slate-900 dark:text-white">Browse by Category</h2>
+          <h2 className="mb-8 text-center">Explore by Category</h2>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
             {[
-              { name: 'Railway Jobs', href: '/latest-jobs?q=railway', icon: '🚂' },
+              { name: 'Railway Recruitment', href: '/latest-jobs?q=railway', icon: '🚂' },
               { name: 'Bank Jobs', href: '/latest-jobs?q=bank', icon: '🏦' },
-              { name: 'Police Jobs', href: '/latest-jobs?q=police', icon: '👮' },
-              { name: 'Teaching', href: '/latest-jobs?q=teacher', icon: '👨‍🏫' },
-              { name: 'Defence', href: '/latest-jobs?q=defence', icon: '🎖️' },
-              { name: 'SSC', href: '/latest-jobs?q=ssc', icon: '📋' },
-              { name: 'UPSC', href: '/latest-jobs?q=upsc', icon: '🏛️' },
-              { name: 'IT Jobs', href: '/latest-jobs?q=it', icon: '💻' },
+              { name: 'Police / Defence', href: '/latest-jobs?q=police', icon: '👮' },
+              { name: 'Teaching Jobs', href: '/latest-jobs?q=teacher', icon: '👨‍🏫' },
+              { name: 'SSC Exams', href: '/latest-jobs?q=ssc', icon: '📋' },
+              { name: 'UPSC / Civil Services', href: '/latest-jobs?q=upsc', icon: '🏛️' },
+              { name: 'Software / IT', href: '/latest-jobs?q=it', icon: '💻' },
+              { name: 'Medical Jobs', href: '/latest-jobs?q=medical', icon: '⚕️' },
             ].map((cat) => (
               <Link
                 key={cat.name}
                 href={cat.href}
-                className="card-hover text-center py-6"
+                className="card hover:border-blue-500 hover:shadow-md transition-all text-center py-6 flex flex-col items-center gap-2 group"
               >
-                <span className="text-3xl mb-3 block">{cat.icon}</span>
-                <span className="font-medium text-slate-700 dark:text-slate-300">{cat.name}</span>
+                <span className="text-3xl mb-2 group-hover:scale-110 transition-transform">{cat.icon}</span>
+                <span className="font-bold text-slate-700 dark:text-slate-300 group-hover:text-blue-600">{cat.name}</span>
               </Link>
             ))}
           </div>

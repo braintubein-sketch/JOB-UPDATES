@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Menu, X, Search, User, Bell, Briefcase, Building2, Award, FileText, BookOpen, Smartphone } from 'lucide-react';
+import { Menu, X, Search, Briefcase, Building2, User } from 'lucide-react';
 import ThemeToggle from './ThemeToggle';
 
 const Navbar = () => {
@@ -11,11 +11,12 @@ const Navbar = () => {
     const [isOpen, setIsOpen] = useState(false);
 
     const mainNav = [
-        { name: 'Jobs', href: '/latest-jobs', icon: Briefcase },
-        { name: 'Govt Jobs', href: '/govt-jobs', icon: Building2 },
-        { name: 'IT Jobs', href: '/it-jobs', icon: Smartphone },
-        { name: 'Results', href: '/results', icon: Award },
-        { name: 'Admit Cards', href: '/admit-cards', icon: FileText },
+        { name: 'Latest Jobs', href: '/latest-jobs' },
+        { name: 'Govt Jobs', href: '/govt-jobs' },
+        { name: 'Private Jobs', href: '/private-jobs' },
+        { name: 'Results', href: '/results' },
+        { name: 'Admit Card', href: '/admit-cards' },
+        { name: 'Contact', href: '/contact' },
     ];
 
     return (
@@ -25,16 +26,13 @@ const Navbar = () => {
                     <div className="flex items-center justify-between h-16">
 
                         {/* Logo */}
-                        <Link href="/" className="flex items-center gap-2.5">
-                            <div className="w-10 h-10 bg-gradient-to-br from-blue-600 to-blue-700 rounded-xl flex items-center justify-center shadow-lg shadow-blue-600/20">
-                                <Briefcase className="text-white" size={20} />
+                        <Link href="/" className="flex items-center gap-2">
+                            <div className="w-8 h-8 bg-blue-600 rounded flex items-center justify-center text-white">
+                                <Briefcase size={18} strokeWidth={2.5} />
                             </div>
-                            <div className="hidden sm:flex flex-col">
-                                <span className="text-xl font-bold text-slate-900 dark:text-white leading-none">
-                                    Job<span className="text-blue-600">Updates</span>
-                                </span>
-                                <span className="text-[10px] font-medium text-slate-400 uppercase tracking-wider">Official Portal</span>
-                            </div>
+                            <span className="text-xl font-bold text-slate-900 dark:text-white tracking-tight">
+                                Job<span className="text-blue-600">Updates</span>
+                            </span>
                         </Link>
 
                         {/* Desktop Navigation */}
@@ -43,9 +41,8 @@ const Navbar = () => {
                                 <Link
                                     key={item.name}
                                     href={item.href}
-                                    className={`nav-link flex items-center gap-1.5 ${pathname === item.href ? 'text-blue-600 dark:text-blue-400 font-bold' : ''}`}
+                                    className={`nav-link ${pathname === item.href ? 'nav-link-active' : ''}`}
                                 >
-                                    <item.icon size={16} />
                                     {item.name}
                                 </Link>
                             ))}
@@ -54,18 +51,7 @@ const Navbar = () => {
                         {/* Desktop Right Actions */}
                         <div className="hidden lg:flex items-center gap-3">
                             <ThemeToggle />
-
-                            <button className="w-10 h-10 rounded-full bg-slate-100 flex items-center justify-center text-slate-600 hover:bg-slate-200 transition-colors dark:bg-slate-800 dark:text-slate-400 dark:hover:bg-slate-700">
-                                <Bell size={18} />
-                            </button>
-
-                            <Link href="/login" className="btn-secondary px-4 py-2 text-sm">
-                                Login
-                            </Link>
-
-                            <Link href="/register" className="btn-primary px-4 py-2 text-sm">
-                                Register
-                            </Link>
+                            {/* Optional: Add search icon or login if needed, keeping it simple for now */}
                         </div>
 
                         {/* Mobile Right Actions */}
@@ -73,69 +59,55 @@ const Navbar = () => {
                             <ThemeToggle />
                             <button
                                 onClick={() => setIsOpen(!isOpen)}
-                                className="w-10 h-10 rounded-lg bg-slate-100 flex items-center justify-center text-slate-700 dark:bg-slate-800 dark:text-slate-300"
+                                className="w-10 h-10 flex items-center justify-center text-slate-700 dark:text-slate-200"
+                                aria-label="Toggle Menu"
                             >
-                                {isOpen ? <X size={22} /> : <Menu size={22} />}
+                                {isOpen ? <X size={24} /> : <Menu size={24} />}
                             </button>
                         </div>
                     </div>
                 </div>
 
-                {/* Mobile Menu (Top Dropdown) */}
+                {/* Mobile Menu Dropdown */}
                 {isOpen && (
-                    <div className="lg:hidden border-t border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-950 animate-fade-in-up">
-                        <div className="container-main py-4">
-                            <nav className="flex flex-col gap-1">
-                                {mainNav.map((item) => (
-                                    <Link
-                                        key={item.name}
-                                        href={item.href}
-                                        onClick={() => setIsOpen(false)}
-                                        className={`flex items-center gap-3 px-4 py-3 rounded-xl font-medium transition-colors ${pathname === item.href
-                                            ? 'bg-blue-50 text-blue-600 dark:bg-blue-900/20 dark:text-blue-400'
-                                            : 'text-slate-700 hover:bg-slate-100 dark:text-slate-300 dark:hover:bg-slate-800'
-                                            }`}
-                                    >
-                                        <item.icon size={20} className={pathname === item.href ? 'text-blue-600' : 'text-slate-400'} />
-                                        {item.name}
-                                    </Link>
-                                ))}
-                            </nav>
-                            <div className="mt-4 pt-4 border-t border-slate-200 dark:border-slate-800 grid grid-cols-2 gap-3">
-                                <Link href="/login" onClick={() => setIsOpen(false)} className="btn-secondary text-center py-3">
-                                    Login
+                    <div className="lg:hidden border-t border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-950 shadow-lg">
+                        <nav className="flex flex-col py-2">
+                            {mainNav.map((item) => (
+                                <Link
+                                    key={item.name}
+                                    href={item.href}
+                                    onClick={() => setIsOpen(false)}
+                                    className={`px-6 py-3 text-sm font-bold uppercase tracking-wide border-b border-slate-50 dark:border-slate-800 last:border-0 ${pathname === item.href
+                                            ? 'text-blue-600 bg-blue-50 dark:bg-blue-900/20'
+                                            : 'text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-900'
+                                        }`}
+                                >
+                                    {item.name}
                                 </Link>
-                                <Link href="/register" onClick={() => setIsOpen(false)} className="btn-primary text-center py-3">
-                                    Register
-                                </Link>
-                            </div>
-                        </div>
+                            ))}
+                        </nav>
                     </div>
                 )}
             </header>
 
-            {/* Mobile Bottom Navigation - App Style */}
+            {/* Mobile Bottom Navigation - Sticky */}
             <nav className="mobile-nav safe-area-inset-bottom">
-                <div className="flex justify-around items-center h-full max-w-md mx-auto">
+                <div className="flex justify-around items-center">
                     <Link href="/" className={pathname === '/' ? 'mobile-nav-item-active' : 'mobile-nav-item'}>
-                        <Briefcase size={22} />
-                        <span className="text-[10px] uppercase font-bold tracking-wider">Home</span>
+                        <Briefcase size={20} />
+                        <span className="text-[10px] font-bold mt-1">Home</span>
                     </Link>
                     <Link href="/latest-jobs" className={pathname === '/latest-jobs' ? 'mobile-nav-item-active' : 'mobile-nav-item'}>
-                        <Search size={22} />
-                        <span className="text-[10px] uppercase font-bold tracking-wider">Search</span>
+                        <Search size={20} />
+                        <span className="text-[10px] font-bold mt-1">Search</span>
                     </Link>
                     <Link href="/govt-jobs" className={pathname === '/govt-jobs' ? 'mobile-nav-item-active' : 'mobile-nav-item'}>
-                        <Building2 size={22} />
-                        <span className="text-[10px] uppercase font-bold tracking-wider">Govt</span>
-                    </Link>
-                    <Link href="/results" className={pathname === '/results' ? 'mobile-nav-item-active' : 'mobile-nav-item'}>
-                        <Award size={22} />
-                        <span className="text-[10px] uppercase font-bold tracking-wider">Results</span>
+                        <Building2 size={20} />
+                        <span className="text-[10px] font-bold mt-1">Govt</span>
                     </Link>
                     <Link href="/login" className={pathname === '/login' ? 'mobile-nav-item-active' : 'mobile-nav-item'}>
-                        <User size={22} />
-                        <span className="text-[10px] uppercase font-bold tracking-wider">Profile</span>
+                        <User size={20} />
+                        <span className="text-[10px] font-bold mt-1">Profile</span>
                     </Link>
                 </div>
             </nav>
