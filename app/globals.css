@@ -16,12 +16,15 @@
 
   /* Surfaces */
   --surface-white: #ffffff;
-  --surface-light: #f8f9fa; /* Very light gray */
+  --surface-light: #f8f9fa;
+  /* Very light gray */
   --surface-border: #e2e8f0;
 
   /* Text - High Contrast */
-  --text-primary: #111827; /* Near Black */
-  --text-secondary: #374151; /* Dark Gray */
+  --text-primary: #111827;
+  /* Near Black */
+  --text-secondary: #374151;
+  /* Dark Gray */
   --text-muted: #6b7280;
 
   /* Shadows - Minimal */
@@ -64,7 +67,7 @@
   h3 {
     @apply text-xl font-bold text-slate-900 dark:text-white;
   }
-  
+
   a {
     @apply transition-colors;
   }
@@ -106,14 +109,14 @@
   .card-hover {
     @apply card hover:border-blue-400 transition-colors;
   }
-  
+
   /* ===== LIST ITEMS (JobUpdates Style) ===== */
   .list-item-container {
-      @apply divide-y divide-slate-200 dark:divide-slate-800 border-t border-b border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 rounded-lg border-l border-r;
+    @apply divide-y divide-slate-200 dark:divide-slate-800 border-t border-b border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 rounded-lg border-l border-r;
   }
-  
+
   .list-item {
-      @apply block p-4 hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors;
+    @apply block p-4 hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors;
   }
 
   /* ===== NAVIGATION ===== */
@@ -124,9 +127,9 @@
   .nav-link {
     @apply px-4 py-2 text-sm font-bold text-slate-600 hover:text-blue-600 transition-colors uppercase tracking-wide dark:text-slate-300 dark:hover:text-blue-400;
   }
-  
+
   .nav-link-active {
-      @apply text-blue-600 dark:text-blue-400;
+    @apply text-blue-600 dark:text-blue-400;
   }
 
   /* ===== SECTIONS ===== */
@@ -143,31 +146,46 @@
     @apply inline-flex items-center px-2 py-0.5 rounded text-xs font-bold uppercase;
   }
 
-  .badge-blue { @apply bg-blue-100 text-blue-800 dark:bg-blue-900/40 dark:text-blue-300; }
-  .badge-green { @apply bg-green-100 text-green-800 dark:bg-green-900/40 dark:text-green-300; }
-  .badge-red { @apply bg-red-100 text-red-800 dark:bg-red-900/40 dark:text-red-300; }
-  .badge-orange { @apply bg-orange-100 text-orange-800 dark:bg-orange-900/40 dark:text-orange-300; }
-  .badge-gray { @apply bg-slate-100 text-slate-800 dark:bg-slate-800 dark:text-slate-300; }
+  .badge-blue {
+    @apply bg-blue-100 text-blue-800 dark:bg-blue-900/40 dark:text-blue-300;
+  }
+
+  .badge-green {
+    @apply bg-green-100 text-green-800 dark:bg-green-900/40 dark:text-green-300;
+  }
+
+  .badge-red {
+    @apply bg-red-100 text-red-800 dark:bg-red-900/40 dark:text-red-300;
+  }
+
+  .badge-orange {
+    @apply bg-orange-100 text-orange-800 dark:bg-orange-900/40 dark:text-orange-300;
+  }
+
+  .badge-gray {
+    @apply bg-slate-100 text-slate-800 dark:bg-slate-800 dark:text-slate-300;
+  }
 
   /* ===== MOBILE BOTTOM NAV ===== */
   .mobile-nav {
-    @apply fixed bottom-0 left-0 right-0 lg:hidden bg-white border-t border-slate-200 z-[100] pb-safe pt-2 px-2 dark:bg-slate-950 dark:border-slate-800;
+    @apply fixed bottom-0 left-0 right-0 lg:hidden bg-white border-t border-slate-200 z-[100] pt-2 px-2 dark:bg-slate-950 dark:border-slate-800;
     padding-bottom: env(safe-area-inset-bottom, 10px);
   }
+
 
   .mobile-nav-item {
     @apply flex flex-col items-center justify-center w-full py-1 text-slate-500 hover:text-blue-600;
   }
-  
+
   .mobile-nav-item-active {
-      @apply text-blue-600 dark:text-blue-400;
+    @apply text-blue-600 dark:text-blue-400;
   }
 
   /* ===== INPUTS ===== */
   .input {
     @apply w-full px-4 py-2 bg-white border border-slate-300 rounded-md text-slate-900 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 dark:bg-slate-900 dark:border-slate-700 dark:text-white;
   }
-  
+
   .select {
     @apply input appearance-none bg-no-repeat bg-right pr-8;
     background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%2364748b'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E");
@@ -177,8 +195,15 @@
 
 /* ===== ANIMATIONS ===== */
 @keyframes fadeInUp {
-  from { opacity: 0; transform: translateY(10px); }
-  to { opacity: 1; transform: translateY(0); }
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .animate-fade-in-up {
@@ -186,6 +211,14 @@
 }
 
 /* SCROLLBAR */
-::-webkit-scrollbar { width: 8px; }
-::-webkit-scrollbar-track { @apply bg-gray-100 dark:bg-slate-900; }
-::-webkit-scrollbar-thumb { @apply bg-gray-300 rounded hover:bg-gray-400 dark:bg-slate-700; }
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  @apply bg-gray-100 dark:bg-slate-900;
+}
+
+::-webkit-scrollbar-thumb {
+  @apply bg-gray-300 rounded hover:bg-gray-400 dark:bg-slate-700;
+}
