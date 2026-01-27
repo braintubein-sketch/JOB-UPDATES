@@ -98,37 +98,66 @@ function extractComprehensiveDetails(title: string, text: string) {
     const fullText = (title + " " + text).toLowerCase();
     const cleanText = text.replace(/<[^>]*>?/gm, '');
 
-    // CLEAN TITLE LOGIC: Remove news clickbait phrases for a professional board look
-    const professionalTitle = title
-        .replace(/Notification|Released|Out Now|Declared|Apply Online|Online Registration|Closing Soon|Check|Details Here|Direct Link|Steps to Apply|How to Apply|@.*in/gi, '')
-        .replace(/:\s*$/g, '')
+    // 1. SMART ORGANIZATION & TITLE CLEANING
+    const cleanerTitle = title
+        .replace(/(?:Latest|New|Urgent|Breaking|2024|2025|2026)\s*/gi, '')
+        .replace(/(?:Notification|Recruitment|Jobs?|Vacanc(?:y|ies)|Hiring|Apply Online|Released|Out Now|Declared|Registration|Admission|Admit Card|Result)\s*/gi, '')
+        .replace(/\d+\s*(?:Posts?|Vacanc(?:y|ies))\s*/gi, '')
+        .replace(/@\s*\S+/g, '')
+        .replace(/\(\s*\)/g, '')
+        .replace(/\s+/g, ' ')
         .trim();
 
-    let postName = professionalTitle.split('Recruitment')[0].split('hiring')[0].split('Vacancy')[0].split('Jobs')[0].trim();
+    // Intelligence: Try to extract Org from common patterns "Org Name Recruitment" or "Org Name Hiring"
+    let realOrg = cleanerTitle.split(/\||-|:/)[0].trim();
+    if (realOrg.split(' ').length > 4) realOrg = realOrg.split(' ').slice(0, 3).join(' ');
 
+    const professionalTitle = cleanerTitle;
+    let postName = cleanerTitle.replace(realOrg, '').replace(/^[^\w]+|[^\w]+$/g, '').trim() || 'Professional Role';
+
+    // 2. EXPERIENCE EXTRACTION (Better accuracy for "Freshers" vs "Experienced")
     let experience = 'Freshers';
-    const expMatch = fullText.match(/(\d+)\+?\s*years?\s*exp/i) || fullText.match(/exp(erience)?:\s*(\d+)/i);
+    const expMatch = fullText.match(/(\d+)\s*(?:-|to)\s*(\d+)\s*years?/i) || fullText.match(/(\d+)\+?\s*years?/i) || fullText.match(/exp(?:erience)?\s*:?\s*(\d+)/i);
     if (expMatch) {
-        experience = `${expMatch[1]}+ Years`;
-        if (!postName.toLowerCase().includes('exp')) postName += ` (${experience})`;
+        experience = expMatch[2] ? `${expMatch[1]}-${expMatch[2]} Years` : `${expMatch[1]}+ Years`;
     }
 
+    // 3. VACANCY INTELLIGENCE
     let vacancies = 'Check Notice';
-    const vacancyMatch = fullText.match(/(\d{1,6})\s+(posts|vacancies|openings|positions)/i);
+    const vacancyMatch = fullText.match(/(\d{1,6})\s+(?:Posts?|Vacanc(?:y|ies)|Openings?|Positions?)/i) || fullText.match(/(?:Total|Over)\s*(\d{1,6})/i);
     if (vacancyMatch) vacancies = vacancyMatch[1];
 
-    let qualification = 'Graduate / Relevant Degree';
+    // 4. QUALIFICATION EXPANSION
     const qualMap = {
-        'btech': 'B.Tech', 'mtech': 'M.Tech', 'graduate': 'Any Graduate',
-        'post graduate': 'Post Graduate', '10th': '10th Pass', '12th': '12th Pass',
-        'iti': 'ITI', 'diploma': 'Diploma', 'mba': 'MBA', 'mca': 'MCA', 'be': 'B.E', 'bcom': 'B.Com', 'bsc': 'B.Sc'
+        'btech': 'B.Tech', 'mtech': 'M.Tech', 'graduate': 'Any Graduate', 'degree': 'Any Degree',
+        'post graduate': 'Post Graduate', '10th': '10th Pass', '12th': '12th Pass', 'hsc': 'HSC', 'ssc': 'SSC',
+        'iti': 'ITI', 'diploma': 'Diploma', 'mba': 'MBA', 'mca': 'MCA', 'be': 'B.E', 'bcom': 'B.Com',
+        'bsc': 'B.Sc', 'ba': 'B.A', 'law': 'LLB/LLM', 'mbbs': 'MBBS', 'ca': 'Chartered Accountant',
+        'phd': 'Ph.D'
     };
-    const foundQuals = Object.keys(qualMap).filter(k => fullText.includes(k));
-    if (foundQuals.length > 0) qualification = foundQuals.map(k => (qualMap as any)[k]).join(', ');
+    const foundQuals = Object.keys(qualMap).filter(k => fullText.toLowerCase().includes(k));
+    let qualification = foundQuals.length > 0 ? Array.from(new Set(foundQuals.map(k => (qualMap as any)[k]))).join(', ') : 'Graduate / Relevant Degree';
 
+    // 5. SMART LOCATION (States + Major Cities)
+    let location = 'All India';
+    const regions = [
+        'Andra Pradesh', 'Arunachal Pradesh', 'Assam', 'Bihar', 'Chhattisgarh', 'Goa', 'Gujarat', 'Haryana',
+        'Himachal Pradesh', 'Jharkhand', 'Karnataka', 'Kerala', 'Madhya Pradesh', 'Maharashtra', 'Manipur',
+        'Meghalaya', 'Mizoram', 'Nagaland', 'Odisha', 'Punjab', 'Rajasthan', 'Sikkim', 'Tamil Nadu',
+        'Telangana', 'Tripura', 'Uttar Pradesh', 'Uttarakhand', 'West Bengal', 'Delhi', 'Mumbai', 'Pune',
+        'Bangalore', 'Bengaluru', 'Chennai', 'Hyderabad', 'Kolkata', 'Noida', 'Gurgaon', 'Gurugram'
+    ];
+    const foundRegion = regions.find(r => fullText.toLowerCase().includes(r.toLowerCase()));
+    if (foundRegion) location = foundRegion.replace('Bengaluru', 'Bangalore').replace('Gurugram', 'Gurgaon');
+
+    // 6. SALARY INTELLIGENCE
+    let salary = 'Competitive Package';
+    const salaryMatch = fullText.match(/(?:salary|stipend|package|lpa|ctc|pay scale|pay)\s*:?\s*(?:rs\.?\s*)?([\d.,\-]+\s*(?:lpa|per month|k|thousand|monthly|annually)?|[\d.,\-]+\s*(?:to|-)\s*[\d.,\-]+\s*(?:lpa|per month|k)?)/i);
+    if (salaryMatch) salary = salaryMatch[1];
+
+    // 7. LAST DATE INTELLIGENCE
     let lastDate: Date | undefined = undefined;
     const months = ['january', 'february', 'march', 'april', 'may', 'june', 'july', 'august', 'september', 'october', 'november', 'december', 'jan', 'feb', 'mar', 'apr', 'may', 'jun', 'jul', 'aug', 'sep', 'oct', 'nov', 'dec'];
-    // Improved Regex for DD Month YYYY or Month DD, YYYY
     const dateRegex = new RegExp(`(\\d{1,2})\\s*(${months.join('|')})\\s*(\\d{4})`, 'i');
     const dateMatch = fullText.match(dateRegex);
 
@@ -138,7 +167,6 @@ function extractComprehensiveDetails(title: string, text: string) {
     }
 
     if (!lastDate) {
-        // Look for 20th Feb style
         const shortDateRegex = new RegExp(`(\\d{1,2})(?:st|nd|rd|th)?\\s*(${months.join('|')})`, 'i');
         const shortMatch = fullText.match(shortDateRegex);
         if (shortMatch) {
@@ -146,38 +174,30 @@ function extractComprehensiveDetails(title: string, text: string) {
             if (!isNaN(d.getTime())) lastDate = d;
         }
     }
-
     if (!lastDate) lastDate = new Date(Date.now() + 20 * 24 * 60 * 60 * 1000);
 
-    let location = 'All India';
-    const states = ['Andhra Pradesh', 'Arunachal Pradesh', 'Assam', 'Bihar', 'Chhattisgarh', 'Goa', 'Gujarat', 'Haryana', 'Himachal Pradesh', 'Jharkhand', 'Karnataka', 'Kerala', 'Madhya Pradesh', 'Maharashtra', 'Manipur', 'Meghalaya', 'Mizoram', 'Nagaland', 'Odisha', 'Punjab', 'Rajasthan', 'Sikkim', 'Tamil Nadu', 'Telangana', 'Tripura', 'Uttar Pradesh', 'Uttarakhand', 'West Bengal', 'Delhi'];
-    const foundState = states.find(s => fullText.includes(s.toLowerCase()));
-    if (foundState) location = foundState;
+    const sentences = cleanText.split(/[.!?]/).map(s => s.trim()).filter(s => s.length > 25);
 
-    let salary = 'Competitive Package';
-    const salaryMatch = fullText.match(/(?:salary|stipend|package|lpa|ctc|pay scale|pay)\s*:?\s*(?:rs\.?\s*)?([\d.,\-]+\s*(?:lpa|per month|k|thousand|monthly|annually)?|[\d.,\-]+\s*(?:to|-)\s*[\d.,\-]+\s*(?:lpa|per month|k)?)/i);
-    if (salaryMatch) salary = salaryMatch[1];
+    // SMART SUMMARY INTELLIGENCE: Ranking sentences by "Information Density"
+    const keySentences = sentences
+        .filter(s => {
+            const lower = s.toLowerCase();
+            return (lower.includes('vacancy') || lower.includes('recruitment') ||
+                lower.includes('eligible') || lower.includes('qualification') ||
+                lower.includes('last date') || lower.includes('apply')) &&
+                !lower.includes('click here') && !lower.includes('follow us');
+        })
+        .sort((a, b) => b.length - a.length)
+        .slice(0, 3);
 
-    const sentences = cleanText.split(/[.!?]/).map(s => s.trim()).filter(s => s.length > 20);
-    
-    // SMART SUMMARY: Pick 3-4 most relevant sentences instead of the whole text
-    const keySentences = sentences.filter(s => {
-        const lower = s.toLowerCase();
-        return lower.includes('vacancy') || lower.includes('recruitment') || 
-               lower.includes('eligible') || lower.includes('qualification') || 
-               lower.includes('last date') || lower.includes('apply') ||
-               lower.includes('selection') || lower.includes('salary') ||
-               lower.includes('experience') || lower.includes('hiring');
-    }).slice(0, 4);
-
-    const smartSummary = keySentences.length > 0 
-        ? keySentences.join('. ') + '.' 
+    const smartSummary = keySentences.length > 0
+        ? keySentences.join('. ') + '.'
         : sentences.slice(0, 2).join('. ') + '.';
 
-    const eligibility = sentences.find(s => s.toLowerCase().includes('eligible') || s.toLowerCase().includes('criteria')) || 'Refer official website for full eligibility details.';
-    const selection = sentences.find(s => s.toLowerCase().includes('selection') || s.toLowerCase().includes('interview') || s.toLowerCase().includes('exam')) || 'Selection via Written Exam / Interview.';
+    const eligibility = sentences.find(s => s.toLowerCase().includes('eligible') || s.toLowerCase().includes('criteria') || s.toLowerCase().includes('qualification')) || 'Refer official website for full eligibility details.';
+    const selection = sentences.find(s => s.toLowerCase().includes('selection') || s.toLowerCase().includes('interview') || s.toLowerCase().includes('exam') || s.toLowerCase().includes('process')) || 'Selection via Written Exam / Interview.';
 
-    return { vacancies, qualification, lastDate, location, postName, experience, eligibility, selection, professionalTitle, salary, smartSummary };
+    return { vacancies, qualification, lastDate, location, postName, experience, eligibility, selection, professionalTitle, salary, smartSummary, realOrg };
 }
 
 export async function automateContentFetch() {
@@ -251,7 +271,7 @@ export async function automateContentFetch() {
                 await Job.create({
                     title: details.professionalTitle,
                     slug: slug,
-                    organization: realOrg,
+                    organization: details.realOrg, // USE THE INTELLIGENTLY EXTRACTED ORG
                     postName: details.postName,
                     vacancies: details.vacancies,
                     qualification: details.qualification,
