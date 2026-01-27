@@ -41,7 +41,7 @@ services:
     name: fetch-jobs-cron
     plan: free
     schedule: "*/30 * * * *"
-    command: "curl -X GET https://job-updates.onrender.com/api/cron/fetch?key=${CRON_SECRET}"
+    command: "curl -X GET https://jobupdate.site/api/cron/fetch?key=${CRON_SECRET}"
     envVars:
       - key: CRON_SECRET
         sync: false
