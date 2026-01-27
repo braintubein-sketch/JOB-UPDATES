@@ -12,6 +12,8 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
         '/private-jobs',
         '/results',
         '/admit-cards',
+        '/contact',
+        '/about',
     ].map((route) => ({
         url: `${baseUrl}${route}`,
         lastModified: new Date(),
@@ -20,21 +22,25 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     }));
 
     try {
+        // Skip DB connection during static optimization if MONGODB_URI is missing
+        if (!process.env.MONGODB_URI) return staticEntries;
+
         await dbConnect();
-        const jobs = await Job.find({ status: 'APPROVED' })
+        const jobs = await Job.find({ status: 'PUBLISHED' })
             .select('slug updatedAt')
+            .limit(1000)
             .lean();
 
         const jobEntries = jobs.map((job: any) => ({
             url: `${baseUrl}/jobs/${job.slug}`,
-            lastModified: job.updatedAt,
+            lastModified: job.updatedAt || new Date(),
             changeFrequency: 'weekly' as const,
             priority: 0.7,
         }));
 
         return [...staticEntries, ...jobEntries];
     } catch (error) {
-        console.error('Sitemap DB connect failed, returning static only:', error);
+        console.error('Sitemap generation error:', error);
         return staticEntries;
     }
 }

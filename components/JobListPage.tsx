@@ -1,25 +1,47 @@
-import { mockJobs } from '@/lib/mock-data';
 import JobListItem from '@/components/JobListItem';
+import dbConnect from '@/lib/mongodb/dbConnect';
+import { Job } from '@/models/Job';
 
 export const dynamic = 'force-dynamic';
+export const revalidate = 1800; // Revalidate every 30 mins
 
 interface JobListPageProps {
     title: string;
     description?: string;
-    category?: string; // 'Govt', 'Private', 'Bank', etc. to filter
+    category?: string; // 'Govt', 'Private', 'IT', etc. to filter
 }
 
-export default function JobListPage({ title, description, category }: JobListPageProps) {
-    // Filter mock jobs
-    let jobs = mockJobs;
-    if (category) {
-        jobs = mockJobs.filter(job => job.category === category);
-    }
+async function getJobs(category?: string) {
+    try {
+        await dbConnect();
+        const query: any = { status: 'PUBLISHED' };
 
-    // Also support 'IT' mapped to 'Private' if needed, or stick to exact match
-    if (category === 'IT') {
-        jobs = mockJobs.filter(job => job.category === 'Private' || job.title.includes('Software') || job.title.includes('Engineer'));
+        if (category) {
+            if (category === 'IT') {
+                query.category = 'IT';
+            } else if (category === 'Govt') {
+                query.category = { $in: ['Govt', 'PSU', 'Railway', 'Teaching', 'Police', 'Defence', 'Banking'] };
+            } else if (category === 'Private') {
+                query.category = { $in: ['Private', 'IT'] };
+            } else {
+                query.category = category;
+            }
+        }
+
+        const jobs = await Job.find(query)
+            .sort({ publishedAt: -1, createdAt: -1 })
+            .limit(50)
+            .lean();
+
+        return JSON.parse(JSON.stringify(jobs));
+    } catch (error) {
+        console.error('Error fetching jobs:', error);
+        return [];
     }
+}
+
+export default async function JobListPage({ title, description, category }: JobListPageProps) {
+    const jobs = await getJobs(category);
 
     return (
         <div className="min-h-screen bg-slate-50 dark:bg-slate-950 pb-20">
@@ -45,7 +67,7 @@ export default function JobListPage({ title, description, category }: JobListPag
                     <div className="lg:col-span-8">
                         <div className="list-item-container shadow-sm">
                             {jobs.map((job: any) => (
-                                <JobListItem key={job.id} job={job} />
+                                <JobListItem key={job._id} job={job} />
                             ))}
                             {jobs.length === 0 && (
                                 <div className="p-12 text-center text-slate-500">
@@ -59,9 +81,7 @@ export default function JobListPage({ title, description, category }: JobListPag
                             <div className="mt-8 flex justify-center gap-2">
                                 <button className="btn-secondary btn-sm" disabled>Previous</button>
                                 <button className="btn-primary btn-sm">1</button>
-                                <button className="btn-secondary btn-sm">2</button>
-                                <button className="btn-secondary btn-sm">3</button>
-                                <button className="btn-secondary btn-sm">Next</button>
+                                <button className="btn-secondary btn-sm" disabled>Next</button>
                             </div>
                         )}
                     </div>
@@ -98,8 +118,8 @@ export default function JobListPage({ title, description, category }: JobListPag
                         </div>
 
                         {/* Ad Slot */}
-                        <div className="w-full h-[300px] bg-slate-100 dark:bg-slate-900 rounded-lg border-2 border-dashed border-slate-300 dark:border-slate-800 flex items-center justify-center text-slate-400">
-                            Ad Space
+                        <div className="w-full h-[300px] bg-slate-100 dark:bg-slate-900 rounded-lg border-2 border-dashed border-slate-300 dark:border-slate-800 flex items-center justify-center text-slate-400 font-bold p-6 text-center">
+                            Google AdSense Space
                         </div>
                     </div>
 

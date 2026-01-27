@@ -1,11 +1,29 @@
-
-import { mockAdmitCards } from '@/lib/mock-data';
 import Link from 'next/link';
 import { Calendar, ChevronRight, Download } from 'lucide-react';
+import { formatDate } from '@/lib/utils';
+import dbConnect from '@/lib/mongodb/dbConnect';
+import { AdmitCard } from '@/models/Automation';
 
 export const dynamic = 'force-dynamic';
+export const revalidate = 3600; // Revalidate every hour
 
-export default function AdmitCardsPage() {
+async function getAdmitCards() {
+    try {
+        await dbConnect();
+        const admitCards = await AdmitCard.find({ status: 'PUBLISHED' })
+            .sort({ examDate: -1, createdAt: -1 })
+            .limit(50)
+            .lean();
+        return JSON.parse(JSON.stringify(admitCards));
+    } catch (error) {
+        console.error('Error fetching admit cards:', error);
+        return [];
+    }
+}
+
+export default async function AdmitCardsPage() {
+    const admitCards = await getAdmitCards();
+
     return (
         <div className="min-h-screen bg-slate-50 dark:bg-slate-950 pb-20">
             {/* Header */}
@@ -25,18 +43,21 @@ export default function AdmitCardsPage() {
                 <div className="max-w-4xl mx-auto">
                     <div className="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm overflow-hidden">
                         <div className="divide-y divide-slate-100 dark:divide-slate-800">
-                            {mockAdmitCards.map((card: any) => (
-                                <div key={card.id} className="p-4 md:p-6 hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors flex items-center justify-between gap-4 group">
+                            {admitCards.map((card: any) => (
+                                <div key={card._id} className="p-4 md:p-6 hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors flex items-center justify-between gap-4 group">
                                     <div className="flex-1 min-w-0">
                                         <div className="flex items-center gap-2 mb-1">
                                             <span className="badge badge-red">Released</span>
                                             <span className="text-xs text-slate-500 flex items-center gap-1">
-                                                <Calendar size={12} /> {card.date}
+                                                <Calendar size={12} /> {formatDate(card.examDate || card.createdAt)}
                                             </span>
                                         </div>
                                         <Link href={`/jobs/${card.slug}`} className="text-lg font-bold text-slate-900 dark:text-white group-hover:text-blue-600 transition-colors line-clamp-2">
                                             {card.title}
                                         </Link>
+                                        <p className="text-xs text-slate-400 mt-1 uppercase tracking-wider font-medium">
+                                            {card.organization}
+                                        </p>
                                     </div>
                                     <Link
                                         href={`/jobs/${card.slug}`}
@@ -49,7 +70,7 @@ export default function AdmitCardsPage() {
                                 </div>
                             ))}
 
-                            {mockAdmitCards.length === 0 && (
+                            {admitCards.length === 0 && (
                                 <div className="p-12 text-center text-slate-500">
                                     No admit cards released recently.
                                 </div>
@@ -58,11 +79,13 @@ export default function AdmitCardsPage() {
                     </div>
 
                     {/* Pagination (Visual) */}
-                    <div className="mt-8 flex justify-center gap-2">
-                        <button className="btn-secondary btn-sm" disabled>Prev</button>
-                        <button className="btn-primary btn-sm">1</button>
-                        <button className="btn-secondary btn-sm">Next</button>
-                    </div>
+                    {admitCards.length > 0 && (
+                        <div className="mt-8 flex justify-center gap-2">
+                            <button className="btn-secondary btn-sm" disabled>Prev</button>
+                            <button className="btn-primary btn-sm">1</button>
+                            <button className="btn-secondary btn-sm">Next</button>
+                        </div>
+                    )}
                 </div>
             </div>
         </div>

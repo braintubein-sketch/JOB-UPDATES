@@ -1,18 +1,47 @@
-import { mockJobs, mockResults, mockAdmitCards } from '@/lib/mock-data';
 import JobListItem from '@/components/JobListItem';
 import HeroSection from '@/components/HeroSection';
 import Link from 'next/link';
-import { ArrowRight, Briefcase, Building2, Award, FileText, Smartphone, TrendingUp, ChevronRight, Calendar } from 'lucide-react';
+import { ArrowRight, Building2, Award, FileText, Smartphone, TrendingUp, Calendar } from 'lucide-react';
+import dbConnect from '@/lib/mongodb/dbConnect';
+import { Job } from '@/models/Job';
+import { Result, AdmitCard } from '@/models/Automation';
+import { formatDate } from '@/lib/utils';
 
 export const dynamic = 'force-dynamic';
+export const revalidate = 1800; // 30 mins
+
+async function getHomeData() {
+  try {
+    await dbConnect();
+    const [featuredJobs, govtJobs, privateJobs, latestResults, admitCards] = await Promise.all([
+      Job.find({ status: 'PUBLISHED' }).sort({ publishedAt: -1, createdAt: -1 }).limit(10).lean(),
+      Job.find({ status: 'PUBLISHED', category: { $in: ['Govt', 'PSU', 'Railway', 'Banking', 'Police', 'Defence'] } }).sort({ publishedAt: -1, createdAt: -1 }).limit(3).lean(),
+      Job.find({ status: 'PUBLISHED', category: { $in: ['Private', 'IT'] } }).sort({ publishedAt: -1, createdAt: -1 }).limit(3).lean(),
+      Result.find({ status: 'PUBLISHED' }).sort({ releaseDate: -1, createdAt: -1 }).limit(3).lean(),
+      AdmitCard.find({ status: 'PUBLISHED' }).sort({ examDate: -1, createdAt: -1 }).limit(3).lean(),
+    ]);
+
+    return JSON.parse(JSON.stringify({
+      featuredJobs,
+      govtJobs,
+      privateJobs,
+      latestResults,
+      admitCards
+    }));
+  } catch (error) {
+    console.error('Error fetching home data:', error);
+    return {
+      featuredJobs: [],
+      govtJobs: [],
+      privateJobs: [],
+      latestResults: [],
+      admitCards: []
+    };
+  }
+}
 
 export default async function HomePage() {
-  // Use mock data directly as requested for the frontend rebuild
-  const featuredJobs = mockJobs;
-  const govtJobs = mockJobs.filter(j => j.category === 'Govt');
-  const privateJobs = mockJobs.filter(j => j.category === 'Private');
-  const latestResults = mockResults;
-  const admitCards = mockAdmitCards;
+  const { featuredJobs, govtJobs, privateJobs, latestResults, admitCards } = await getHomeData();
 
   return (
     <div className="pb-20 lg:pb-0 bg-white dark:bg-slate-950">
@@ -36,10 +65,10 @@ export default async function HomePage() {
 
           <div className="list-item-container">
             {featuredJobs.map((job: any) => (
-              <JobListItem key={job.id} job={job} />
+              <JobListItem key={job._id} job={job} />
             ))}
             {featuredJobs.length === 0 && (
-              <div className="p-8 text-center">
+              <div className="p-8 text-center border border-slate-100 rounded-lg">
                 <p className="text-slate-500">No updates available at the moment.</p>
               </div>
             )}
@@ -67,9 +96,14 @@ export default async function HomePage() {
                 <Link href="/govt-jobs" className="text-sm font-bold text-blue-600 hover:underline">View All</Link>
               </div>
               <div className="list-item-container">
-                {govtJobs.slice(0, 3).map((job: any) => (
-                  <JobListItem key={job.id} job={job} />
+                {govtJobs.map((job: any) => (
+                  <JobListItem key={job._id} job={job} />
                 ))}
+                {govtJobs.length === 0 && (
+                  <div className="p-8 text-center border border-slate-200 rounded-lg bg-white dark:bg-slate-900">
+                    <p className="text-slate-500">Stay tuned for govt job updates.</p>
+                  </div>
+                )}
               </div>
             </div>
 
@@ -83,8 +117,8 @@ export default async function HomePage() {
                 <Link href="/private-jobs" className="text-sm font-bold text-blue-600 hover:underline">View All</Link>
               </div>
               <div className="list-item-container">
-                {privateJobs.slice(0, 3).map((job: any) => (
-                  <JobListItem key={job.id} job={job} />
+                {privateJobs.map((job: any) => (
+                  <JobListItem key={job._id} job={job} />
                 ))}
                 {privateJobs.length === 0 && (
                   <div className="p-8 text-center border border-slate-200 rounded-lg bg-white dark:bg-slate-900">
@@ -110,19 +144,22 @@ export default async function HomePage() {
                 </h3>
                 <Link href="/results" className="btn-sm btn-outline text-xs">View All</Link>
               </div>
-              <ul className="space-y-3">
-                {latestResults.map((result) => (
-                  <li key={result.id}>
+              <ul className="space-y-4">
+                {latestResults.map((result: any) => (
+                  <li key={result._id}>
                     <Link href={`/jobs/${result.slug}`} className="block group">
                       <span className="text-sm font-bold text-slate-800 dark:text-slate-200 group-hover:text-blue-600 transition-colors block mb-1">
                         {result.title}
                       </span>
                       <span className="text-xs text-slate-500 flex items-center gap-1">
-                        <Calendar size={12} /> Declared on {result.date}
+                        <Calendar size={12} /> Declared on {formatDate(result.releaseDate || result.createdAt)}
                       </span>
                     </Link>
                   </li>
                 ))}
+                {latestResults.length === 0 && (
+                  <p className="text-sm text-slate-500 text-center py-4">No results released recently.</p>
+                )}
               </ul>
             </div>
 
@@ -135,19 +172,22 @@ export default async function HomePage() {
                 </h3>
                 <Link href="/admit-cards" className="btn-sm btn-outline text-xs">View All</Link>
               </div>
-              <ul className="space-y-3">
-                {admitCards.map((card) => (
-                  <li key={card.id}>
+              <ul className="space-y-4">
+                {admitCards.map((card: any) => (
+                  <li key={card._id}>
                     <Link href={`/jobs/${card.slug}`} className="block group">
                       <span className="text-sm font-bold text-slate-800 dark:text-slate-200 group-hover:text-blue-600 transition-colors block mb-1">
                         {card.title}
                       </span>
                       <span className="text-xs text-slate-500 flex items-center gap-1">
-                        <Calendar size={12} /> Released on {card.date}
+                        <Calendar size={12} /> Released on {formatDate(card.examDate || card.createdAt)}
                       </span>
                     </Link>
                   </li>
                 ))}
+                {admitCards.length === 0 && (
+                  <p className="text-sm text-slate-500 text-center py-4">No admit cards released recently.</p>
+                )}
               </ul>
             </div>
           </div>
@@ -157,7 +197,7 @@ export default async function HomePage() {
       {/* Useful Links / Categories */}
       <section className="section-gray">
         <div className="container-main">
-          <h2 className="mb-8 text-center">Explore by Category</h2>
+          <h2 className="mb-8 text-center text-slate-900 dark:text-white">Explore by Category</h2>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
             {[
               { name: 'Railway Recruitment', href: '/latest-jobs?q=railway', icon: '🚂' },

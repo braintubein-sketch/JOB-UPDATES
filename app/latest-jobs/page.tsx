@@ -1,8 +1,8 @@
-
-import { mockJobs } from '@/lib/mock-data';
 import JobListItem from '@/components/JobListItem';
-import { Search, Filter, ArrowRight } from 'lucide-react';
+import { Search, Filter } from 'lucide-react';
 import Link from 'next/link';
+import dbConnect from '@/lib/mongodb/dbConnect';
+import { Job } from '@/models/Job';
 
 export const dynamic = 'force-dynamic';
 
@@ -10,25 +10,37 @@ interface Props {
     searchParams: { q?: string; category?: string; location?: string };
 }
 
-export default function LatestJobsPage({ searchParams }: Props) {
-    let jobs = mockJobs;
+async function getJobs(searchParams: Props['searchParams']) {
+    try {
+        await dbConnect();
+        const query: any = { status: 'PUBLISHED' };
 
-    // Filter Logic (Mock)
-    if (searchParams.q) {
-        const query = searchParams.q.toLowerCase();
-        jobs = jobs.filter(job =>
-            job.title.toLowerCase().includes(query) ||
-            job.organization.toLowerCase().includes(query)
-        );
-    }
+        if (searchParams.q) {
+            query.$or = [
+                { title: { $regex: searchParams.q, $options: 'i' } },
+                { organization: { $regex: searchParams.q, $options: 'i' } },
+                { postName: { $regex: searchParams.q, $options: 'i' } }
+            ];
+        }
 
-    if (searchParams.category) {
-        jobs = jobs.filter(job => job.category === searchParams.category);
-    }
+        if (searchParams.category) {
+            query.category = searchParams.category;
+        }
 
-    if (searchParams.location) {
-        jobs = jobs.filter(job => (job as any).location?.toLowerCase().includes(searchParams.location?.toLowerCase()));
+        const jobs = await Job.find(query)
+            .sort({ publishedAt: -1, createdAt: -1 })
+            .limit(50)
+            .lean();
+
+        return JSON.parse(JSON.stringify(jobs));
+    } catch (error) {
+        console.error('Error fetching jobs:', error);
+        return [];
     }
+}
+
+export default async function LatestJobsPage({ searchParams }: Props) {
+    const jobs = await getJobs(searchParams);
 
     return (
         <div className="min-h-screen bg-slate-50 dark:bg-slate-950 pb-20">
@@ -46,7 +58,7 @@ export default function LatestJobsPage({ searchParams }: Props) {
                         </div>
 
                         {/* Search Bar */}
-                        <form className="flex gap-2 w-full md:w-auto">
+                        <form className="flex gap-2 w-full md:w-auto" action="/latest-jobs" method="GET">
                             <div className="relative flex-1 md:w-64">
                                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" size={16} />
                                 <input
@@ -56,6 +68,7 @@ export default function LatestJobsPage({ searchParams }: Props) {
                                     placeholder="Search by keywords..."
                                     className="input py-2 pl-9 text-sm"
                                 />
+                                {searchParams.category && <input type="hidden" name="category" value={searchParams.category} />}
                             </div>
                             <button type="submit" className="btn-primary btn-sm">Search</button>
                         </form>
@@ -82,6 +95,7 @@ export default function LatestJobsPage({ searchParams }: Props) {
                                         <Link href="/latest-jobs?category=Govt" className={`block text-sm ${searchParams.category === 'Govt' ? 'text-blue-600 font-bold' : 'text-slate-600'}`}>Govt Jobs</Link>
                                         <Link href="/latest-jobs?category=Private" className={`block text-sm ${searchParams.category === 'Private' ? 'text-blue-600 font-bold' : 'text-slate-600'}`}>Private Jobs</Link>
                                         <Link href="/latest-jobs?category=Bank" className={`block text-sm ${searchParams.category === 'Bank' ? 'text-blue-600 font-bold' : 'text-slate-600'}`}>Bank Jobs</Link>
+                                        <Link href="/latest-jobs?category=IT" className={`block text-sm ${searchParams.category === 'IT' ? 'text-blue-600 font-bold' : 'text-slate-600'}`}>IT Jobs</Link>
                                     </div>
                                 </div>
                             </div>
@@ -92,7 +106,7 @@ export default function LatestJobsPage({ searchParams }: Props) {
                     <div className="lg:col-span-9">
                         <div className="list-item-container shadow-sm mb-8">
                             {jobs.map((job: any) => (
-                                <JobListItem key={job.id} job={job} />
+                                <JobListItem key={job._id} job={job} />
                             ))}
                             {jobs.length === 0 && (
                                 <div className="p-12 text-center">
@@ -111,9 +125,7 @@ export default function LatestJobsPage({ searchParams }: Props) {
                             <div className="flex justify-center gap-2">
                                 <button className="btn-secondary btn-sm" disabled>Prev</button>
                                 <button className="btn-primary btn-sm">1</button>
-                                <button className="btn-secondary btn-sm">2</button>
-                                <button className="btn-secondary btn-sm">3</button>
-                                <button className="btn-secondary btn-sm">Next</button>
+                                <button className="btn-secondary btn-sm" disabled>Next</button>
                             </div>
                         )}
 
