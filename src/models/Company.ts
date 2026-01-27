@@ -55,7 +55,7 @@ const CompanySchema = new Schema<ICompany>(
 );
 
 // Pre-save middleware to generate slug
-CompanySchema.pre('save', function (next) {
+CompanySchema.pre('save', function (this: any, next: any) {
     if (this.isNew || this.isModified('name')) {
         this.slug = this.name
             .toLowerCase()
