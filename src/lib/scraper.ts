@@ -1,0 +1,268 @@
+import axios from 'axios';
+import * as cheerio from 'cheerio';
+import { Job } from '@/types';
+
+interface ScrapedJob {
+    company: string;
+    title: string;
+    qualification: string;
+    locations: string[];
+    experience: { min: number; max: number; label: string };
+    employmentType: string;
+    description: string;
+    skills: string[];
+    applyLink: string;
+    category: string;
+    source: 'automated';
+    sourceUrl: string;
+}
+
+// IT job keywords for filtering
+const IT_KEYWORDS = [
+    'software', 'developer', 'engineer', 'programmer', 'data', 'cloud',
+    'devops', 'frontend', 'backend', 'fullstack', 'full-stack', 'web',
+    'mobile', 'ios', 'android', 'react', 'angular', 'vue', 'node',
+    'python', 'java', 'javascript', 'typescript', 'golang', 'go',
+    'aws', 'azure', 'gcp', 'kubernetes', 'docker', 'ci/cd',
+    'machine learning', 'ml', 'ai', 'data science', 'analytics',
+    'cybersecurity', 'security', 'network', 'database', 'sql',
+    'qa', 'testing', 'automation', 'selenium', 'api', 'rest',
+    'microservices', 'product', 'tech lead', 'architect',
+];
+
+// Non-IT keywords to filter out
+const EXCLUDE_KEYWORDS = [
+    'government', 'ssc', 'upsc', 'railway', 'bank clerk', 'admit card',
+    'result', 'answer key', 'exam date', 'syllabus', 'govt',
+];
+
+export function isITJob(title: string, description: string = ''): boolean {
+    const text = `${title} ${description}`.toLowerCase();
+
+    // Check if it contains any exclusion keywords
+    if (EXCLUDE_KEYWORDS.some(keyword => text.includes(keyword))) {
+        return false;
+    }
+
+    // Check if it contains IT keywords
+    return IT_KEYWORDS.some(keyword => text.includes(keyword));
+}
+
+export function detectCategory(title: string, skills: string[] = []): string {
+    const text = `${title} ${skills.join(' ')}`.toLowerCase();
+
+    if (text.includes('ml') || text.includes('machine learning') || text.includes('ai') || text.includes('data science')) {
+        return 'AI/ML Engineer';
+    }
+    if (text.includes('devops') || text.includes('sre') || text.includes('reliability')) {
+        return 'DevOps Engineer';
+    }
+    if (text.includes('cloud') || text.includes('aws') || text.includes('azure') || text.includes('gcp')) {
+        return 'Cloud Engineer';
+    }
+    if (text.includes('data engineer') || text.includes('etl') || text.includes('data pipeline')) {
+        return 'Data Engineer';
+    }
+    if (text.includes('security') || text.includes('cyber')) {
+        return 'Cybersecurity';
+    }
+    if (text.includes('qa') || text.includes('test') || text.includes('quality')) {
+        return 'QA/Testing';
+    }
+    if (text.includes('frontend') || text.includes('front-end') || text.includes('ui developer')) {
+        return 'Frontend Developer';
+    }
+    if (text.includes('backend') || text.includes('back-end')) {
+        return 'Backend Developer';
+    }
+    if (text.includes('fullstack') || text.includes('full-stack') || text.includes('full stack')) {
+        return 'Full Stack Developer';
+    }
+    if (text.includes('mobile') || text.includes('ios') || text.includes('android') || text.includes('flutter')) {
+        return 'Mobile Developer';
+    }
+    if (text.includes('product') || text.includes('program manager')) {
+        return 'Product & Tech';
+    }
+    if (text.includes('system')) {
+        return 'Systems Engineer';
+    }
+
+    return 'Software Engineer';
+}
+
+export function parseExperienceFromText(text: string): { min: number; max: number; label: string } {
+    const patterns = [
+        /(\d+)\s*[-–to]+\s*(\d+)\s*(?:years?|yrs?)/i,
+        /(\d+)\+?\s*(?:years?|yrs?)/i,
+        /fresher|entry.level|graduate/i,
+    ];
+
+    for (const pattern of patterns) {
+        const match = text.match(pattern);
+        if (match) {
+            if (match[0].toLowerCase().includes('fresher') || match[0].toLowerCase().includes('entry')) {
+                return { min: 0, max: 1, label: '0-1 Years (Fresher)' };
+            }
+            if (match[2]) {
+                const min = parseInt(match[1]);
+                const max = parseInt(match[2]);
+                return { min, max, label: `${min}-${max} Years` };
+            }
+            if (match[1]) {
+                const val = parseInt(match[1]);
+                return { min: val, max: val + 2, label: `${val}+ Years` };
+            }
+        }
+    }
+
+    return { min: 0, max: 15, label: '0-15 Years' };
+}
+
+export function extractSkillsFromText(text: string): string[] {
+    const skillPatterns = [
+        'JavaScript', 'TypeScript', 'Python', 'Java', 'C++', 'C#', 'Go', 'Golang', 'Rust',
+        'React', 'Angular', 'Vue', 'Next.js', 'Node.js', 'Express', 'Django', 'Flask', 'Spring',
+        'AWS', 'Azure', 'GCP', 'Docker', 'Kubernetes', 'Terraform', 'Jenkins', 'Git',
+        'SQL', 'PostgreSQL', 'MySQL', 'MongoDB', 'Redis', 'Elasticsearch',
+        'Machine Learning', 'Deep Learning', 'TensorFlow', 'PyTorch', 'Pandas', 'NumPy',
+        'REST API', 'GraphQL', 'Microservices', 'CI/CD', 'Agile', 'Scrum',
+        'Linux', 'Unix', 'Shell Scripting', 'Bash',
+        'HTML', 'CSS', 'SASS', 'Tailwind', 'Bootstrap',
+    ];
+
+    const foundSkills: string[] = [];
+    const textLower = text.toLowerCase();
+
+    for (const skill of skillPatterns) {
+        if (textLower.includes(skill.toLowerCase())) {
+            foundSkills.push(skill);
+        }
+    }
+
+    return [...new Set(foundSkills)].slice(0, 10);
+}
+
+export function extractLocationsFromText(text: string): string[] {
+    const indianCities = [
+        'Bangalore', 'Bengaluru', 'Hyderabad', 'Chennai', 'Mumbai', 'Pune', 'Delhi',
+        'NCR', 'Noida', 'Gurgaon', 'Gurugram', 'Kolkata', 'Ahmedabad', 'Jaipur',
+        'Kochi', 'Trivandrum', 'Chandigarh', 'Indore', 'Mysore', 'Coimbatore',
+        'Remote', 'Work from Home', 'WFH', 'Hybrid',
+    ];
+
+    const foundLocations: string[] = [];
+    const textLower = text.toLowerCase();
+
+    for (const city of indianCities) {
+        if (textLower.includes(city.toLowerCase())) {
+            // Normalize city names
+            let normalizedCity = city;
+            if (city === 'Bengaluru') normalizedCity = 'Bangalore';
+            if (city === 'Gurugram') normalizedCity = 'Gurgaon';
+            if (city === 'Work from Home' || city === 'WFH') normalizedCity = 'Remote';
+
+            if (!foundLocations.includes(normalizedCity)) {
+                foundLocations.push(normalizedCity);
+            }
+        }
+    }
+
+    return foundLocations.length > 0 ? foundLocations : ['India'];
+}
+
+export function validateApplyLink(url: string): boolean {
+    if (!url) return false;
+
+    try {
+        const parsed = new URL(url);
+
+        // Check for trusted domains
+        const trustedDomains = [
+            'careers.google.com', 'careers.microsoft.com', 'amazon.jobs',
+            'metacareers.com', 'linkedin.com', 'naukri.com', 'indeed.com',
+            'lever.co', 'greenhouse.io', 'workday.com', 'smartrecruiters.com',
+            'jobs.lever.co', 'boards.greenhouse.io',
+        ];
+
+        // Check if it's https
+        if (parsed.protocol !== 'https:') return false;
+
+        // Check if it's a career/jobs page
+        const isCareerPage =
+            parsed.pathname.includes('career') ||
+            parsed.pathname.includes('job') ||
+            parsed.pathname.includes('apply') ||
+            parsed.hostname.includes('career') ||
+            parsed.hostname.includes('jobs') ||
+            trustedDomains.some(domain => parsed.hostname.includes(domain));
+
+        return isCareerPage;
+    } catch {
+        return false;
+    }
+}
+
+export function generateJobSlug(company: string, title: string): string {
+    const base = `${company}-${title}`
+        .toLowerCase()
+        .replace(/[^a-z0-9]+/g, '-')
+        .replace(/^-+|-+$/g, '');
+    return `${base}-${Date.now()}`;
+}
+
+export function normalizeCompanyName(name: string): string {
+    const normalizations: Record<string, string> = {
+        'google llc': 'Google',
+        'google inc': 'Google',
+        'microsoft corporation': 'Microsoft',
+        'amazon.com': 'Amazon',
+        'meta platforms': 'Meta',
+        'facebook': 'Meta',
+        'apple inc': 'Apple',
+        'infosys limited': 'Infosys',
+        'tata consultancy services': 'TCS',
+        'wipro limited': 'Wipro',
+    };
+
+    const lower = name.toLowerCase().trim();
+    return normalizations[lower] || name.trim();
+}
+
+// Rate limiting helper
+export async function sleep(ms: number): Promise<void> {
+    return new Promise(resolve => setTimeout(resolve, ms));
+}
+
+// Scraping utilities class
+export class JobScraper {
+    private userAgents = [
+        'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+        'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+    ];
+
+    private getRandomUserAgent(): string {
+        return this.userAgents[Math.floor(Math.random() * this.userAgents.length)];
+    }
+
+    async fetchPage(url: string): Promise<string | null> {
+        try {
+            const response = await axios.get(url, {
+                headers: {
+                    'User-Agent': this.getRandomUserAgent(),
+                    'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
+                    'Accept-Language': 'en-US,en;q=0.5',
+                },
+                timeout: 30000,
+            });
+            return response.data;
+        } catch (error) {
+            console.error(`Failed to fetch ${url}:`, error);
+            return null;
+        }
+    }
+
+    // Add more scraping methods here for specific job sites
+}
+
+export default JobScraper;
