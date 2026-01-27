@@ -158,11 +158,26 @@ function extractComprehensiveDetails(title: string, text: string) {
     const salaryMatch = fullText.match(/(?:salary|stipend|package|lpa|ctc|pay scale|pay)\s*:?\s*(?:rs\.?\s*)?([\d.,\-]+\s*(?:lpa|per month|k|thousand|monthly|annually)?|[\d.,\-]+\s*(?:to|-)\s*[\d.,\-]+\s*(?:lpa|per month|k)?)/i);
     if (salaryMatch) salary = salaryMatch[1];
 
-    const sentences = cleanText.split(/[.!?]/);
-    const eligibility = sentences.find(s => s.toLowerCase().includes('eligible') || s.toLowerCase().includes('criteria'))?.trim() || 'Refer official website for full eligibility details.';
-    const selection = sentences.find(s => s.toLowerCase().includes('selection') || s.toLowerCase().includes('interview') || s.toLowerCase().includes('exam'))?.trim() || 'Selection via Written Exam / Interview.';
+    const sentences = cleanText.split(/[.!?]/).map(s => s.trim()).filter(s => s.length > 20);
+    
+    // SMART SUMMARY: Pick 3-4 most relevant sentences instead of the whole text
+    const keySentences = sentences.filter(s => {
+        const lower = s.toLowerCase();
+        return lower.includes('vacancy') || lower.includes('recruitment') || 
+               lower.includes('eligible') || lower.includes('qualification') || 
+               lower.includes('last date') || lower.includes('apply') ||
+               lower.includes('selection') || lower.includes('salary') ||
+               lower.includes('experience') || lower.includes('hiring');
+    }).slice(0, 4);
 
-    return { vacancies, qualification, lastDate, location, postName, experience, eligibility, selection, professionalTitle, salary };
+    const smartSummary = keySentences.length > 0 
+        ? keySentences.join('. ') + '.' 
+        : sentences.slice(0, 2).join('. ') + '.';
+
+    const eligibility = sentences.find(s => s.toLowerCase().includes('eligible') || s.toLowerCase().includes('criteria')) || 'Refer official website for full eligibility details.';
+    const selection = sentences.find(s => s.toLowerCase().includes('selection') || s.toLowerCase().includes('interview') || s.toLowerCase().includes('exam')) || 'Selection via Written Exam / Interview.';
+
+    return { vacancies, qualification, lastDate, location, postName, experience, eligibility, selection, professionalTitle, salary, smartSummary };
 }
 
 export async function automateContentFetch() {
@@ -249,7 +264,7 @@ export async function automateContentFetch() {
                     category: category,
                     source: item.link,
                     applyLink: officialLink,
-                    description: sanitizedDescription,
+                    description: details.smartSummary, // USE THE SMART SUMMARY instead of full snippet
                     status: 'PUBLISHED',
                     howToApply: category === 'Result' ? 'Check your result on the official portal.' : category === 'Admit Card' ? 'Download your admit card from the official link.' : `Visit the official portal at ${officialLink} to complete registration.`,
                 });

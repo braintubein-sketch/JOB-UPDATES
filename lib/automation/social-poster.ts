@@ -49,41 +49,35 @@ function formatTelegramMessage(job: any): string {
         ].join('\n');
     }
 
+    // IT Jobs Telegram Format
     if (job.category === 'IT') {
         return [
-            `💻 <b>IT JOB ALERT (MNC)</b> 💻`,
-            ``,
+            `💻 <b>IT JOB (MNC)</b>`,
             `🏢 <b>Company:</b> ${job.organization}`,
             `👨‍💻 <b>Role:</b> ${job.postName || job.title}`,
-            `💰 <b>Salary/Stipend:</b> ${job.salary || 'Best in Industry'}`,
-            `💼 <b>Experience:</b> ${job.experience || 'Freshers'}`,
-            `🎓 <b>Skills:</b> ${job.qualification || 'Developer'}`,
+            `💰 <b>Salary:</b> ${job.salary || 'Best in Industry'}`,
+            `💼 <b>Exp:</b> ${job.experience || 'Freshers'}`,
             `📍 <b>Location:</b> ${job.location || 'India'}`,
             ``,
-            `🔗 <b>Apply on Official Portal:</b>`,
-            `${jobUrl}`,
+            `🔗 <b>Apply:</b> ${jobUrl}`,
             ``,
-            `#ITJobs #SoftwareJobs #Hiring #MNC #TCS #Infosys #Wipro`,
+            `#ITJobs #Software #Hiring #MNC #TCS #Infosys`,
         ].join('\n');
     }
 
-    // Default Govt Job Format
+    // Default Govt Job Telegram Format
     return [
-        `🚨 <b>NEW GOVT JOB ALERT</b> 🚨`,
-        ``,
-        `📝 <b>Organization:</b> ${job.organization}`,
+        `🚨 <b>NEW JOB ALERT</b>`,
+        `🏢 <b>Org:</b> ${job.organization}`,
         `📌 <b>Post:</b> ${job.postName || job.title}`,
-        `📊 <b>Vacancies:</b> ${job.vacancies || 'See Notice'}`,
-        `🎓 <b>Qualification:</b> ${job.qualification || 'See Details'}`,
-        `💼 <b>Experience:</b> ${job.experience || 'Freshers / Refer PDF'}`,
-        `📍 <b>Location:</b> ${job.location || 'India'}`,
+        `🎓 <b>Qual:</b> ${job.qualification || 'Details in link'}`,
+        `💼 <b>Exp:</b> ${job.experience || 'Freshers'}`,
         `💰 <b>Salary:</b> ${job.salary || 'As per norms'}`,
         `📅 <b>Last Date:</b> ${dateStr}`,
         ``,
-        `🔗 <b>Apply Online / Full Details:</b>`,
-        `${jobUrl}`,
+        `🔗 <b>Details & Apply:</b> ${jobUrl}`,
         ``,
-        `#${job.category?.toLowerCase() || 'job'} #governmentjobs #jobalert #fresherjobs #hiring`,
+        `#jobalert #govtjobs #hiring #jobupdate`,
     ].join('\n');
 }
 
@@ -93,41 +87,21 @@ function formatWhatsAppMessage(job: any): string {
     if (job.category === 'Result') {
         return [
             `📢 *RESULT OUT*`,
-            ``,
-            `📝 *Organization:* ${job.organization}`,
-            `📌 *Exam Result:* ${job.postName || job.title}`,
+            `📝 *Org:* ${job.organization}`,
+            `📌 *Exam:* ${job.postName || job.title}`,
             `✅ *Status:* DECLARED`,
             ``,
-            `🔗 *Check Result:*`,
-            `${jobUrl}`,
-        ].join('\n');
-    }
-
-    if (job.category === 'Admit Card') {
-        return [
-            `📢 *ADMIT CARD RELEASED*`,
-            ``,
-            `📝 *Organization:* ${job.organization}`,
-            `📌 *Exam:* ${job.postName || job.title}`,
-            `🛂 *Status:* Download Now`,
-            ``,
-            `🔗 *Download Link:*`,
-            `${jobUrl}`,
+            `🔗 *Check Now:* ${jobUrl}`,
         ].join('\n');
     }
 
     return [
-        `📢 *NEW JOB ALERT*`,
-        ``,
-        `*Organization:* ${job.organization}`,
+        `📢 *JOB ALERT*`,
+        `*Org:* ${job.organization}`,
         `*Post:* ${job.postName || job.title}`,
-        `*Qualification:* ${job.qualification}`,
-        `*Experience:* ${job.experience || 'Freshers'}`,
         `*Salary:* ${job.salary || 'As per norms'}`,
-        `*Location:* ${job.location || 'India'}`,
         ``,
-        `🔗 *Details & Apply:*`,
-        `${jobUrl}`,
+        `🔗 *Apply:* ${jobUrl}`,
     ].join('\n');
 }
 
