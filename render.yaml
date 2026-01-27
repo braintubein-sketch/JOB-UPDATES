@@ -4,7 +4,8 @@ services:
     env: node
     plan: free
     buildCommand: npm install && npm run build
-    startCommand: npm start
+    startCommand: "npm run start -- -p $PORT -H 0.0.0.0"
+    healthCheckPath: /api/hello
     envVars:
       - key: NODE_VERSION
         value: 20.9.0
