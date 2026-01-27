@@ -58,10 +58,11 @@ async function postPendingJobsToTelegram() {
             .sort({ postedDate: -1 })
             .limit(5);
 
-        const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://JOB UPDATES.com';
+        const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://jobupdate.site';
 
         for (const job of pendingJobs) {
-            const messageId = await postJobToTelegram(job.toObject(), siteUrl);
+            // Cast to any to bypass Mongoose document vs plain object type mismatch in build
+            const messageId = await postJobToTelegram(job.toObject() as any, siteUrl);
 
             if (messageId) {
                 job.telegramPosted = true;
@@ -183,6 +184,9 @@ export async function triggerArchive() {
 }
 
 export async function triggerDuplicateCleanup() {
-    await cleanupDuplicateJobs();
+    await cleanupDuplicateCleanup();
 }
 
+async function cleanupDuplicateCleanup() {
+    await cleanupDuplicateJobs();
+}
