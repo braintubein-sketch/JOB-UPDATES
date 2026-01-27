@@ -18,6 +18,7 @@ import {
     Calendar,
     ChevronRight,
     Search,
+    X,
 } from 'lucide-react';
 import { Job } from '@/types';
 import { formatDate, formatRelativeDate, formatExperience, formatSalary } from '@/lib/utils';
