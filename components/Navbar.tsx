@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Menu, X, Search, User, Bell, Briefcase, Building2, Award, FileText, BookOpen } from 'lucide-react';
+import { Menu, X, Search, User, Bell, Briefcase, Building2, Award, FileText, BookOpen, Smartphone } from 'lucide-react';
 import ThemeToggle from './ThemeToggle';
 
 const Navbar = () => {
@@ -13,9 +13,9 @@ const Navbar = () => {
     const mainNav = [
         { name: 'Jobs', href: '/latest-jobs', icon: Briefcase },
         { name: 'Govt Jobs', href: '/govt-jobs', icon: Building2 },
+        { name: 'IT Jobs', href: '/it-jobs', icon: Smartphone },
         { name: 'Results', href: '/results', icon: Award },
         { name: 'Admit Cards', href: '/admit-cards', icon: FileText },
-        { name: 'Blog', href: '/blog', icon: BookOpen },
     ];
 
     return (

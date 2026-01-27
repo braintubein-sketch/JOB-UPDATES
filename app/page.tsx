@@ -10,12 +10,14 @@ export const dynamic = 'force-dynamic';
 export default async function HomePage() {
   let featuredJobs: any[] = [];
   let govtJobs: any[] = [];
+  let itJobs: any[] = [];
   let latestResults: any[] = [];
 
   try {
     await dbConnect();
     featuredJobs = await Job.find({ status: 'PUBLISHED' }).sort({ createdAt: -1 }).limit(6).lean();
     govtJobs = await Job.find({ status: 'PUBLISHED', category: 'Govt' }).sort({ createdAt: -1 }).limit(4).lean();
+    itJobs = await Job.find({ status: 'PUBLISHED', category: 'IT' }).sort({ createdAt: -1 }).limit(4).lean();
     latestResults = await Job.find({ status: 'PUBLISHED', category: 'Result' }).sort({ createdAt: -1 }).limit(3).lean();
   } catch (error) {
     console.error('Home page error:', error);
@@ -87,6 +89,35 @@ export default async function HomePage() {
             {govtJobs.length === 0 && (
               <div className="col-span-full text-center py-12">
                 <p className="text-slate-500 dark:text-slate-400">No government jobs available.</p>
+              </div>
+            )}
+          </div>
+        </div>
+      </section>
+
+      {/* IT Jobs Section */}
+      <section className="section">
+        <div className="container-main">
+          <div className="flex items-center justify-between mb-8">
+            <div>
+              <h2 className="flex items-center gap-2 text-slate-900 dark:text-white">
+                <Smartphone className="text-blue-600" size={28} />
+                Freshers & IT Jobs
+              </h2>
+              <p className="text-slate-500 dark:text-slate-400 mt-1">Top MNCs, Startups and Software Engineer roles</p>
+            </div>
+            <Link href="/it-jobs" className="btn-secondary btn-sm hidden md:inline-flex items-center gap-2">
+              View All <ArrowRight size={16} />
+            </Link>
+          </div>
+
+          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+            {itJobs.map((job: any) => (
+              <JobCard key={job._id.toString()} job={{ ...job, id: job._id.toString() }} />
+            ))}
+            {itJobs.length === 0 && (
+              <div className="col-span-full text-center py-12">
+                <p className="text-slate-500 dark:text-slate-400">No IT jobs available.</p>
               </div>
             )}
           </div>

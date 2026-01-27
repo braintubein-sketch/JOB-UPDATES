@@ -29,6 +29,7 @@ export default function JobCard({ job }: JobCardProps) {
     const categoryColors: Record<string, string> = {
         'Govt': 'badge-blue',
         'Private': 'badge-green',
+        'IT': 'bg-indigo-100 text-indigo-700 dark:bg-indigo-900/40 dark:text-indigo-400 px-2 py-1 rounded text-xs font-bold uppercase',
         'Result': 'badge-orange',
         'Admit Card': 'badge-red',
     };

@@ -94,7 +94,12 @@ export default async function JobDetailPage({ params }: { params: { slug: string
                         <div className="flex-1 min-w-0">
                             {/* Badges */}
                             <div className="flex flex-wrap items-center gap-2 mb-4">
-                                <span className={`badge ${job.category === 'Govt' ? 'badge-blue' : job.category === 'Result' ? 'badge-orange' : 'badge-green'}`}>
+                                <span className={`badge ${job.category === 'Govt' ? 'badge-blue' :
+                                        job.category === 'IT' ? 'bg-indigo-100 text-indigo-700 dark:bg-indigo-900/40 dark:text-indigo-400' :
+                                            job.category === 'Result' ? 'badge-orange' :
+                                                job.category === 'Admit Card' ? 'bg-purple-100 text-purple-700 dark:bg-purple-900/40 dark:text-purple-400' :
+                                                    'badge-green'
+                                    }`}>
                                     <ShieldCheck size={12} />
                                     {job.category}
                                 </span>
@@ -150,13 +155,41 @@ export default async function JobDetailPage({ params }: { params: { slug: string
 
                         {/* Key Info Cards */}
                         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                            <InfoCard icon={<Users size={20} />} label="Vacancies" value={job.vacancies || 'Check PDF'} />
-                            <InfoCard icon={<GraduationCap size={20} />} label="Qualification" value={job.qualification || 'Refer PDF'} />
-                            <InfoCard icon={<Briefcase size={20} />} label="Experience" value={job.experience || 'Not Required'} />
-                            <InfoCard icon={<MapPin size={20} />} label="Location" value={job.location || 'All India'} />
-                            <InfoCard icon={<Banknote size={20} />} label="Salary" value={job.salary || 'As per norms'} />
+                            <InfoCard
+                                icon={<Users size={20} />}
+                                label="Vacancies"
+                                value={job.vacancies || 'Check PDF'}
+                                highlight={job.category === 'IT'}
+                            />
+                            <InfoCard
+                                icon={<GraduationCap size={20} />}
+                                label="Qualification"
+                                value={job.qualification || 'Refer PDF'}
+                            />
+                            <InfoCard
+                                icon={<Briefcase size={20} />}
+                                label="Experience"
+                                value={job.experience || 'Not Required'}
+                                highlight={job.category === 'IT'}
+                            />
+                            <InfoCard
+                                icon={<MapPin size={20} />}
+                                label="Location"
+                                value={job.location || 'All India'}
+                            />
+                            <InfoCard
+                                icon={<Banknote size={20} />}
+                                label="Salary"
+                                value={job.salary || 'As per norms'}
+                                highlight={job.category === 'IT'}
+                            />
                             <InfoCard icon={<Calendar size={20} />} label="Age Limit" value={job.ageLimit || '18-35 Years'} />
-                            <InfoCard icon={<Calendar size={20} />} label="Last Date" value={job.lastDate ? new Date(job.lastDate).toLocaleDateString('en-IN') : 'Check PDF'} />
+                            <InfoCard
+                                icon={<Calendar size={20} />}
+                                label={job.category === 'Result' ? 'Announced' : 'Last Date'}
+                                value={job.lastDate ? new Date(job.lastDate).toLocaleDateString('en-IN') : 'Check PDF'}
+                                highlight={job.category === 'Result' || job.category === 'Admit Card'}
+                            />
                         </div>
 
                         {/* Interactive Tabs Content */}
@@ -186,7 +219,7 @@ export default async function JobDetailPage({ params }: { params: { slug: string
                                         rel="noopener noreferrer"
                                         className="btn bg-orange-600 hover:bg-orange-700 text-white flex-1 justify-center py-4 text-lg shadow-lg shadow-orange-600/20"
                                     >
-                                        View Official Result
+                                        Check Your Result Now
                                         <ExternalLink size={20} className="ml-2" />
                                     </a>
                                 )
@@ -197,8 +230,18 @@ export default async function JobDetailPage({ params }: { params: { slug: string
                                     rel="noopener noreferrer"
                                     className="btn bg-purple-600 hover:bg-purple-700 text-white flex-1 justify-center py-4 text-lg shadow-lg shadow-purple-600/20"
                                 >
-                                    Login to Download
+                                    Login & Download Admit Card
                                     <Download size={20} className="ml-2" />
+                                </a>
+                            ) : job.category === 'IT' ? (
+                                <a
+                                    href={job.applyLink}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="btn bg-indigo-600 hover:bg-indigo-700 text-white flex-1 justify-center py-4 text-lg shadow-lg shadow-indigo-600/20"
+                                >
+                                    Apply on Official Company Portal
+                                    <ExternalLink size={20} className="ml-2" />
                                 </a>
                             ) : (
                                 job.applyLink && (
@@ -319,12 +362,12 @@ export default async function JobDetailPage({ params }: { params: { slug: string
     );
 }
 
-function InfoCard({ icon, label, value }: { icon: React.ReactNode, label: string, value: string }) {
+function InfoCard({ icon, label, value, highlight }: { icon: React.ReactNode, label: string, value: string, highlight?: boolean }) {
     return (
-        <div className="card p-4 text-center">
-            <div className="text-blue-600 dark:text-blue-400 mb-2 flex justify-center">{icon}</div>
+        <div className={`card p-4 text-center transition-all ${highlight ? 'ring-2 ring-blue-500 bg-blue-50/30 dark:bg-blue-900/10' : ''}`}>
+            <div className={`${highlight ? 'text-blue-600' : 'text-slate-400'} dark:text-blue-400 mb-2 flex justify-center`}>{icon}</div>
             <span className="text-[10px] uppercase font-semibold tracking-wider text-slate-400 block mb-1">{label}</span>
-            <span className="font-bold text-sm text-slate-900 dark:text-white">{value}</span>
+            <span className={`font-bold text-sm ${highlight ? 'text-blue-700 dark:text-blue-300' : 'text-slate-900 dark:text-white'}`}>{value}</span>
         </div>
     );
 }

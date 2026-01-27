@@ -153,11 +153,15 @@ function extractComprehensiveDetails(title: string, text: string) {
     const foundState = states.find(s => fullText.includes(s.toLowerCase()));
     if (foundState) location = foundState;
 
+    let salary = 'Competitive Package';
+    const salaryMatch = fullText.match(/(?:salary|stipend|package|lpa|ctc|pay scale|pay)\s*:?\s*(?:rs\.?\s*)?([\d.,\-]+\s*(?:lpa|per month|k|thousand|monthly|annually)?|[\d.,\-]+\s*(?:to|-)\s*[\d.,\-]+\s*(?:lpa|per month|k)?)/i);
+    if (salaryMatch) salary = salaryMatch[1];
+
     const sentences = cleanText.split(/[.!?]/);
     const eligibility = sentences.find(s => s.toLowerCase().includes('eligible') || s.toLowerCase().includes('criteria'))?.trim() || 'Refer official website for full eligibility details.';
     const selection = sentences.find(s => s.toLowerCase().includes('selection') || s.toLowerCase().includes('interview') || s.toLowerCase().includes('exam'))?.trim() || 'Selection via Written Exam / Interview.';
 
-    return { vacancies, qualification, lastDate, location, postName, experience, eligibility, selection, professionalTitle };
+    return { vacancies, qualification, lastDate, location, postName, experience, eligibility, selection, professionalTitle, salary };
 }
 
 export async function automateContentFetch() {
@@ -209,6 +213,19 @@ export async function automateContentFetch() {
                 else if (titleLower.includes('ssc')) realOrg = 'Staff Selection Commission';
                 else if (titleLower.includes('upsc')) realOrg = 'UPSC';
 
+                // 3. ENHANCED CATEGORIZATION
+                let category = source.defaultCategory;
+                if (titleLower.includes('result') && (titleLower.includes('declared') || titleLower.includes('out') || titleLower.includes('released') || titleLower.includes('announced'))) {
+                    category = 'Result';
+                } else if (titleLower.includes('admit card') && (titleLower.includes('released') || titleLower.includes('out') || titleLower.includes('available') || titleLower.includes('download'))) {
+                    category = 'Admit Card';
+                } else if (titleLower.includes('software') || titleLower.includes('developer') || titleLower.includes('it jobs') || titleLower.includes('technician') || titleLower.includes('engineer') || titleLower.includes('tcs') || titleLower.includes('infosys') || titleLower.includes('wipro') || titleLower.includes('cognizant') || titleLower.includes('accenture')) {
+                    category = 'IT';
+                }
+
+                // Skip Results/Admit Cards that are NOT yet announced
+                if ((titleLower.includes('result') || titleLower.includes('admit card')) && category === source.defaultCategory) continue;
+
                 const sanitizedDescription = (item.contentSnippet || item.content || details.professionalTitle)
                     .replace(/<[^>]*>?/gm, '')
                     .replace(/&nbsp;/g, ' ')
@@ -223,16 +240,17 @@ export async function automateContentFetch() {
                     vacancies: details.vacancies,
                     qualification: details.qualification,
                     location: details.location,
+                    salary: details.salary,
                     lastDate: details.lastDate,
                     experience: details.experience,
                     eligibility: details.eligibility,
                     selectionProcess: details.selection,
-                    category: titleLower.includes('result') ? 'Result' : titleLower.includes('admit') ? 'Admit Card' : source.defaultCategory,
+                    category: category,
                     source: item.link,
                     applyLink: officialLink,
                     description: sanitizedDescription,
                     status: 'PUBLISHED',
-                    howToApply: `Visit the official portal at ${officialLink} to complete registration.`,
+                    howToApply: category === 'Result' ? 'Check your result on the official portal.' : category === 'Admit Card' ? 'Download your admit card from the official link.' : `Visit the official portal at ${officialLink} to complete registration.`,
                 });
 
                 newJobsCount++;

@@ -40,7 +40,7 @@ const JobSchema = new mongoose.Schema({
     // Categorization
     category: {
         type: String,
-        enum: ['Govt', 'Private', 'Result', 'Admit Card', 'Railway', 'Banking', 'Defence', 'Teaching', 'PSU'],
+        enum: ['Govt', 'Private', 'IT', 'Result', 'Admit Card', 'Railway', 'Banking', 'Defence', 'Teaching', 'PSU'],
         required: true
     },
     subCategory: { type: String },
