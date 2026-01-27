@@ -5,10 +5,10 @@ import Job from '@/models/Job';
 export const dynamic = 'force-dynamic';
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-    const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://JOB UPDATES.com';
+    const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://jobupdate.site';
 
     // Static pages
-    const staticPages = [
+    const staticPages: MetadataRoute.Sitemap = [
         '',
         '/jobs',
         '/companies',
@@ -18,7 +18,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     ].map((route) => ({
         url: `${baseUrl}${route}`,
         lastModified: new Date(),
-        changeFrequency: route === '' ? 'daily' : 'weekly' as const,
+        changeFrequency: (route === '' ? 'daily' : 'weekly') as 'daily' | 'weekly',
         priority: route === '' ? 1 : 0.8,
     }));
 
@@ -33,10 +33,10 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
             .limit(1000)
             .lean();
 
-        jobPages = jobs.map((job: { slug: string; updatedAt: Date }) => ({
+        jobPages = jobs.map((job: any) => ({
             url: `${baseUrl}/jobs/${job.slug}`,
-            lastModified: job.updatedAt,
-            changeFrequency: 'daily' as const,
+            lastModified: new Date(job.updatedAt),
+            changeFrequency: 'daily' as 'daily',
             priority: 0.7,
         }));
     } catch (error) {
@@ -45,4 +45,3 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 
     return [...staticPages, ...jobPages];
 }
-
