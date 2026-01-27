@@ -3,6 +3,7 @@ import dbConnect from '../mongodb/dbConnect';
 import { Job } from '../../models/Job';
 import { generateSlug } from '../utils';
 import { autoPostNewJobs } from './social-poster';
+import { JobDataNormalizer } from './normalizer';
 
 const parser = new RSSParser({
     headers: {
@@ -91,115 +92,6 @@ async function extractOfficialLink(newsUrl: string): Promise<string> {
     }
 }
 
-/**
- * Intelligent extraction for Job Details
- */
-function extractComprehensiveDetails(title: string, text: string) {
-    const fullText = (title + " " + text).toLowerCase();
-    const cleanText = text.replace(/<[^>]*>?/gm, '');
-
-    // 1. SMART ORGANIZATION & TITLE CLEANING
-    const cleanerTitle = title
-        .replace(/(?:Latest|New|Urgent|Breaking|2024|2025|2026)\s*/gi, '')
-        .replace(/(?:Notification|Recruitment|Jobs?|Vacanc(?:y|ies)|Hiring|Apply Online|Released|Out Now|Declared|Registration|Admission|Admit Card|Result)\s*/gi, '')
-        .replace(/\d+\s*(?:Posts?|Vacanc(?:y|ies))\s*/gi, '')
-        .replace(/@\s*\S+/g, '')
-        .replace(/\(\s*\)/g, '')
-        .replace(/\s+/g, ' ')
-        .trim();
-
-    // Intelligence: Try to extract Org from common patterns "Org Name Recruitment" or "Org Name Hiring"
-    let realOrg = cleanerTitle.split(/\||-|:/)[0].trim();
-    if (realOrg.split(' ').length > 4) realOrg = realOrg.split(' ').slice(0, 3).join(' ');
-
-    const professionalTitle = cleanerTitle;
-    let postName = cleanerTitle.replace(realOrg, '').replace(/^[^\w]+|[^\w]+$/g, '').trim() || 'Professional Role';
-
-    // 2. EXPERIENCE EXTRACTION (Better accuracy for "Freshers" vs "Experienced")
-    let experience = 'Freshers';
-    const expMatch = fullText.match(/(\d+)\s*(?:-|to)\s*(\d+)\s*years?/i) || fullText.match(/(\d+)\+?\s*years?/i) || fullText.match(/exp(?:erience)?\s*:?\s*(\d+)/i);
-    if (expMatch) {
-        experience = expMatch[2] ? `${expMatch[1]}-${expMatch[2]} Years` : `${expMatch[1]}+ Years`;
-    }
-
-    // 3. VACANCY INTELLIGENCE
-    let vacancies = 'Check Notice';
-    const vacancyMatch = fullText.match(/(\d{1,6})\s+(?:Posts?|Vacanc(?:y|ies)|Openings?|Positions?)/i) || fullText.match(/(?:Total|Over)\s*(\d{1,6})/i);
-    if (vacancyMatch) vacancies = vacancyMatch[1];
-
-    // 4. QUALIFICATION EXPANSION
-    const qualMap = {
-        'btech': 'B.Tech', 'mtech': 'M.Tech', 'graduate': 'Any Graduate', 'degree': 'Any Degree',
-        'post graduate': 'Post Graduate', '10th': '10th Pass', '12th': '12th Pass', 'hsc': 'HSC', 'ssc': 'SSC',
-        'iti': 'ITI', 'diploma': 'Diploma', 'mba': 'MBA', 'mca': 'MCA', 'be': 'B.E', 'bcom': 'B.Com',
-        'bsc': 'B.Sc', 'ba': 'B.A', 'law': 'LLB/LLM', 'mbbs': 'MBBS', 'ca': 'Chartered Accountant',
-        'phd': 'Ph.D'
-    };
-    const foundQuals = Object.keys(qualMap).filter(k => fullText.toLowerCase().includes(k));
-    let qualification = foundQuals.length > 0 ? Array.from(new Set(foundQuals.map(k => (qualMap as any)[k]))).join(', ') : 'Graduate / Relevant Degree';
-
-    // 5. SMART LOCATION (States + Major Cities)
-    let location = 'All India';
-    const regions = [
-        'Andra Pradesh', 'Arunachal Pradesh', 'Assam', 'Bihar', 'Chhattisgarh', 'Goa', 'Gujarat', 'Haryana',
-        'Himachal Pradesh', 'Jharkhand', 'Karnataka', 'Kerala', 'Madhya Pradesh', 'Maharashtra', 'Manipur',
-        'Meghalaya', 'Mizoram', 'Nagaland', 'Odisha', 'Punjab', 'Rajasthan', 'Sikkim', 'Tamil Nadu',
-        'Telangana', 'Tripura', 'Uttar Pradesh', 'Uttarakhand', 'West Bengal', 'Delhi', 'Mumbai', 'Pune',
-        'Bangalore', 'Bengaluru', 'Chennai', 'Hyderabad', 'Kolkata', 'Noida', 'Gurgaon', 'Gurugram'
-    ];
-    const foundRegion = regions.find(r => fullText.toLowerCase().includes(r.toLowerCase()));
-    if (foundRegion) location = foundRegion.replace('Bengaluru', 'Bangalore').replace('Gurugram', 'Gurgaon');
-
-    // 6. SALARY INTELLIGENCE
-    let salary = 'Competitive Package';
-    const salaryMatch = fullText.match(/(?:salary|stipend|package|lpa|ctc|pay scale|pay)\s*:?\s*(?:rs\.?\s*)?([\d.,\-]+\s*(?:lpa|per month|k|thousand|monthly|annually)?|[\d.,\-]+\s*(?:to|-)\s*[\d.,\-]+\s*(?:lpa|per month|k)?)/i);
-    if (salaryMatch) salary = salaryMatch[1];
-
-    // 7. LAST DATE INTELLIGENCE
-    let lastDate: Date | undefined = undefined;
-    const months = ['january', 'february', 'march', 'april', 'may', 'june', 'july', 'august', 'september', 'october', 'november', 'december', 'jan', 'feb', 'mar', 'apr', 'may', 'jun', 'jul', 'aug', 'sep', 'oct', 'nov', 'dec'];
-    const dateRegex = new RegExp(`(\\d{1,2})\\s*(${months.join('|')})\\s*(\\d{4})`, 'i');
-    const dateMatch = fullText.match(dateRegex);
-
-    if (dateMatch) {
-        const d = new Date(`${dateMatch[1]} ${dateMatch[2]} ${dateMatch[3]}`);
-        if (!isNaN(d.getTime())) lastDate = d;
-    }
-
-    if (!lastDate) {
-        const shortDateRegex = new RegExp(`(\\d{1,2})(?:st|nd|rd|th)?\\s*(${months.join('|')})`, 'i');
-        const shortMatch = fullText.match(shortDateRegex);
-        if (shortMatch) {
-            const d = new Date(`${shortMatch[1]} ${shortMatch[2]} ${new Date().getFullYear()}`);
-            if (!isNaN(d.getTime())) lastDate = d;
-        }
-    }
-    if (!lastDate) lastDate = new Date(Date.now() + 20 * 24 * 60 * 60 * 1000);
-
-    const sentences = cleanText.split(/[.!?]/).map(s => s.trim()).filter(s => s.length > 25);
-
-    // SMART SUMMARY INTELLIGENCE: Ranking sentences by "Information Density"
-    const keySentences = sentences
-        .filter(s => {
-            const lower = s.toLowerCase();
-            return (lower.includes('vacancy') || lower.includes('recruitment') ||
-                lower.includes('eligible') || lower.includes('qualification') ||
-                lower.includes('last date') || lower.includes('apply')) &&
-                !lower.includes('click here') && !lower.includes('follow us');
-        })
-        .sort((a, b) => b.length - a.length)
-        .slice(0, 3);
-
-    const smartSummary = keySentences.length > 0
-        ? keySentences.join('. ') + '.'
-        : sentences.slice(0, 2).join('. ') + '.';
-
-    const eligibility = sentences.find(s => s.toLowerCase().includes('eligible') || s.toLowerCase().includes('criteria') || s.toLowerCase().includes('qualification')) || 'Refer official website for full eligibility details.';
-    const selection = sentences.find(s => s.toLowerCase().includes('selection') || s.toLowerCase().includes('interview') || s.toLowerCase().includes('exam') || s.toLowerCase().includes('process')) || 'Selection via Written Exam / Interview.';
-
-    return { vacancies, qualification, lastDate, location, postName, experience, eligibility, selection, professionalTitle, salary, smartSummary, realOrg };
-}
-
 export async function automateContentFetch() {
     await dbConnect();
     console.log('=== ULTRA DEEP EXTRACTION CYCLE STARTED ===');
@@ -229,66 +121,67 @@ export async function automateContentFetch() {
                 // 2. DEEP LINK FETCHING
                 const officialLink = await extractOfficialLink(item.link);
 
-                // SKIPPING if we couldn't find a better link than the news site itself
-                // This ensures we NEVER point back to a news article as an 'Official Link'
-                const isNewsDomain = ['indiatoday', 'zeenews', 'timesofindia', 'hindustantimes', 'indiatvnews', 'financialexpress', 'jagranjosh'].some(d => officialLink.includes(d));
-                if (isNewsDomain) continue;
+                // 3. NORMALIZE & VALIDATE (The New Intelligence Layer)
+                const rawData = {
+                    title: originalTitle,
+                    link: officialLink, // Use the detected official link
+                    contentSnippet: item.contentSnippet,
+                    content: item.content,
+                    sourceName: source.name,
+                    defaultCategory: source.defaultCategory
+                };
 
-                const details = extractComprehensiveDetails(originalTitle, item.contentSnippet || item.content || '');
+                const normalized = JobDataNormalizer.normalize(rawData);
 
-                const slug = generateSlug(details.professionalTitle).substring(0, 80);
+                // HARD RULE: REJECT if not official link
+                if (!normalized.isOfficial) {
+                    console.log(`❌ Rejected (Unofficial): ${normalized.organization} - ${normalized.applyLink}`);
+                    continue;
+                }
+
+                // HARD RULE: REJECT if missing mandatory fields (checking validationErrors)
+                if (normalized.validationErrors.length > 0) {
+                    console.log(`❌ Rejected (Invalid Data): ${normalized.title} - ${normalized.validationErrors.join(', ')}`);
+                    continue;
+                }
+
+                const slug = generateSlug(normalized.title).substring(0, 80);
                 const existing = await Job.findOne({ slug });
                 if (existing) continue;
 
-                // 3. ORG LOGIC
-                let realOrg = details.professionalTitle.split(' ')[0];
-                if (['where', 'how', 'when', 'what', 'why', 'this'].includes(realOrg.toLowerCase())) realOrg = details.professionalTitle.split(' ').slice(0, 2).join(' ');
-
-                if (titleLower.includes('railway')) realOrg = 'Indian Railways';
-                else if (titleLower.includes('bank')) realOrg = 'Banking Sector';
-                else if (titleLower.includes('ssc')) realOrg = 'Staff Selection Commission';
-                else if (titleLower.includes('upsc')) realOrg = 'UPSC';
-
-                // 3. ENHANCED CATEGORIZATION
-                let category = source.defaultCategory;
-                if (titleLower.includes('result') && (titleLower.includes('declared') || titleLower.includes('out') || titleLower.includes('released') || titleLower.includes('announced'))) {
-                    category = 'Result';
-                } else if (titleLower.includes('admit card') && (titleLower.includes('released') || titleLower.includes('out') || titleLower.includes('available') || titleLower.includes('download'))) {
-                    category = 'Admit Card';
-                } else if (titleLower.includes('software') || titleLower.includes('developer') || titleLower.includes('it jobs') || titleLower.includes('technician') || titleLower.includes('engineer') || titleLower.includes('tcs') || titleLower.includes('infosys') || titleLower.includes('wipro') || titleLower.includes('cognizant') || titleLower.includes('accenture')) {
-                    category = 'IT';
-                }
-
-                // Skip Results/Admit Cards that are NOT yet announced
-                if ((titleLower.includes('result') || titleLower.includes('admit card')) && category === source.defaultCategory) continue;
-
-                const sanitizedDescription = (item.contentSnippet || item.content || details.professionalTitle)
-                    .replace(/<[^>]*>?/gm, '')
-                    .replace(/&nbsp;/g, ' ')
-                    .replace(/\s+/g, ' ')
-                    .trim();
-
+                // CREATE JOB WITH STANDARDIZED DATA
                 await Job.create({
-                    title: details.professionalTitle,
+                    title: normalized.title,
                     slug: slug,
-                    organization: details.realOrg, // USE THE INTELLIGENTLY EXTRACTED ORG
-                    postName: details.postName,
-                    vacancies: details.vacancies,
-                    qualification: details.qualification,
-                    location: details.location,
-                    salary: details.salary,
-                    lastDate: details.lastDate,
-                    experience: details.experience,
-                    eligibility: details.eligibility,
-                    selectionProcess: details.selection,
-                    category: category,
-                    source: item.link,
-                    applyLink: officialLink,
-                    description: details.smartSummary, // USE THE SMART SUMMARY instead of full snippet
-                    status: 'PUBLISHED',
-                    howToApply: category === 'Result' ? 'Check your result on the official portal.' : category === 'Admit Card' ? 'Download your admit card from the official link.' : `Visit the official portal at ${officialLink} to complete registration.`,
+                    organization: normalized.organization,
+                    postName: normalized.postName,
+                    vacancies: normalized.vacancies,
+                    qualification: normalized.qualification,
+                    ageLimit: normalized.ageLimit,
+                    salary: normalized.salary,
+                    location: normalized.location,
+                    experience: normalized.experience,
+
+                    lastDate: normalized.lastDate,
+                    examDate: normalized.examDate,
+
+                    category: normalized.category,
+
+                    source: source.url,
+                    sourceUrl: item.link, // Original Source URL
+                    applyLink: normalized.applyLink,
+
+                    description: normalized.description, // Smart Summary
+
+                    status: normalized.status, // Should be PUBLISHED at this point
+
+                    // Generated Metadata
+                    howToApply: normalized.category === 'Result' ? 'Check your result on the official portal.' : normalized.category === 'Admit Card' ? 'Download your admit card from the official link.' : `Visit the official portal at ${normalized.applyLink} to apply.`,
+
+                    publishedAt: new Date(),
                 });
 
+                console.log(`✅ Posted: ${normalized.organization} - ${normalized.postName}`);
                 newJobsCount++;
             }
         } catch (err: any) {

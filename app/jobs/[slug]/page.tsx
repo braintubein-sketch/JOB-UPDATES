@@ -229,7 +229,7 @@ export default async function JobDetailPage({ params }: { params: { slug: string
                             organization: job.organization,
                             title: job.title,
                             postName: job.postName,
-                            notificationPdf: job.notificationPdf || job.source || job.applyLink,
+                            notificationPdf: job.notificationPdf || job.sourceUrl || job.applyLink,
                             importantDates: [
                                 job.startDate && { label: 'Application Start Date', date: new Date(job.startDate).toLocaleDateString('en-IN') },
                                 job.lastDate && { label: job.category === 'Result' ? 'Result Declared On' : 'Last Date to Apply', date: new Date(job.lastDate).toLocaleDateString('en-IN'), isUrgent },
@@ -284,9 +284,9 @@ export default async function JobDetailPage({ params }: { params: { slug: string
                                     </a>
                                 )
                             )}
-                            {job.source && (
+                            {job.sourceUrl && (
                                 <a
-                                    href={job.source}
+                                    href={job.sourceUrl}
                                     target="_blank"
                                     rel="noopener noreferrer"
                                     className="btn-secondary flex-1 justify-center py-4 text-lg"

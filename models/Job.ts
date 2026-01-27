@@ -31,6 +31,7 @@ const JobSchema = new mongoose.Schema({
     applyLink: { type: String },
     notificationPdf: { type: String },
     source: { type: String },
+    sourceUrl: { type: String }, // Official Source URL (News Item or RSS Link)
 
     // Content
     description: { type: String },
