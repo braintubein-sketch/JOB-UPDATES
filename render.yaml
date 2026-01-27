@@ -17,6 +17,6 @@ services:
       - key: ADMIN_PASSWORD
         value: admin123
       - key: NEXT_PUBLIC_SITE_URL
-        value: https://job-updates-portal.onrender.com
+        value: https://jobupdate.site
       - key: NEXT_PUBLIC_SITE_NAME
         value: JOB UPDATES

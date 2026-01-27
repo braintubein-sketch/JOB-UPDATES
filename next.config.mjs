@@ -21,7 +21,7 @@ const nextConfig = {
 
     // Environment variables validation
     env: {
-        NEXT_PUBLIC_SITE_URL: process.env.NEXT_PUBLIC_SITE_URL || 'https://jobupdates.com',
+        NEXT_PUBLIC_SITE_URL: process.env.NEXT_PUBLIC_SITE_URL || 'https://jobupdate.site',
         NEXT_PUBLIC_SITE_NAME: process.env.NEXT_PUBLIC_SITE_NAME || 'JOB UPDATES',
     },
 };
