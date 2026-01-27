@@ -35,3 +35,12 @@ services:
           name: job-updates
           type: web
           property: host
+
+  - type: cron
+    name: fetch-jobs-cron
+    plan: free
+    schedule: "*/30 * * * *"
+    command: "curl -X GET https://job-updates.onrender.com/api/cron/fetch?key=${CRON_SECRET}"
+    envVars:
+      - key: CRON_SECRET
+        sync: false
