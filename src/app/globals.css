@@ -122,12 +122,21 @@
 
   /* Interactive Elements */
   .btn-primary {
-    @apply relative overflow-hidden px-8 py-4 bg-primary text-white font-bold rounded-2xl transition-all duration-300 hover:scale-[1.02] active:scale-[0.98] hover:shadow-[0_0_30px_rgba(100, 80, 255, 0.4)] flex items-center justify-center gap-2;
+    @apply relative overflow-hidden px-8 py-4 bg-primary text-white font-bold rounded-2xl transition-all duration-300 active:scale-[0.98] flex items-center justify-center gap-2;
     background: var(--gradient-primary);
   }
 
+  .btn-primary:hover {
+    @apply scale-[1.02];
+    box-shadow: 0 0 30px rgba(100, 80, 255, 0.4);
+  }
+
   .btn-secondary {
-    @apply px-8 py-4 bg-secondary text-foreground font-semibold rounded-2xl transition-all duration-300 hover:bg-secondary/80 border border-border hover:border-primary/50 flex items-center justify-center gap-2;
+    @apply px-8 py-4 bg-secondary text-foreground font-semibold rounded-2xl transition-all duration-300 border border-border flex items-center justify-center gap-2;
+  }
+
+  .btn-secondary:hover {
+    @apply bg-secondary/80 border-primary/50;
   }
 
   .input-premium {
@@ -135,7 +144,12 @@
   }
 
   .card-premium {
-    @apply bg-card border border-border rounded-[2rem] p-8 transition-all duration-500 hover:border-primary/30 hover:shadow-[0_20px_40px_rgba(0, 0, 0, 0.3)] relative overflow-hidden;
+    @apply bg-card border border-border rounded-[2rem] p-8 transition-all duration-500 relative overflow-hidden;
+  }
+
+  .card-premium:hover {
+    @apply border-primary/30;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
   }
 
   .gradient-text {
