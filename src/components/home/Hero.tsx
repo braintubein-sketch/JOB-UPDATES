@@ -1,5 +1,6 @@
 'use client';
 
+import { Suspense } from 'react';
 import { motion } from 'framer-motion';
 import Link from 'next/link';
 import { ArrowRight, Sparkles, TrendingUp, Briefcase, Zap, ShieldCheck, Globe } from 'lucide-react';
@@ -55,7 +56,9 @@ export default function Hero() {
                     transition={{ delay: 0.3 }}
                     className="relative z-10 w-full max-w-4xl mx-auto glass rounded-[2.5rem] p-4 md:p-6 mb-12 shadow-2xl"
                 >
-                    <SearchBar />
+                    <Suspense fallback={<div className="h-16 w-full animate-pulse bg-secondary/50 rounded-full" />}>
+                        <SearchBar />
+                    </Suspense>
                 </motion.div>
 
                 {/* Trust Indicators */}
