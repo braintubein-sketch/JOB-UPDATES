@@ -50,7 +50,7 @@ export default async function JobDetailPage({ params }: { params: { slug: string
     if (!job) return notFound();
 
     const timeLeft = job.lastDate ? getTimeRemaining(job.lastDate) : null;
-    const isUrgent = timeLeft && !timeLeft.expired && timeLeft.days <= 3;
+    const isUrgent = !!(timeLeft && !timeLeft.expired && timeLeft.days <= 3);
 
     const jsonLd = {
         "@context": "https://schema.org/",
@@ -95,10 +95,10 @@ export default async function JobDetailPage({ params }: { params: { slug: string
                             {/* Badges */}
                             <div className="flex flex-wrap items-center gap-2 mb-4">
                                 <span className={`badge ${job.category === 'Govt' ? 'badge-blue' :
-                                        job.category === 'IT' ? 'bg-indigo-100 text-indigo-700 dark:bg-indigo-900/40 dark:text-indigo-400' :
-                                            job.category === 'Result' ? 'badge-orange' :
-                                                job.category === 'Admit Card' ? 'bg-purple-100 text-purple-700 dark:bg-purple-900/40 dark:text-purple-400' :
-                                                    'badge-green'
+                                    job.category === 'IT' ? 'bg-indigo-100 text-indigo-700 dark:bg-indigo-900/40 dark:text-indigo-400' :
+                                        job.category === 'Result' ? 'badge-orange' :
+                                            job.category === 'Admit Card' ? 'bg-purple-100 text-purple-700 dark:bg-purple-900/40 dark:text-purple-400' :
+                                                'badge-green'
                                     }`}>
                                     <ShieldCheck size={12} />
                                     {job.category}
@@ -153,47 +153,75 @@ export default async function JobDetailPage({ params }: { params: { slug: string
                     {/* Left Column - Main Content */}
                     <div className="lg:col-span-2 space-y-6">
 
-                        {/* Key Info Cards */}
+                        {/* Key Info Cards - Specialized by Category */}
                         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                            <InfoCard
-                                icon={<Users size={20} />}
-                                label="Vacancies"
-                                value={job.vacancies || 'Check PDF'}
-                                highlight={job.category === 'IT'}
-                            />
-                            <InfoCard
-                                icon={<GraduationCap size={20} />}
-                                label="Qualification"
-                                value={job.qualification || 'Refer PDF'}
-                            />
-                            <InfoCard
-                                icon={<Briefcase size={20} />}
-                                label="Experience"
-                                value={job.experience || 'Not Required'}
-                                highlight={job.category === 'IT'}
-                            />
-                            <InfoCard
-                                icon={<MapPin size={20} />}
-                                label="Location"
-                                value={job.location || 'All India'}
-                            />
-                            <InfoCard
-                                icon={<Banknote size={20} />}
-                                label="Salary"
-                                value={job.salary || 'As per norms'}
-                                highlight={job.category === 'IT'}
-                            />
-                            <InfoCard icon={<Calendar size={20} />} label="Age Limit" value={job.ageLimit || '18-35 Years'} />
-                            <InfoCard
-                                icon={<Calendar size={20} />}
-                                label={job.category === 'Result' ? 'Announced' : 'Last Date'}
-                                value={job.lastDate ? new Date(job.lastDate).toLocaleDateString('en-IN') : 'Check PDF'}
-                                highlight={job.category === 'Result' || job.category === 'Admit Card'}
-                            />
+                            {job.category === 'IT' ? (
+                                <>
+                                    <InfoCard icon={<Building2 size={20} />} label="Company" value={job.organization} highlight />
+                                    <InfoCard icon={<Banknote size={20} />} label="Salary" value={job.salary || 'Best in Industry'} highlight />
+                                    <InfoCard icon={<Briefcase size={20} />} label="Experience" value={job.experience || 'Freshers'} highlight />
+                                    <InfoCard icon={<MapPin size={20} />} label="Job Location" value={job.location || 'India'} />
+                                    <InfoCard icon={<GraduationCap size={20} />} label="Skills" value={job.qualification || 'Developer'} />
+                                    <InfoCard icon={<Calendar size={20} />} label="Joining" value="Immediate" />
+                                </>
+                            ) : job.category === 'Result' ? (
+                                <>
+                                    <InfoCard icon={<Users size={20} />} label="Status" value="Declared" highlight />
+                                    <InfoCard icon={<Calendar size={20} />} label="Announced" value={job.lastDate ? new Date(job.lastDate).toLocaleDateString('en-IN') : 'Recently'} highlight />
+                                    <InfoCard icon={<Building2 size={20} />} label="Board" value={job.organization} />
+                                    <InfoCard icon={<MapPin size={20} />} label="Region" value={job.location || 'All India'} />
+                                </>
+                            ) : job.category === 'Admit Card' ? (
+                                <>
+                                    <InfoCard icon={<Calendar size={20} />} label="Exam Date" value={job.examDate ? new Date(job.examDate).toLocaleDateString('en-IN') : 'Check Notice'} highlight />
+                                    <InfoCard icon={<Download size={20} />} label="Availability" value="Live Now" highlight />
+                                    <InfoCard icon={<Building2 size={20} />} label="Organizer" value={job.organization} />
+                                    <InfoCard icon={<MapPin size={20} />} label="Centers" value={job.location || 'All India'} />
+                                </>
+                            ) : (
+                                <>
+                                    <InfoCard
+                                        icon={<Users size={20} />}
+                                        label="Vacancies"
+                                        value={job.vacancies || 'Check PDF'}
+                                        highlight={job.category === 'IT'}
+                                    />
+                                    <InfoCard
+                                        icon={<GraduationCap size={20} />}
+                                        label="Qualification"
+                                        value={job.qualification || 'Refer PDF'}
+                                    />
+                                    <InfoCard
+                                        icon={<Briefcase size={20} />}
+                                        label="Experience"
+                                        value={job.experience || 'Not Required'}
+                                        highlight={job.category === 'IT'}
+                                    />
+                                    <InfoCard
+                                        icon={<MapPin size={20} />}
+                                        label="Location"
+                                        value={job.location || 'All India'}
+                                    />
+                                    <InfoCard
+                                        icon={<Banknote size={20} />}
+                                        label="Salary"
+                                        value={job.salary || 'As per norms'}
+                                        highlight={job.category === 'IT'}
+                                    />
+                                    <InfoCard icon={<Calendar size={20} />} label="Age Limit" value={job.ageLimit || '18-35 Years'} />
+                                    <InfoCard
+                                        icon={<Calendar size={20} />}
+                                        label="Last Date"
+                                        value={job.lastDate ? new Date(job.lastDate).toLocaleDateString('en-IN') : 'Check PDF'}
+                                        highlight={isUrgent}
+                                    />
+                                </>
+                            )}
                         </div>
 
                         {/* Interactive Tabs Content */}
                         <JobTabs job={{
+                            category: job.category,
                             description: job.description,
                             eligibility: job.eligibility,
                             selectionProcess: job.selectionProcess,
@@ -204,7 +232,7 @@ export default async function JobDetailPage({ params }: { params: { slug: string
                             notificationPdf: job.notificationPdf || job.source || job.applyLink,
                             importantDates: [
                                 job.startDate && { label: 'Application Start Date', date: new Date(job.startDate).toLocaleDateString('en-IN') },
-                                job.lastDate && { label: 'Last Date to Apply', date: new Date(job.lastDate).toLocaleDateString('en-IN'), isUrgent },
+                                job.lastDate && { label: job.category === 'Result' ? 'Result Declared On' : 'Last Date to Apply', date: new Date(job.lastDate).toLocaleDateString('en-IN'), isUrgent },
                                 job.examDate && { label: 'Exam Date', date: new Date(job.examDate).toLocaleDateString('en-IN') }
                             ].filter(Boolean) as any
                         }} />

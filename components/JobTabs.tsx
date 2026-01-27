@@ -5,6 +5,7 @@ import { FileText, CheckCircle, ClipboardList, Calendar, Info } from 'lucide-rea
 
 interface JobTabsProps {
     job: {
+        category: string;
         description?: string;
         eligibility?: string;
         selectionProcess?: string;
@@ -20,12 +21,15 @@ interface JobTabsProps {
 export default function JobTabs({ job }: JobTabsProps) {
     const [activeTab, setActiveTab] = useState('description');
 
+    const isResult = job.category === 'Result';
+    const isAdmitCard = job.category === 'Admit Card';
+
     const tabs = [
-        { id: 'description', label: 'Job Description', icon: FileText },
-        { id: 'eligibility', label: 'Eligibility', icon: CheckCircle },
-        { id: 'selection', label: 'Selection Process', icon: ClipboardList },
-        { id: 'dates', label: 'Important Dates', icon: Calendar },
-        { id: 'official', label: 'Official Notice', icon: Info },
+        { id: 'description', label: isResult ? 'Result Info' : isAdmitCard ? 'Card Details' : 'Job Summary', icon: FileText },
+        ...(!isResult && !isAdmitCard ? [{ id: 'eligibility', label: 'Eligibility', icon: CheckCircle }] : []),
+        { id: 'selection', label: isResult ? 'How to Check' : isAdmitCard ? 'How to Download' : 'Selection Process', icon: ClipboardList },
+        { id: 'dates', label: isResult ? 'Announcements' : 'Schedule', icon: Calendar },
+        { id: 'official', label: isResult ? 'Result Link' : isAdmitCard ? 'Portal Link' : 'Official Notice', icon: Info },
     ];
 
     const renderContent = () => {
@@ -33,16 +37,26 @@ export default function JobTabs({ job }: JobTabsProps) {
             case 'description':
                 return (
                     <div className="animate-fade-in-up">
-                        <h2 className="text-xl font-bold text-slate-900 dark:text-white mb-4">Job Summary</h2>
+                        <h2 className="text-xl font-bold text-slate-900 dark:text-white mb-4">
+                            {isResult ? 'Result Declaration Info' : isAdmitCard ? 'Admit Card Status' : 'Job Summary'}
+                        </h2>
                         <p className="text-slate-600 dark:text-slate-400 leading-relaxed whitespace-pre-line">
-                            {job.description || `The ${job.organization} has officially released the notification for ${job.postName || job.title}. Eligible candidates are invited to apply through official channels before the last date.`}
+                            {job.description || (
+                                isResult
+                                    ? `The ${job.organization} has officially declared the results for ${job.postName || job.title}. Candidates who appeared for the exam can now check their scores and merit list status using the direct links provided.`
+                                    : isAdmitCard
+                                        ? `The Admit Cards for ${job.organization} ${job.postName || job.title} are now available for download. Candidates are advised to download and print their hall tickets early to avoid last-minute rush.`
+                                        : `The ${job.organization} has officially released the notification for ${job.postName || job.title}. Eligible candidates are invited to apply through official channels before the last date.`
+                            )}
                         </p>
                         <div className="mt-8 p-4 bg-slate-50 dark:bg-slate-800/50 rounded-2xl border border-slate-100 dark:border-slate-800">
                             <h3 className="font-bold text-slate-900 dark:text-white mb-2">Key Highlights:</h3>
                             <ul className="list-disc list-inside text-sm text-slate-600 dark:text-slate-400 space-y-2">
                                 <li>Organization: {job.organization}</li>
-                                <li>Post: {job.postName || 'Relevant Post'}</li>
-                                <li>Official Website: {job.organization ? job.organization.toLowerCase().split(' ').join('') : 'portal'}.gov.in</li>
+                                <li>Type: {job.category}</li>
+                                {isResult && <li>Status: Declared / Released</li>}
+                                {isAdmitCard && <li>Status: Available for Download</li>}
+                                {!isResult && !isAdmitCard && <li>Post: {job.postName || 'Relevant Post'}</li>}
                             </ul>
                         </div>
                     </div>
@@ -86,17 +100,23 @@ export default function JobTabs({ job }: JobTabsProps) {
             case 'selection':
                 return (
                     <div className="animate-fade-in-up">
-                        <h2 className="text-xl font-bold text-slate-900 dark:text-white mb-4">Selection Process</h2>
-                        {job.selectionProcess ? (
-                            <p className="text-slate-600 dark:text-slate-400 leading-relaxed whitespace-pre-line">
-                                {job.selectionProcess}
-                            </p>
-                        ) : (
-                            <div className="p-4 bg-slate-50 dark:bg-slate-800/50 rounded-xl flex gap-3 text-slate-600 dark:text-slate-400">
-                                <Info size={20} className="shrink-0" />
-                                <p className="text-sm">Selection involves Written Exam, Interview, and Verification. Refer to the notice for the exact sequence.</p>
-                            </div>
-                        )}
+                        <h2 className="text-xl font-bold text-slate-900 dark:text-white mb-4">
+                            {isResult ? 'Steps to Check Result' : isAdmitCard ? 'Steps to Download Admit Card' : 'Selection Process'}
+                        </h2>
+                        <div className="space-y-4">
+                            {job.selectionProcess || (
+                                isResult
+                                    ? "1. Click on the Official Result Link.\n2. Enter your Registration Number and DOB.\n3. View your result/scorecard.\n4. Take a printout if required."
+                                    : isAdmitCard
+                                        ? "1. Visit the official portal provided below.\n2. Login with your credentials.\n3. Find the 'Download Admit Card' tab.\n4. Download and print your hall ticket."
+                                        : "Selection involves Written Exam, Interview, and Document Verification. Refer to the official notice for the exact sequence."
+                            ).split('\n').map((step, i) => (
+                                <div key={i} className="flex gap-3 text-slate-600 dark:text-slate-400">
+                                    <CheckCircle size={18} className="text-blue-500 shrink-0 mt-0.5" />
+                                    <p className="text-sm">{step.replace(/^\d+\.\s*/, '')}</p>
+                                </div>
+                            ))}
+                        </div>
                     </div>
                 );
             case 'dates':
