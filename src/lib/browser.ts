@@ -6,10 +6,19 @@ export async function getBrowser() {
 
     if (isProduction) {
         return await puppeteer.launch({
-            args: chromium.args,
+            args: [
+                ...chromium.args,
+                '--no-sandbox',
+                '--disable-setuid-sandbox',
+                '--disable-dev-shm-usage', // Critical for Render/Docker
+                '--disable-accelerated-2d-canvas',
+                '--no-first-run',
+                '--no-zygote',
+                '--disable-gpu'
+            ],
             defaultViewport: { width: 1920, height: 1080 },
             executablePath: await chromium.executablePath('https://github.com/Sparticuz/chromium/releases/download/v121.0.0/chromium-v121.0.0-pack.tar'),
-            headless: true, // simplified for compatibility
+            headless: true,
         });
     } else {
         // Local development: use local chrome installation

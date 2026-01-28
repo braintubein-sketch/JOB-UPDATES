@@ -24,6 +24,16 @@ export async function scrapeFreshersNow() {
         // Stealth settings
         await page.setUserAgent('Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/121.0.0.0 Safari/537.36');
 
+        // Speed up: Block images and CSS
+        await page.setRequestInterception(true);
+        page.on('request', (req) => {
+            if (['image', 'stylesheet', 'font', 'media'].includes(req.resourceType())) {
+                req.abort();
+            } else {
+                req.continue();
+            }
+        });
+
         const url = 'https://www.freshersnow.com/off-campus-drives/';
         console.log(`[Scraper] Navigating to ${url}`);
 
