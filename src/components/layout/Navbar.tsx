@@ -113,17 +113,6 @@ export default function Navbar() {
                                 </button>
                             )}
 
-                            <Link
-                                href={user ? "/admin/dashboard" : "/admin"}
-                                className="hidden md:flex btn-primary !py-2.5 !px-6 text-sm"
-                            >
-                                {user ? (
-                                    <>
-                                        <LayoutDashboard className="w-4 h-4" />
-                                        Dashboard
-                                    </>
-                                ) : "Post Jobs"}
-                            </Link>
 
                             <button
                                 onClick={() => setIsOpen(!isOpen)}
@@ -170,15 +159,6 @@ export default function Navbar() {
                                 ))}
                             </nav>
 
-                            <div className="mt-auto">
-                                <Link
-                                    href={user ? "/admin/dashboard" : "/admin"}
-                                    onClick={() => setIsOpen(false)}
-                                    className="w-full btn-primary h-16 rounded-[2rem] text-lg font-black"
-                                >
-                                    {user ? "GO TO DASHBOARD" : "POST A JOB"}
-                                </Link>
-                            </div>
                         </div>
                     </motion.div>
                 )}

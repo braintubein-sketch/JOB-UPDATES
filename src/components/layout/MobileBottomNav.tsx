@@ -52,23 +52,6 @@ export default function MobileBottomNav() {
                     );
                 })}
 
-                {/* Dashboard/Admin Link */}
-                <Link
-                    href={user ? "/admin/dashboard" : "/admin"}
-                    className={`relative flex flex-col items-center gap-1 p-3 min-w-[64px] ${pathname.startsWith('/admin') ? 'text-primary' : 'text-muted-foreground'}`}
-                >
-                    {pathname.startsWith('/admin') && (
-                        <motion.div
-                            layoutId="bottomNav"
-                            className="absolute inset-0 bg-primary/10 rounded-2xl border border-primary/20"
-                            transition={{ type: 'spring', stiffness: 400, damping: 30 }}
-                        />
-                    )}
-                    <LayoutDashboard className={`w-6 h-6 z-10 ${pathname.startsWith('/admin') ? 'text-primary' : 'text-muted-foreground'}`} />
-                    <span className={`text-[10px] font-black uppercase tracking-tighter z-10 ${pathname.startsWith('/admin') ? 'text-primary' : 'text-muted-foreground'}`}>
-                        {user ? 'Admin' : 'Post'}
-                    </span>
-                </Link>
             </div>
         </div>
     );
