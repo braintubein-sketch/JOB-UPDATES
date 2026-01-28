@@ -32,7 +32,7 @@ export const metadata: Metadata = {
     openGraph: {
         type: 'website',
         locale: 'en_IN',
-        url: 'https://jobupdates.com', // Placeholder URL
+        url: 'https://jobupdate.site',
         siteName: 'JOB UPDATES',
         title: 'JOB UPDATES - Unlock Your Next Tech Chapter',
         description: 'Elite IT jobs for the top 1% tech talent. Browse curated opportunities now.',

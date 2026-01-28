@@ -71,14 +71,14 @@ export default function ContactPage() {
                             <div className="space-y-4">
                                 <div>
                                     <p className="text-sm text-muted-foreground">Email</p>
-                                    <a href="mailto:contact@JOB UPDATES.com" className="text-primary hover:underline">
-                                        contact@JOB UPDATES.com
+                                    <a href="mailto:contact@braintube.in" className="text-primary hover:underline">
+                                        contact@braintube.in
                                     </a>
                                 </div>
                                 <div>
                                     <p className="text-sm text-muted-foreground">Telegram</p>
-                                    <a href="https://t.me/JOB UPDATES" className="text-primary hover:underline">
-                                        @JOB UPDATES
+                                    <a href="https://t.me/jobupdatesite" className="text-primary hover:underline">
+                                        @jobupdatesite
                                     </a>
                                 </div>
                                 <div>

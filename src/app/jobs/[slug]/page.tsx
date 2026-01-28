@@ -34,10 +34,10 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
             title: `${jobData.title} at ${jobData.company}`,
             description: `${jobData.title} job at ${jobData.company}. Location: ${jobData.locations.slice(0, 3).join(', ')}. Experience: ${jobData.experience.label}. Required skills: ${jobData.skills.slice(0, 5).join(', ')}.`,
             openGraph: {
-                title: `${jobData.title} at ${jobData.company} | TechHireHub`,
+                title: `${jobData.title} at ${jobData.company} | JOB UPDATES`,
                 description: `Apply for ${jobData.title} position at ${jobData.company}. ${jobData.experience.label} experience required.`,
                 type: 'website',
-                url: `https://techhirehub.com/jobs/${jobData.slug}`,
+                url: `https://jobupdate.site/jobs/${jobData.slug}`,
             },
             twitter: {
                 card: 'summary_large_image',

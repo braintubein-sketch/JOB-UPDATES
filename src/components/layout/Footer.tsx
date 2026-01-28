@@ -77,13 +77,19 @@ export default function Footer() {
                             We bridge the gap between elite talent and global opportunities.
                         </p>
                         <div className="flex items-center gap-4">
-                            {[Twitter, Linkedin, Github].map((Icon, i) => (
+                            {[
+                                { icon: Send, href: 'https://t.me/jobupdatesite' },
+                                { icon: Twitter, href: 'https://twitter.com/jobupdatesite' },
+                                { icon: Github, href: 'https://github.com/jobupdatesite' },
+                            ].map((item, i) => (
                                 <a
                                     key={i}
-                                    href="#"
+                                    href={item.href}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
                                     className="w-12 h-12 flex items-center justify-center rounded-2xl bg-secondary border border-border hover:border-primary hover:text-primary transition-all duration-300"
                                 >
-                                    <Icon className="w-5 h-5" />
+                                    <item.icon className="w-5 h-5" />
                                 </a>
                             ))}
                         </div>

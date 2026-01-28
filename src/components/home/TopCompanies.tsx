@@ -3,7 +3,6 @@
 import { motion } from 'framer-motion';
 import Link from 'next/link';
 import { Building2, ArrowRight, Zap, Globe } from 'lucide-react';
-import { getCompanyLogo } from '@/lib/utils';
 
 const topCompanies = [
     { name: 'Google', jobCount: 45, color: 'from-blue-500 to-green-500' },
@@ -67,12 +66,8 @@ export default function TopCompanies() {
                                 href={`/jobs?company=${encodeURIComponent(company.name)}`}
                                 className="group block glass !p-4 md:!p-8 rounded-3xl md:rounded-[2.5rem] border border-border/50 hover:border-primary/50 hover:bg-primary/[0.02] transition-all hover:-translate-y-2 text-center"
                             >
-                                <div className="w-20 h-20 md:w-24 md:h-24 rounded-3xl bg-white border border-border flex items-center justify-center mb-6 mx-auto group-hover:scale-110 transition-transform shadow-xl p-4 overflow-hidden">
-                                    <img
-                                        src={getCompanyLogo(company.name)}
-                                        alt={company.name}
-                                        className="w-full h-full object-contain"
-                                    />
+                                <div className="w-16 h-16 md:w-20 md:h-20 rounded-3xl bg-secondary border border-border flex items-center justify-center mb-6 mx-auto group-hover:scale-110 transition-transform shadow-sm group-hover:border-primary/50 transition-colors">
+                                    <Building2 className="w-8 h-8 md:w-10 md:h-10 text-primary" />
                                 </div>
                                 <h3 className="text-lg font-black tracking-tight group-hover:text-primary transition-colors">
                                     {company.name}

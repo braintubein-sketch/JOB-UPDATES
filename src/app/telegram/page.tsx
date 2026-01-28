@@ -74,13 +74,13 @@ export default function TelegramPage() {
 
                     {/* CTA Button */}
                     <a
-                        href="https://t.me/JOB UPDATES"
+                        href="https://t.me/jobupdatesite"
                         target="_blank"
                         rel="noopener noreferrer"
                         className="inline-flex items-center gap-3 bg-gradient-to-r from-blue-500 to-blue-600 text-white px-10 py-5 rounded-2xl font-semibold text-xl hover:from-blue-600 hover:to-blue-700 transition-all shadow-lg hover:shadow-xl hover:-translate-y-1"
                     >
                         <Send className="w-6 h-6" />
-                        Join JOB UPDATES Channel
+                        Join @jobupdatesite Channel
                         <ArrowRight className="w-6 h-6" />
                     </a>
 
@@ -169,8 +169,8 @@ export default function TelegramPage() {
                             <p className="text-blue-400 hover:underline cursor-pointer mt-4">
                                 🔗 Apply Now →
                             </p>
-                            <p className="text-gray-500 text-sm mt-4">
-                                #ITJobs #Google #SoftwareEngineer #Bangalore #TechJobs
+                            <p className="text-gray-500 text-sm mt-4 italic font-medium">
+                                No hashtags, just high-quality job alerts.
                             </p>
                         </div>
 
@@ -193,7 +193,7 @@ export default function TelegramPage() {
                     </p>
 
                     <a
-                        href="https://t.me/JOB UPDATES"
+                        href="https://t.me/jobupdatesite"
                         target="_blank"
                         rel="noopener noreferrer"
                         className="inline-flex items-center gap-3 bg-gradient-to-r from-blue-500 to-blue-600 text-white px-10 py-5 rounded-2xl font-semibold text-xl hover:from-blue-600 hover:to-blue-700 transition-all shadow-lg"

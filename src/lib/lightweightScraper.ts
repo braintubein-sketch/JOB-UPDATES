@@ -74,7 +74,6 @@ async function scrapeJobicy(): Promise<ScraperResult> {
                     isActive: true,
                     source: 'automated',
                     sourceUrl,
-                    companyLogo: job.companyLogo || getCompanyLogo(company),
                     postedDate: new Date(job.pubDate || Date.now())
                 });
 
@@ -144,7 +143,6 @@ async function scrapeAdzuna(): Promise<ScraperResult> {
                     isActive: true,
                     source: 'automated',
                     sourceUrl,
-                    companyLogo: getCompanyLogo(company),
                     postedDate: new Date(job.created || Date.now())
                 });
 
@@ -218,7 +216,6 @@ async function scrapeArbeitnow(): Promise<ScraperResult> {
                     isActive: true,
                     source: 'automated',
                     sourceUrl,
-                    companyLogo: getCompanyLogo(company),
                     postedDate: new Date(job.created_at || Date.now())
                 });
 
@@ -293,7 +290,6 @@ async function scrapeSimpleSource(): Promise<ScraperResult> {
                     isActive: true,
                     source: 'automated',
                     sourceUrl,
-                    companyLogo: job.companyLogo || getCompanyLogo(company),
                     postedDate: new Date(job.pubDate || Date.now())
                 });
 
@@ -362,7 +358,6 @@ async function scrapeRemotive(): Promise<ScraperResult> {
                     isActive: true,
                     source: 'automated',
                     sourceUrl,
-                    companyLogo: job.company_logo || getCompanyLogo(company),
                     postedDate: new Date(job.publication_date || Date.now())
                 });
 
@@ -441,7 +436,6 @@ async function scrapeJSearch(): Promise<ScraperResult> {
                     isActive: true,
                     source: 'automated',
                     sourceUrl,
-                    companyLogo: job.employer_logo || getCompanyLogo(company),
                     postedDate: new Date(job.job_posted_at_datetime_utc || Date.now())
                 });
 

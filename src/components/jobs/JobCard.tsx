@@ -14,7 +14,7 @@ import {
     ChevronRight,
 } from 'lucide-react';
 import { Job } from '@/types';
-import { formatRelativeDate, formatExperience, formatLocations, getCompanyLogo } from '@/lib/utils';
+import { formatRelativeDate, formatExperience, formatLocations } from '@/lib/utils';
 
 interface JobCardProps {
     job: Job;
@@ -37,20 +37,8 @@ export default function JobCard({ job, index = 0, featured = false }: JobCardPro
             {/* Top Row: Company & Status */}
             <div className="relative z-10 flex flex-col sm:flex-row items-start justify-between gap-4 mb-6">
                 <div className="flex items-start gap-4 flex-1">
-                    <div className="shrink-0 w-14 h-14 md:w-16 md:h-16 rounded-3xl bg-secondary border border-border flex items-center justify-center p-2 group-hover:scale-110 transition-transform duration-500">
-                        {job.companyLogo ? (
-                            <img
-                                src={job.companyLogo}
-                                alt={job.company}
-                                className="w-full h-full object-contain"
-                            />
-                        ) : (
-                            <img
-                                src={getCompanyLogo(job.company)}
-                                alt={job.company}
-                                className="w-full h-full object-contain"
-                            />
-                        )}
+                    <div className="shrink-0 w-14 h-14 md:w-16 md:h-16 rounded-3xl bg-primary/10 border border-primary/20 flex items-center justify-center group-hover:scale-110 transition-transform duration-500">
+                        <Building2 className="w-6 h-6 md:w-8 md:h-8 text-primary" />
                     </div>
                     <div className="min-w-0 flex-1">
                         <div className="flex items-center gap-2 mb-1">

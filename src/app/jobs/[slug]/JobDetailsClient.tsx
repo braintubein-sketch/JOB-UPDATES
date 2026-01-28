@@ -21,7 +21,7 @@ import {
     X,
 } from 'lucide-react';
 import { Job } from '@/types';
-import { formatDate, formatRelativeDate, formatExperience, formatSalary, getCompanyLogo } from '@/lib/utils';
+import { formatDate, formatRelativeDate, formatExperience, formatSalary } from '@/lib/utils';
 
 export default function JobDetailsClient({ slug }: { slug: string }) {
     const router = useRouter();
@@ -111,12 +111,8 @@ export default function JobDetailsClient({ slug }: { slug: string }) {
 
                     <div className="flex flex-col md:flex-row items-start justify-between gap-8">
                         <div className="flex items-start gap-6">
-                            <div className="w-20 h-20 md:w-24 md:h-24 rounded-[2rem] bg-secondary border border-border flex items-center justify-center p-4 shadow-2xl">
-                                {job.companyLogo ? (
-                                    <img src={job.companyLogo} alt={job.company} className="w-full h-full object-contain" />
-                                ) : (
-                                    <img src={getCompanyLogo(job.company)} alt={job.company} className="w-full h-full object-contain" />
-                                )}
+                            <div className="w-20 h-20 md:w-24 md:h-24 rounded-[2rem] bg-primary/10 border border-primary/20 flex items-center justify-center shadow-2xl">
+                                <Building2 className="w-10 h-10 md:w-12 md:h-12 text-primary" />
                             </div>
                             <div>
                                 <div className="flex items-center gap-2 mb-3">
@@ -214,12 +210,8 @@ export default function JobDetailsClient({ slug }: { slug: string }) {
                         {/* Company Card */}
                         <div className="card-premium sticky top-32">
                             <div className="text-center mb-8">
-                                <div className="w-24 h-24 rounded-3xl bg-secondary border border-border flex items-center justify-center p-4 mx-auto mb-6 shadow-xl">
-                                    {job.companyLogo ? (
-                                        <img src={job.companyLogo} alt={job.company} className="w-full h-full object-contain" />
-                                    ) : (
-                                        <img src={getCompanyLogo(job.company)} alt={job.company} className="w-full h-full object-contain" />
-                                    )}
+                                <div className="w-24 h-24 rounded-3xl bg-secondary border border-border flex items-center justify-center mx-auto mb-6 shadow-xl">
+                                    <Building2 className="w-12 h-12 text-primary" />
                                 </div>
                                 <h3 className="text-2xl font-black tracking-tight">{job.company}</h3>
                                 <p className="text-muted-foreground font-bold mt-2">Elite Recruitment Partner</p>

@@ -110,7 +110,7 @@ export default function AboutPage() {
                             </div>
                             <div>
                                 <div className="text-xs font-black tracking-widest text-muted-foreground uppercase mb-1">Fastest Support</div>
-                                <a href="https://t.me/JOB_UPDATES" className="text-2xl font-black hover:text-primary transition-colors">@JOB_UPDATES</a>
+                                <a href="https://t.me/jobupdatesite" className="text-2xl font-black hover:text-primary transition-colors">@jobupdatesite</a>
                             </div>
                         </div>
                     </div>
