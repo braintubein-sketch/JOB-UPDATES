@@ -66,9 +66,6 @@ async function postJobToTelegram(job: any, siteUrl: string): Promise<number | nu
 <b>Work Experience</b> ${job.experience.label}
 
 <b>Link-</b> <a href="${jobUrl}">${jobUrl}</a>
-
-━━━━━━━━━━━━━━━━━━━━━━
-📢 Join @jobupdatesite for daily IT job updates!
 `;
 
     try {

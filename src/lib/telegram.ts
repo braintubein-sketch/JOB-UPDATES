@@ -32,9 +32,6 @@ export function formatJobForTelegram(job: Job, siteUrl: string): TelegramMessage
 <b>Work Experience</b> ${job.experience.label}
 
 <b>Link-</b> <a href="${jobUrl}">${jobUrl}</a>
-
-━━━━━━━━━━━━━━━━━━━━━━
-📢 Join @jobupdatesite for daily IT job updates!
 `;
 
     return {
