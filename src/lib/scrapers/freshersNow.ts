@@ -1,4 +1,4 @@
-import axios from 'axios';
+import { getBrowser } from '../browser';
 import * as cheerio from 'cheerio';
 import {
     isITJob,
@@ -13,32 +13,28 @@ import connectDB from '../db';
 import Job from '@/models/Job';
 
 export async function scrapeFreshersNow() {
-    console.log('[Scraper] Starting FreshersNow scrape...');
+    console.log('[Scraper] Starting FreshersNow scrape with Puppeteer...');
 
-    const userAgents = [
-        'Mozilla/5.0 (iPhone; CPU iPhone OS 17_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.0 Mobile/15E148 Safari/604.1',
-        'Mozilla/5.0 (Linux; Android 14; Pixel 8) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/121.0.6167.143 Mobile Safari/537.36',
-        'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/121.0.0.0 Safari/537.36'
-    ];
-
-    const headers = {
-        'User-Agent': userAgents[Math.floor(Math.random() * userAgents.length)],
-        'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8',
-        'Accept-Language': 'en-US,en;q=0.5',
-        'Referer': 'https://www.google.com/',
-        'Cache-Control': 'max-age=0',
-        'DNT': '1',
-        'Sec-Fetch-Dest': 'document',
-        'Sec-Fetch-Mode': 'navigate',
-        'Sec-Fetch-Site': 'cross-site'
-    };
-
+    let browser = null;
     try {
-        const url = 'https://www.freshersnow.com/off-campus-drives/';
-        const { data } = await axios.get(url, { headers });
+        const { getBrowser } = await import('../browser');
+        browser = await getBrowser();
+        const page = await browser.newPage();
 
-        const $ = cheerio.load(data);
-        const jobElements = $('.wp-block-table tr').toArray().slice(1); // Skip header row
+        // Stealth settings
+        await page.setUserAgent('Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/121.0.0.0 Safari/537.36');
+
+        const url = 'https://www.freshersnow.com/off-campus-drives/';
+        console.log(`[Scraper] Navigating to ${url}`);
+
+        await page.goto(url, { waitUntil: 'domcontentloaded', timeout: 60000 });
+
+        // Get content
+        const content = await page.content();
+        const $ = cheerio.load(content);
+
+        // Select rows - skip header
+        const jobElements = $('.wp-block-table tr').toArray().slice(1, 6); // Limit to 5
         let newJobsCount = 0;
 
         await connectDB();
@@ -61,61 +57,62 @@ export async function scrapeFreshersNow() {
                 const existing = await Job.findOne({ sourceUrl });
                 if (existing) continue;
 
-                // Navigate to job detail page
-                const detailRes = await axios.get(sourceUrl, { headers });
-                const $detail = cheerio.load(detailRes.data);
+                console.log(`[Scraper] Processing (FN): ${titleRaw}`);
 
-                const contentText = $detail('.entry-content').text();
-                const company = normalizeCompanyName(companyRaw);
+                // Visit Detail Page
+                try {
+                    await page.goto(sourceUrl, { waitUntil: 'domcontentloaded', timeout: 30000 });
+                    const detailContent = await page.content();
+                    const $detail = cheerio.load(detailContent);
 
-                const skills = extractSkillsFromText(contentText);
-                const locations = extractLocationsFromText(contentText);
-                const experience = parseExperienceFromText(contentText);
-                const category = detectCategory(titleRaw, skills);
+                    const contentText = $detail('.entry-content').text();
+                    const company = normalizeCompanyName(companyRaw);
 
-                let applyLink = sourceUrl;
-                $detail('a').each((_, el) => {
-                    const href = $(el).attr('href');
-                    const text = $(el).text().toLowerCase();
-                    if (href && (text.includes('click here to apply') || text.includes('apply link') || text.includes('register here'))) {
-                        if (!href.includes('telegram') && !href.includes('whatsapp') && !href.includes('freshersnow')) {
-                            applyLink = href;
-                        }
-                    }
-                });
+                    const skills = extractSkillsFromText(contentText);
+                    const locations = extractLocationsFromText(contentText);
+                    const experience = parseExperienceFromText(contentText);
+                    const category = detectCategory(titleRaw, skills);
 
-                const newJob = new Job({
-                    company,
-                    title: titleRaw,
-                    qualification: 'BE/B.Tech/MCA/Any Graduate',
-                    locations,
-                    experience,
-                    employmentType: 'Full-time',
-                    description: $detail('.entry-content').html() || contentText,
-                    skills,
-                    applyLink,
-                    category,
-                    isVerified: true,
-                    isActive: true,
-                    source: 'automated',
-                    sourceUrl,
-                    companyLogo: getCompanyLogo(company),
-                    postedDate: new Date(),
-                });
+                    let applyLink = sourceUrl;
 
-                await newJob.save();
-                newJobsCount++;
-                console.log(`[Scraper] Added (FN): ${company} - ${titleRaw}`);
+                    const newJob = new Job({
+                        company,
+                        title: titleRaw,
+                        qualification: 'BE/B.Tech/MCA/Any Graduate',
+                        locations,
+                        experience,
+                        employmentType: 'Full-time',
+                        description: contentText.substring(0, 1000),
+                        skills,
+                        applyLink,
+                        category,
+                        isVerified: true,
+                        isActive: true,
+                        source: 'automated',
+                        sourceUrl,
+                        companyLogo: getCompanyLogo(company),
+                        postedDate: new Date(),
+                    });
 
-                await new Promise(resolve => setTimeout(resolve, 2000));
+                    await newJob.save();
+                    newJobsCount++;
+                    console.log(`[Scraper] Saved (FN): ${company}`);
+
+                    await new Promise(r => setTimeout(r, 2000));
+
+                } catch (innerErr) {
+                    console.error(`[Scraper] Failed details for ${sourceUrl}`, innerErr);
+                }
             } catch (err) {
                 console.error('[Scraper] Error parsing FN job:', err);
             }
         }
 
+        await browser.close();
         return { count: newJobsCount, success: true };
     } catch (error: any) {
         console.error('[Scraper] FreshersNow Fatal error:', error);
+        if (browser) await browser.close();
         return { count: 0, success: false, error: error.message || 'Unknown error' };
     }
 }
