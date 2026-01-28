@@ -28,6 +28,8 @@ const IT_KEYWORDS = [
     'cybersecurity', 'security', 'network', 'database', 'sql',
     'qa', 'testing', 'automation', 'selenium', 'api', 'rest',
     'microservices', 'product', 'tech lead', 'architect',
+    'intern', 'graduate', 'trainee', 'fresher', 'associate',
+    'it', 'technical', 'support', 'analyst', 'consultant',
 ];
 
 // Non-IT keywords to filter out

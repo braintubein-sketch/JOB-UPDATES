@@ -1,6 +1,6 @@
 import mongoose from 'mongoose';
 
-const MONGODB_URI = process.env.MONGODB_URI || '';
+const MONGODB_URI = (process.env.MONGODB_URI || '').trim();
 
 interface MongooseCache {
   conn: typeof mongoose | null;
@@ -25,8 +25,8 @@ export async function connectDB(): Promise<typeof mongoose> {
   }
 
   // Debug log (masked for security)
-  const maskedUri = MONGODB_URI.replace(/:([^@]+)@/, ':****@');
-  console.log(`[DB] Attempting connection to: ${maskedUri}`);
+  const maskedUri = MONGODB_URI.replace(/\/\/([^:]+):([^@]+)@/, '//****:****@');
+  console.log(`[DB] Connecting to: ${maskedUri}`);
 
   if (cached.conn) {
     return cached.conn;

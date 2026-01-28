@@ -17,33 +17,51 @@ export async function scrapeOffCampusJobs() {
     console.log('[Scraper] Starting OffCampusJobs4u scrape...');
 
     try {
-        const url = 'https://offcampusjobs4u.com/category/it-jobs/';
+        const url = 'https://offcampusjobs4u.com/';
+
+        // Use a mobile user agent which sometimes has fewer protections
+        const userAgents = [
+            'Mozilla/5.0 (iPhone; CPU iPhone OS 17_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.0 Mobile/15E148 Safari/604.1',
+            'Mozilla/5.0 (Linux; Android 14; Pixel 8) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/121.0.6167.143 Mobile Safari/537.36',
+            'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/121.0.0.0 Safari/537.36'
+        ];
+
         const { data } = await axios.get(url, {
             headers: {
-                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/121.0.0.0 Safari/537.36',
-                'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8',
-                'Accept-Language': 'en-US,en;q=0.9',
-                'Referer': 'https://t.co/', // Mimic Twitter/X referral
-                'Cache-Control': 'no-cache',
-                'Pragma': 'no-cache',
+                'User-Agent': userAgents[Math.floor(Math.random() * userAgents.length)],
+                'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8',
+                'Accept-Language': 'en-US,en;q=0.5',
+                'Referer': 'https://www.google.com/',
+                'DNT': '1',
+                'Upgrade-Insecure-Requests': '1',
                 'Sec-Fetch-Dest': 'document',
                 'Sec-Fetch-Mode': 'navigate',
                 'Sec-Fetch-Site': 'cross-site',
-                'Upgrade-Insecure-Requests': '1'
+                'Cache-Control': 'max-age=0'
             },
-            timeout: 10000
+            timeout: 20000
         });
 
         const $ = cheerio.load(data);
-        const jobElements = $('.post-column').toArray();
+        // Combine multiple possible selectors to be robust
+        const jobElements = [
+            ...$('.post-column').toArray(),
+            ...$('.entry-header').toArray(),
+            ...$('article').toArray(),
+            ...$('h3.entry-title').toArray()
+        ];
         let newJobsCount = 0;
 
         await connectDB();
 
         for (const element of jobElements) {
             try {
-                const title = $(element).find('.entry-title a').text().trim();
-                const sourceUrl = $(element).find('.entry-title a').attr('href') || '';
+                // Try finding title and link in various common WordPress locations
+                const linkEl = $(element).find('a').first();
+                const title = $(element).find('.entry-title').text().trim() ||
+                    $(element).find('h3').text().trim() ||
+                    linkEl.text().trim();
+                const sourceUrl = linkEl.attr('href') || '';
 
                 if (!title || !sourceUrl) continue;
 
