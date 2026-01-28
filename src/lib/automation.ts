@@ -183,51 +183,16 @@ export async function triggerTelegramPostManual() {
     return await triggerTelegramPost();
 }
 
-import { scrapeApnaJobs } from './scrapers/apna';
-
-import { scrapeUnstopJobs } from './scrapers/unstop';
-import { scrapeInternshala } from './scrapers/internshala';
+import { triggerLightweightScraping } from './lightweightScraper';
 
 export async function triggerScraping() {
-    console.log('[Automation] Starting scraping sequence...');
+    console.log('[Automation] Starting lightweight API-based scraping...');
 
-    const scrapers = [
-        { name: 'offCampus', fn: scrapeOffCampusJobs },
-        { name: 'freshersNow', fn: scrapeFreshersNow },
-        { name: 'apna', fn: scrapeApnaJobs },
-        { name: 'unstop', fn: scrapeUnstopJobs },
-        { name: 'internshala', fn: scrapeInternshala }
-    ];
+    // Use lightweight API-based scraping instead of Puppeteer
+    // This is much faster and uses minimal memory
+    const result = await triggerLightweightScraping();
 
-    // Shuffle and pick ONLY 1 to strictly limit RAM usage on Render free tier
-    const shuffled = scrapers.sort(() => 0.5 - Math.random());
-    const selected = shuffled.slice(0, 1);
-
-    console.log(`[Automation] Selected scraper for this run: ${selected.map(s => s.name).join(', ')}`);
-
-    const results: Record<string, any> = {};
-    let totalCount = 0;
-
-    for (const scraper of selected) {
-        // Force garbage collection hint
-        if (global.gc) { global.gc(); }
-
-        try {
-            console.log(`[Automation] Running ${scraper.name}...`);
-            const result = await scraper.fn();
-            results[scraper.name] = result;
-            totalCount += result.count;
-        } catch (e: any) {
-            console.error(`[Automation] Error running ${scraper.name}:`, e);
-            results[scraper.name] = { count: 0, success: false, error: e.message };
-        }
-    }
-
-    return {
-        ...results,
-        selected: selected.map(s => s.name),
-        total: totalCount
-    };
+    return result;
 }
 
 export async function triggerStatusUpdate() {

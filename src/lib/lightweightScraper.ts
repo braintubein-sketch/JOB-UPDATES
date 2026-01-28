@@ -1,0 +1,310 @@
+import axios from 'axios';
+import * as cheerio from 'cheerio';
+import {
+    isITJob,
+    detectCategory,
+    parseExperienceFromText,
+    extractSkillsFromText,
+    extractLocationsFromText,
+    normalizeCompanyName
+} from './scraper';
+import { getCompanyLogo } from './utils';
+import connectDB from './db';
+import Job from '@/models/Job';
+
+// Lightweight scraper - NO PUPPETEER, uses simple HTTP requests
+
+interface ScraperResult {
+    count: number;
+    success: boolean;
+    error?: string;
+}
+
+// RemoteOK API - Free, no browser needed
+async function scrapeRemoteOK(): Promise<ScraperResult> {
+    console.log('[Scraper] Fetching from RemoteOK API...');
+    try {
+        const { data } = await axios.get('https://remoteok.com/api', {
+            headers: { 'User-Agent': 'Mozilla/5.0 JobUpdateBot/1.0' },
+            timeout: 15000
+        });
+
+        // First element is metadata, skip it
+        const jobs = data.slice(1, 11); // Get top 10 jobs
+        let newJobsCount = 0;
+
+        await connectDB();
+
+        for (const job of jobs) {
+            try {
+                const sourceUrl = `https://remoteok.com/remote-jobs/${job.id}`;
+
+                // Check if already exists
+                const existing = await Job.findOne({ sourceUrl });
+                if (existing) continue;
+
+                // Filter for IT jobs
+                const tags = (job.tags || []).join(' ');
+                if (!isITJob(job.position + ' ' + tags)) continue;
+
+                const company = normalizeCompanyName(job.company || 'Unknown');
+                const skills = job.tags || [];
+
+                const newJob = new Job({
+                    company,
+                    title: job.position,
+                    qualification: 'Any Graduate',
+                    locations: ['Remote'],
+                    experience: { min: 0, max: 5, label: 'Entry-Mid Level' },
+                    employmentType: 'Full-time',
+                    description: (job.description || '').substring(0, 1000),
+                    skills,
+                    applyLink: job.url || sourceUrl,
+                    category: detectCategory(job.position, skills),
+                    isVerified: true,
+                    isActive: true,
+                    source: 'automated',
+                    sourceUrl,
+                    companyLogo: job.company_logo || getCompanyLogo(company),
+                    postedDate: new Date(job.date || Date.now()),
+                    salary: job.salary || ''
+                });
+
+                await newJob.save();
+                newJobsCount++;
+                console.log(`[Scraper] Saved (RemoteOK): ${company} - ${job.position}`);
+            } catch (err) {
+                console.error('[Scraper] Error saving RemoteOK job:', err);
+            }
+        }
+
+        return { count: newJobsCount, success: true };
+    } catch (error: any) {
+        console.error('[Scraper] RemoteOK error:', error.message);
+        return { count: 0, success: false, error: error.message };
+    }
+}
+
+// Adzuna API - Free tier available
+async function scrapeAdzuna(): Promise<ScraperResult> {
+    console.log('[Scraper] Fetching from Adzuna...');
+    try {
+        const appId = process.env.ADZUNA_APP_ID || '';
+        const appKey = process.env.ADZUNA_APP_KEY || '';
+
+        if (!appId || !appKey) {
+            console.log('[Scraper] Adzuna credentials not configured, skipping...');
+            return { count: 0, success: true };
+        }
+
+        const url = `https://api.adzuna.com/v1/api/jobs/in/search/1?app_id=${appId}&app_key=${appKey}&what=software+developer&results_per_page=10`;
+        const { data } = await axios.get(url, { timeout: 15000 });
+
+        let newJobsCount = 0;
+        await connectDB();
+
+        for (const job of data.results || []) {
+            try {
+                const sourceUrl = job.redirect_url;
+
+                const existing = await Job.findOne({ sourceUrl });
+                if (existing) continue;
+
+                const company = normalizeCompanyName(job.company?.display_name || 'Unknown');
+
+                const newJob = new Job({
+                    company,
+                    title: job.title,
+                    qualification: 'Any Graduate',
+                    locations: [job.location?.display_name || 'India'],
+                    experience: { min: 0, max: 5, label: 'Entry Level' },
+                    employmentType: job.contract_type || 'Full-time',
+                    description: (job.description || '').substring(0, 1000),
+                    skills: extractSkillsFromText(job.description || ''),
+                    applyLink: sourceUrl,
+                    category: detectCategory(job.title, []),
+                    isVerified: true,
+                    isActive: true,
+                    source: 'automated',
+                    sourceUrl,
+                    companyLogo: getCompanyLogo(company),
+                    postedDate: new Date(job.created || Date.now()),
+                    salary: job.salary_min ? `₹${job.salary_min} - ₹${job.salary_max}` : ''
+                });
+
+                await newJob.save();
+                newJobsCount++;
+                console.log(`[Scraper] Saved (Adzuna): ${company} - ${job.title}`);
+            } catch (err) {
+                console.error('[Scraper] Error saving Adzuna job:', err);
+            }
+        }
+
+        return { count: newJobsCount, success: true };
+    } catch (error: any) {
+        console.error('[Scraper] Adzuna error:', error.message);
+        return { count: 0, success: false, error: error.message };
+    }
+}
+
+// GitHub Jobs alternative - Arbeitnow (free API)
+async function scrapeArbeitnow(): Promise<ScraperResult> {
+    console.log('[Scraper] Fetching from Arbeitnow...');
+    try {
+        const { data } = await axios.get('https://www.arbeitnow.com/api/job-board-api', {
+            timeout: 15000
+        });
+
+        let newJobsCount = 0;
+        await connectDB();
+
+        const jobs = (data.data || []).slice(0, 10);
+
+        for (const job of jobs) {
+            try {
+                const sourceUrl = job.url;
+
+                const existing = await Job.findOne({ sourceUrl });
+                if (existing) continue;
+
+                // Filter for IT/Tech jobs
+                const tags = (job.tags || []).join(' ');
+                if (!isITJob(job.title + ' ' + tags)) continue;
+
+                const company = normalizeCompanyName(job.company_name || 'Unknown');
+
+                const newJob = new Job({
+                    company,
+                    title: job.title,
+                    qualification: 'Any Graduate',
+                    locations: [job.location || 'Remote'],
+                    experience: { min: 0, max: 5, label: 'Entry Level' },
+                    employmentType: job.job_types?.includes('full_time') ? 'Full-time' : 'Contract',
+                    description: (job.description || '').substring(0, 1000),
+                    skills: job.tags || [],
+                    applyLink: sourceUrl,
+                    category: detectCategory(job.title, job.tags || []),
+                    isVerified: true,
+                    isActive: true,
+                    source: 'automated',
+                    sourceUrl,
+                    companyLogo: getCompanyLogo(company),
+                    postedDate: new Date(job.created_at || Date.now()),
+                    isRemote: job.remote || false
+                });
+
+                await newJob.save();
+                newJobsCount++;
+                console.log(`[Scraper] Saved (Arbeitnow): ${company} - ${job.title}`);
+            } catch (err) {
+                console.error('[Scraper] Error saving Arbeitnow job:', err);
+            }
+        }
+
+        return { count: newJobsCount, success: true };
+    } catch (error: any) {
+        console.error('[Scraper] Arbeitnow error:', error.message);
+        return { count: 0, success: false, error: error.message };
+    }
+}
+
+// Simple HTTP scrape of a reliable source (no heavy JS)
+async function scrapeSimpleSource(): Promise<ScraperResult> {
+    console.log('[Scraper] Fetching from simple HTTP source...');
+    try {
+        // Use a simple, reliable job board
+        const { data } = await axios.get('https://himalayas.app/jobs/api?limit=10', {
+            timeout: 15000
+        });
+
+        let newJobsCount = 0;
+        await connectDB();
+
+        for (const job of data.jobs || []) {
+            try {
+                const sourceUrl = `https://himalayas.app/jobs/${job.slug}`;
+
+                const existing = await Job.findOne({ sourceUrl });
+                if (existing) continue;
+
+                if (!isITJob(job.title + ' ' + (job.categories || []).join(' '))) continue;
+
+                const company = normalizeCompanyName(job.companyName || 'Unknown');
+
+                const newJob = new Job({
+                    company,
+                    title: job.title,
+                    qualification: 'Any Graduate',
+                    locations: [job.locationRestrictions?.[0] || 'Remote'],
+                    experience: { min: 0, max: 5, label: job.seniority || 'Entry Level' },
+                    employmentType: 'Full-time',
+                    description: (job.description || '').substring(0, 1000),
+                    skills: job.categories || [],
+                    applyLink: job.applicationUrl || sourceUrl,
+                    category: detectCategory(job.title, job.categories || []),
+                    isVerified: true,
+                    isActive: true,
+                    source: 'automated',
+                    sourceUrl,
+                    companyLogo: job.companyLogo || getCompanyLogo(company),
+                    postedDate: new Date(job.pubDate || Date.now()),
+                    salary: job.minSalary ? `$${job.minSalary} - $${job.maxSalary}` : ''
+                });
+
+                await newJob.save();
+                newJobsCount++;
+                console.log(`[Scraper] Saved (Himalayas): ${company} - ${job.title}`);
+            } catch (err) {
+                console.error('[Scraper] Error saving Himalayas job:', err);
+            }
+        }
+
+        return { count: newJobsCount, success: true };
+    } catch (error: any) {
+        console.error('[Scraper] Himalayas error:', error.message);
+        return { count: 0, success: false, error: error.message };
+    }
+}
+
+// Main trigger function
+export async function triggerLightweightScraping() {
+    console.log('[Automation] Starting lightweight API-based scraping...');
+
+    const results: Record<string, ScraperResult> = {};
+    let totalCount = 0;
+
+    // Run all lightweight scrapers - they're fast and don't use much memory
+    try {
+        results.remoteOK = await scrapeRemoteOK();
+        totalCount += results.remoteOK.count;
+    } catch (e: any) {
+        results.remoteOK = { count: 0, success: false, error: e.message };
+    }
+
+    try {
+        results.arbeitnow = await scrapeArbeitnow();
+        totalCount += results.arbeitnow.count;
+    } catch (e: any) {
+        results.arbeitnow = { count: 0, success: false, error: e.message };
+    }
+
+    try {
+        results.himalayas = await scrapeSimpleSource();
+        totalCount += results.himalayas.count;
+    } catch (e: any) {
+        results.himalayas = { count: 0, success: false, error: e.message };
+    }
+
+    // Adzuna only if configured
+    try {
+        results.adzuna = await scrapeAdzuna();
+        totalCount += results.adzuna.count;
+    } catch (e: any) {
+        results.adzuna = { count: 0, success: false, error: e.message };
+    }
+
+    return {
+        ...results,
+        total: totalCount
+    };
+}
