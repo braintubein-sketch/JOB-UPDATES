@@ -19,8 +19,8 @@ export function initializeCronJobs() {
 
     console.log('Initializing cron jobs...');
 
-    // Scrape new jobs every 2 hours
-    cron.schedule('0 */2 * * *', async () => {
+    // Scrape new jobs every 30 minutes
+    cron.schedule('*/30 * * * *', async () => {
         console.log('[Cron] Starting automated scraping...');
         await scrapeOffCampusJobs();
     });

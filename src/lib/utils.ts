@@ -122,13 +122,15 @@ export function getExperienceLabel(min: number, max: number): string {
 }
 
 export function getCompanyLogo(companyName: string): string {
-    const formattedName = companyName.toLowerCase().replace(/[^a-z0-9]/g, '');
+    const formattedName = companyName.toLowerCase().trim()
+        .replace(/ (?:india|private|limited|ltd|solutions|technologies|services|recruitment|hiring|off campus|drive).*/g, '')
+        .replace(/[^a-z0-9]/g, '');
 
     // High quality logos for major companies (Manual overrides)
     const manualLogos: Record<string, string> = {
         'google': 'https://upload.wikimedia.org/wikipedia/commons/c/c1/Google_\"G\"_Logo.svg',
         'microsoft': 'https://upload.wikimedia.org/wikipedia/commons/4/44/Microsoft_logo.svg',
-        'amazon': 'https://upload.wikimedia.org/wikipedia/commons/a/a9/Amazon_logo.svg',
+        'amazon': 'https://upload.wikimedia.org/wikipedia/commons/a/5c/Amazon_alphabet_logo.svg',
         'meta': 'https://upload.wikimedia.org/wikipedia/commons/7/7b/Meta_Platforms_Inc._logo.svg',
         'apple': 'https://upload.wikimedia.org/wikipedia/commons/f/fa/Apple_logo_black.svg',
         'netflix': 'https://upload.wikimedia.org/wikipedia/commons/0/08/Netflix_2015_logo.svg',
@@ -139,11 +141,21 @@ export function getCompanyLogo(companyName: string): string {
         'flipkart': 'https://upload.wikimedia.org/wikipedia/commons/7/7a/Flipkart_logo.svg',
         'swiggy': 'https://upload.wikimedia.org/wikipedia/en/1/12/Swiggy_logo.png',
         'zomato': 'https://upload.wikimedia.org/wikipedia/commons/7/75/Zomato_logo.svg',
+        'capgemini': 'https://upload.wikimedia.org/wikipedia/commons/9/94/Capgemini_logo.svg',
+        'cognizant': 'https://upload.wikimedia.org/wikipedia/commons/4/43/Cognizant_logo_2022.svg',
+        'hcl': 'https://upload.wikimedia.org/wikipedia/commons/c/c7/HCL_Technologies_logo.svg',
+        'oracle': 'https://upload.wikimedia.org/wikipedia/commons/5/50/Oracle_logo.svg',
+        'ibm': 'https://upload.wikimedia.org/wikipedia/commons/5/51/IBM_logo.svg',
+        'dell': 'https://upload.wikimedia.org/wikipedia/commons/1/18/Dell_logo_2016.svg',
+        'intel': 'https://upload.wikimedia.org/wikipedia/commons/7/7d/Intel_logo_%282020%2C_dark_blue%29.svg',
+        'hp': 'https://upload.wikimedia.org/wikipedia/commons/a/ad/HP_logo_2012.svg',
+        'samsung': 'https://upload.wikimedia.org/wikipedia/commons/2/24/Samsung_Logo.svg',
     };
 
     if (manualLogos[formattedName]) return manualLogos[formattedName];
 
-    // Fallback using Clearbit or Google Favicon API (guessing domain)
+    // Better Domain Fallback
     const domain = `${formattedName}.com`;
-    return `https://logo.clearbit.com/${domain}?size=128&fallback=https://www.google.com/s2/favicons?domain=${domain}&sz=128`;
+    // DuckDuckGo Icon API is very reliable for logos
+    return `https://icons.duckduckgo.com/ip3/${domain}.ico`;
 }
