@@ -35,9 +35,9 @@ export default function JobCard({ job, index = 0, featured = false }: JobCardPro
             <div className="absolute inset-0 bg-gradient-to-br from-primary/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
 
             {/* Top Row: Company & Status */}
-            <div className="relative z-10 flex items-start justify-between mb-6">
-                <div className="flex items-center gap-4">
-                    <div className="w-14 h-14 md:w-16 md:h-16 rounded-3xl bg-secondary border border-border flex items-center justify-center p-2 group-hover:scale-110 transition-transform duration-500">
+            <div className="relative z-10 flex flex-col sm:flex-row items-start justify-between gap-4 mb-6">
+                <div className="flex items-start gap-4 flex-1">
+                    <div className="shrink-0 w-14 h-14 md:w-16 md:h-16 rounded-3xl bg-secondary border border-border flex items-center justify-center p-2 group-hover:scale-110 transition-transform duration-500">
                         {job.companyLogo ? (
                             <img
                                 src={job.companyLogo}
@@ -48,7 +48,7 @@ export default function JobCard({ job, index = 0, featured = false }: JobCardPro
                             <Building2 className="w-8 h-8 text-muted-foreground group-hover:text-primary transition-colors" />
                         )}
                     </div>
-                    <div>
+                    <div className="min-w-0 flex-1">
                         <div className="flex items-center gap-2 mb-1">
                             <span className="text-sm font-bold text-muted-foreground hover:text-primary transition-colors cursor-pointer capitalize">
                                 {job.company}
@@ -56,14 +56,14 @@ export default function JobCard({ job, index = 0, featured = false }: JobCardPro
                             {job.isVerified && <Verified className="w-4 h-4 text-primary" />}
                         </div>
                         <Link href={`/jobs/${job.slug}`}>
-                            <h3 className="text-xl md:text-2xl font-black tracking-tight leading-tight group-hover:text-primary transition-colors line-clamp-1">
+                            <h3 className="text-xl md:text-2xl font-black tracking-tight leading-tight group-hover:text-primary transition-colors">
                                 {job.title}
                             </h3>
                         </Link>
                     </div>
                 </div>
 
-                <div className="flex flex-col items-end gap-2">
+                <div className="flex shrink-0 items-center sm:items-end gap-2">
                     {job.isRecent && (
                         <div className="flex items-center gap-1.5 px-3 py-1 bg-primary text-white text-[10px] font-black uppercase tracking-widest rounded-full shadow-lg shadow-primary/20">
                             <Zap className="w-3 h-3 fill-white" />
@@ -74,7 +74,7 @@ export default function JobCard({ job, index = 0, featured = false }: JobCardPro
             </div>
 
             {/* Metas Row: Location, Exp, Type */}
-            <div className="relative z-10 flex flex-wrap gap-x-6 gap-y-3 mb-8">
+            <div className="relative z-10 flex flex-wrap items-center gap-x-6 gap-y-3 mb-8">
                 <div className="flex items-center gap-2 text-sm font-bold text-muted-foreground">
                     <MapPin className="w-4 h-4 text-primary/60" />
                     {formatLocations(job.locations)}
@@ -90,12 +90,11 @@ export default function JobCard({ job, index = 0, featured = false }: JobCardPro
             </div>
 
             {/* Bottom Row: Skills & Action */}
-            <div className="relative z-10 flex items-center justify-between pt-6 border-t border-border/50">
-                <div className="flex -space-x-2">
+            <div className="relative z-10 flex flex-col sm:flex-row sm:items-center justify-between gap-6 pt-6 border-t border-border/50">
+                <div className="flex flex-wrap gap-2">
                     {job.skills.slice(0, 3).map((skill, i) => (
                         <div
                             key={skill}
-                            style={{ zIndex: 10 - i }}
                             className="px-4 py-1.5 bg-secondary border border-border rounded-full text-[11px] font-black text-foreground shadow-sm group-hover:border-primary/30 transition-colors"
                         >
                             {skill}
@@ -110,7 +109,7 @@ export default function JobCard({ job, index = 0, featured = false }: JobCardPro
 
                 <Link
                     href={`/jobs/${job.slug}`}
-                    className="flex items-center gap-2 font-black text-sm text-primary hover:gap-4 transition-all"
+                    className="flex items-center justify-center sm:justify-end gap-2 font-black text-sm text-primary hover:gap-4 transition-all bg-primary/5 sm:bg-transparent py-3 sm:py-0 rounded-2xl border border-primary/10 sm:border-0"
                 >
                     VIEW JOB
                     <ChevronRight className="w-4 h-4" />
