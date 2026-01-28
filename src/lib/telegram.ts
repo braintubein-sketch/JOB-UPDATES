@@ -31,12 +31,10 @@ export function formatJobForTelegram(job: Job, siteUrl: string): TelegramMessage
 <b>Location</b> ${job.locations.join(', ')}
 <b>Work Experience</b> ${job.experience.label}
 
-<b>Link-</b> <a href="${job.applyLink}">${job.applyLink}</a>
+<b>Link-</b> <a href="${jobUrl}">${jobUrl}</a>
 
 ━━━━━━━━━━━━━━━━━━━━━━
-📢 Join @BraintubeIndia for daily IT job updates!
-
-${hashtags.join(' ')}
+📢 Join @jobupdatesite for daily IT job updates!
 `;
 
     return {
