@@ -6,8 +6,12 @@ export const dynamic = 'force-dynamic';
 export async function GET(request: NextRequest) {
     try {
         const { searchParams } = new URL(request.url);
-        // We can use a secret to protect this endpoint if needed
-        // For now, let's just make it work as requested by the user
+        const key = searchParams.get('key');
+        const secret = process.env.CRON_SECRET;
+
+        if (secret && key !== secret) {
+            return NextResponse.json({ success: false, error: 'Unauthorized' }, { status: 401 });
+        }
 
         console.log('[Cron] Execution started...');
 
