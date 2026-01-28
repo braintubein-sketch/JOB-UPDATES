@@ -47,13 +47,13 @@ export default function Navbar() {
                 initial={{ y: -100 }}
                 animate={{ y: 0 }}
                 className={`fixed top-0 left-0 right-0 z-[100] transition-all duration-500 ${isScrolled
-                        ? 'p-4'
-                        : 'p-6'
+                    ? 'p-2 md:p-4'
+                    : 'p-4 md:p-6'
                     }`}
             >
                 <div className={`max-w-7xl mx-auto transition-all duration-500 ${isScrolled
-                        ? 'glass rounded-[2rem] px-6 py-3 shadow-[0_8px_32px_rgba(0,0,0,0.2)]'
-                        : 'bg-transparent px-2'
+                    ? 'glass rounded-[2rem] px-4 md:px-6 py-2 md:py-3 shadow-[0_8px_32px_rgba(0,0,0,0.2)]'
+                    : 'bg-transparent px-2'
                     }`}>
                     <div className="flex items-center justify-between">
                         {/* Logo */}
@@ -115,7 +115,7 @@ export default function Navbar() {
 
                             <Link
                                 href={user ? "/admin/dashboard" : "/admin"}
-                                className="hidden sm:flex btn-primary !py-2.5 !px-6 text-sm"
+                                className="hidden md:flex btn-primary !py-2.5 !px-6 text-sm"
                             >
                                 {user ? (
                                     <>

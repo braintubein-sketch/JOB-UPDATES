@@ -58,8 +58,8 @@ export default function SearchBar({ sticky = false, compact = false }: SearchBar
     };
 
     return (
-        <div className={`w-full ${sticky ? 'sticky top-32 z-[90]' : ''}`}>
-            <div className="flex flex-col lg:flex-row items-stretch gap-2 bg-secondary/30 p-2 rounded-[1.5rem] md:rounded-[2.5rem] border border-border/50 backdrop-blur-md shadow-2xl">
+        <div className={`w-full ${sticky ? 'sticky top-24 md:top-32 z-[90]' : ''}`}>
+            <div className="flex flex-col lg:flex-row items-stretch gap-2 bg-secondary/30 p-2 md:p-3 rounded-3xl md:rounded-[2.5rem] border border-border/50 backdrop-blur-md shadow-2xl">
 
                 {/* Keyword Input */}
                 <div className="flex-1 relative min-w-[200px]">

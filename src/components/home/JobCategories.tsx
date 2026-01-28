@@ -60,7 +60,7 @@ export default function JobCategories() {
                             >
                                 <Link
                                     href={`/jobs?category=${encodeURIComponent(category)}`}
-                                    className="group flex flex-col items-center justify-center p-6 md:p-10 rounded-[2.5rem] bg-secondary/50 border border-border hover:border-primary/50 hover:bg-primary/[0.02] transition-all hover:-translate-y-2"
+                                    className="group flex flex-col items-center justify-center p-4 md:p-10 rounded-3xl md:rounded-[2.5rem] bg-secondary/50 border border-border hover:border-primary/50 hover:bg-primary/[0.02] transition-all hover:-translate-y-2"
                                 >
                                     <div className="w-16 h-16 rounded-2xl bg-background border border-border flex items-center justify-center mb-6 group-hover:scale-110 group-hover:bg-primary group-hover:text-white transition-all shadow-lg group-hover:shadow-primary/20">
                                         <Icon className="w-8 h-8" />

@@ -32,7 +32,7 @@ export default function Hero() {
                     initial={{ opacity: 0, y: 30 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.8, ease: "easeOut" }}
-                    className="text-5xl md:text-8xl lg:text-9xl font-black tracking-tighter leading-[0.9] mb-8"
+                    className="text-4xl md:text-8xl lg:text-9xl font-black tracking-tighter leading-[0.9] mb-8"
                 >
                     Unlock Your <br />
                     <span className="gradient-text italic">Next Chapter</span>

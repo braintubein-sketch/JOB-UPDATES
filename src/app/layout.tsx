@@ -5,6 +5,7 @@ import { ThemeProvider } from '@/components/providers/ThemeProvider';
 import { AuthProvider } from '@/components/providers/AuthProvider';
 import Navbar from '@/components/layout/Navbar';
 import Footer from '@/components/layout/Footer';
+import MobileBottomNav from '@/components/layout/MobileBottomNav';
 
 const pjs = Plus_Jakarta_Sans({ subsets: ['latin'], variable: '--font-pjs' });
 
@@ -68,7 +69,8 @@ export default function RootLayout({
                     <ThemeProvider>
                         <div className="min-h-screen flex flex-col relative overflow-x-hidden">
                             <Navbar />
-                            <main className="flex-1 relative z-10">{children}</main>
+                            <main className="flex-1 relative z-10 pb-28 md:pb-0">{children}</main>
+                            <MobileBottomNav />
                             <Footer />
                         </div>
                     </ThemeProvider>

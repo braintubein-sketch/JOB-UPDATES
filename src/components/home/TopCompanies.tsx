@@ -64,7 +64,7 @@ export default function TopCompanies() {
                         >
                             <Link
                                 href={`/jobs?company=${encodeURIComponent(company.name)}`}
-                                className="group block glass !p-8 rounded-[2.5rem] border border-border/50 hover:border-primary/50 hover:bg-primary/[0.02] transition-all hover:-translate-y-2 text-center"
+                                className="group block glass !p-4 md:!p-8 rounded-3xl md:rounded-[2.5rem] border border-border/50 hover:border-primary/50 hover:bg-primary/[0.02] transition-all hover:-translate-y-2 text-center"
                             >
                                 <div className={`w-16 h-16 rounded-2xl bg-gradient-to-br ${company.color} flex items-center justify-center mb-6 mx-auto group-hover:scale-110 transition-transform shadow-xl`}>
                                     <span className="text-white font-black text-2xl italic">

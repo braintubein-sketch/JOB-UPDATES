@@ -38,7 +38,7 @@ export default function Footer() {
     const currentYear = new Date().getFullYear();
 
     return (
-        <footer className="relative border-t border-border bg-background pt-20 overflow-hidden">
+        <footer className="relative border-t border-border bg-background pt-20 pb-32 md:pb-0 overflow-hidden">
             {/* Background Decoration */}
             <div className="absolute bottom-0 left-0 w-full h-1/2 bg-mesh opacity-50" />
             <div className="absolute top-0 right-0 w-96 h-96 bg-primary/5 blur-[100px] rounded-full" />
