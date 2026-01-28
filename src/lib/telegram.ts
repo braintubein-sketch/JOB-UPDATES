@@ -23,25 +23,18 @@ export function formatJobForTelegram(job: Job, siteUrl: string): TelegramMessage
 
     const jobUrl = `${siteUrl}/jobs/${job.slug}`;
 
-    // Premium HTML Template
+    // Clean, Simple Template
     const message = `
-<b>🚀 NEW OPPORTUNITY AT ${job.company.toUpperCase()}</b>
-━━━━━━━━━━━━━━━━━━━━━━
+<b>Company</b> ${job.company}
+<b>Roles</b> ${job.title}${job.roles && job.roles.length > 1 ? ' & other' : ''}
+<b>Qualification</b> ${job.qualification}
+<b>Location</b> ${job.locations.join(', ')}
+<b>Work Experience</b> ${job.experience.label}
 
-📌 <b>ROLE:</b> ${job.title}
-🏢 <b>COMPANY:</b> ${job.company}
-🎓 <b>QUALIFICATION:</b> ${job.qualification}
-📍 <b>LOCATION:</b> ${job.locations.slice(0, 3).join(', ')}
-🧠 <b>EXPERIENCE:</b> ${formatExperience(job.experience.min, job.experience.max)}
-⏰ <b>TYPE:</b> ${job.employmentType}
-
-🛠 <b>SKILLS REQUIRED:</b>
-${job.skills.slice(0, 6).map(s => `• ${s}`).join('\n')}
+<b>Link-</b> <a href="${job.applyLink}">${job.applyLink}</a>
 
 ━━━━━━━━━━━━━━━━━━━━━━
-🔗 <b>APPLY NOW:</b> <a href="${jobUrl}">Click Here to Apply</a>
-
-<i>📢 Join @BraintubeIndia for daily premium IT job updates!</i>
+📢 Join @BraintubeIndia for daily IT job updates!
 
 ${hashtags.join(' ')}
 `;
