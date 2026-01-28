@@ -21,13 +21,13 @@ export async function scrapeFreshersNow() {
         browser = await getBrowser();
         const page = await browser.newPage();
 
-        // Stealth settings
+        // Optimized & Stealthy
         await page.setUserAgent('Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/121.0.0.0 Safari/537.36');
 
-        // Speed up: Block images and CSS
+        // Relaxed resource blocking
         await page.setRequestInterception(true);
         page.on('request', (req) => {
-            if (['image', 'stylesheet', 'font', 'media'].includes(req.resourceType())) {
+            if (['image', 'media', 'font'].includes(req.resourceType())) {
                 req.abort();
             } else {
                 req.continue();
@@ -39,12 +39,19 @@ export async function scrapeFreshersNow() {
 
         await page.goto(url, { waitUntil: 'domcontentloaded', timeout: 60000 });
 
+        // Wait for table
+        try {
+            await page.waitForSelector('table', { timeout: 10000 });
+        } catch (e) { console.log('[Scraper] No table found on FreshersNow'); }
+
         // Get content
         const content = await page.content();
         const $ = cheerio.load(content);
 
-        // Select rows - skip header
-        const jobElements = $('.wp-block-table tr').toArray().slice(1, 6); // Limit to 5
+        // Select rows - handle multiple possible table classes
+        const jobElements = $('table tr').toArray()
+            .filter(el => $(el).find('td').length >= 2) // Ensure it has columns
+            .slice(0, 10); // Limit to top 10
         console.log(`[Scraper] Found ${jobElements.length} candidate rows on FreshersNow`);
         let newJobsCount = 0;
 

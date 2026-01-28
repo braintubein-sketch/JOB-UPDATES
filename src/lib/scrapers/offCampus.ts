@@ -22,13 +22,13 @@ export async function scrapeOffCampusJobs() {
         browser = await getBrowser();
         const page = await browser.newPage();
 
-        // Stealth settings
+        // Optimized & Stealthy
         await page.setUserAgent('Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/121.0.0.0 Safari/537.36');
 
-        // Speed up: Block images and CSS
+        // Relaxed resource blocking - block only heavy media
         await page.setRequestInterception(true);
         page.on('request', (req) => {
-            if (['image', 'stylesheet', 'font', 'media'].includes(req.resourceType())) {
+            if (['image', 'media', 'font'].includes(req.resourceType())) {
                 req.abort();
             } else {
                 req.continue();
@@ -45,12 +45,12 @@ export async function scrapeOffCampusJobs() {
         const content = await page.content();
         const $ = cheerio.load(content);
 
-        // Robust selectors
+        // Robust selectors - find ANY link that looks like a job post
+        // OffCampus uses <h2> for titles usually inside a post block
         const jobElements = [
-            ...$('.post-column').toArray(),
-            ...$('.entry-header').toArray(),
-            ...$('article').toArray()
-        ].slice(0, 5); // Limit to top 5 for performance
+            ...$('.post-column, .post, article').toArray(),
+            ...$('h2.entry-title').parents('article').toArray()
+        ].slice(0, 10); // Check top 10
 
         console.log(`[Scraper] Found ${jobElements.length} candidate elements on OffCampusJobs4u`);
         let newJobsCount = 0;
