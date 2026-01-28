@@ -24,7 +24,7 @@ interface ScraperResult {
 async function scrapeJobicy(): Promise<ScraperResult> {
     console.log('[Scraper] Fetching from Jobicy API...');
     try {
-        const { data } = await axios.get('https://jobicy.com/api/v2/remote-jobs?count=10', {
+        const { data } = await axios.get('https://jobicy.com/api/v2/remote-jobs?count=30', {
             headers: {
                 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/121.0.0.0 Safari/537.36',
                 'Accept': 'application/json'
@@ -167,9 +167,10 @@ async function scrapeArbeitnow(): Promise<ScraperResult> {
     try {
         const { data } = await axios.get('https://www.arbeitnow.com/api/job-board-api', {
             headers: {
-                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
+                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
                 'Accept': 'application/json',
-                'Accept-Language': 'en-US,en;q=0.9'
+                'Accept-Language': 'en-US,en;q=0.9',
+                'Referer': 'https://www.arbeitnow.com/'
             },
             timeout: 15000
         });
@@ -389,7 +390,7 @@ async function scrapeJSearch(): Promise<ScraperResult> {
     try {
         const { data } = await axios.get('https://jsearch.p.rapidapi.com/search', {
             params: {
-                query: 'software developer in India',
+                query: 'software engineer devops cloud data developer in India',
                 page: '1',
                 num_pages: '1'
             },
