@@ -9,33 +9,19 @@ import TelegramCTA from '@/components/home/TelegramCTA';
 export default function HomePage() {
     return (
         <main className="relative">
-            {/* Background Orbs for the whole page */}
+            {/* Background Orbs */}
             <div className="fixed inset-0 pointer-events-none overflow-hidden z-0">
                 <div className="absolute top-[20%] right-[-10%] w-[40%] h-[40%] bg-primary/5 blur-[120px] rounded-full" />
                 <div className="absolute bottom-[20%] left-[-10%] w-[30%] h-[30%] bg-accent/5 blur-[120px] rounded-full" />
             </div>
 
-            {/* Hero Section */}
             <Hero />
 
-            {/* Featured Jobs */}
-            <Suspense fallback={<HomeSectionSkeleton />}>
-                <FeaturedJobs />
-            </Suspense>
-
-            {/* Job Categories */}
-            <JobCategories />
-
-            {/* Latest Jobs */}
-            <Suspense fallback={<HomeSectionSkeleton />}>
-                <LatestJobs />
-            </Suspense>
-
-            {/* Top Companies */}
-            <TopCompanies />
-
-            {/* Telegram CTA */}
-            <TelegramCTA />
+            <div className="pb-24">
+                <Suspense fallback={<HomeSectionSkeleton />}>
+                    <LatestJobs />
+                </Suspense>
+            </div>
         </main>
     );
 }

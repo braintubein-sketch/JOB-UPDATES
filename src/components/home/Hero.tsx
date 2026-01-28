@@ -8,7 +8,7 @@ import SearchBar from '@/components/jobs/SearchBar';
 
 export default function Hero() {
     return (
-        <section className="relative min-h-[90vh] flex items-center justify-center overflow-hidden py-20 px-4">
+        <section className="relative min-h-[60vh] flex items-center justify-center overflow-hidden py-16 px-4">
             {/* Ultra Premium Background Elements */}
             <div className="absolute inset-0 bg-mesh opacity-40" />
 
@@ -61,45 +61,7 @@ export default function Hero() {
                     </Suspense>
                 </motion.div>
 
-                {/* Trust Indicators */}
-                <motion.div
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    transition={{ delay: 0.5 }}
-                    className="flex flex-wrap items-center justify-center gap-8 md:gap-12"
-                >
-                    {[
-                        { icon: Briefcase, label: "5,000+ Jobs", color: "text-blue-500" },
-                        { icon: Globe, label: "Remote First", color: "text-green-500" },
-                        { icon: ShieldCheck, label: "100% Verified", color: "text-purple-500" },
-                    ].map((item, i) => (
-                        <div key={i} className="flex items-center gap-3">
-                            <div className={`w-10 h-10 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center ${item.color}`}>
-                                <item.icon className="w-5 h-5 shadow-sm" />
-                            </div>
-                            <span className="font-bold text-sm tracking-tight">{item.label}</span>
-                        </div>
-                    ))}
-                </motion.div>
 
-                {/* Trending Tags */}
-                <motion.div
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: 0.6 }}
-                    className="mt-12 flex flex-wrap items-center justify-center gap-2"
-                >
-                    <span className="text-sm font-bold text-muted-foreground mr-2">Top Picks:</span>
-                    {['React', 'Next.js', 'Rust', 'AI/ML', 'DevOps'].map((tag) => (
-                        <Link
-                            key={tag}
-                            href={`/jobs?q=${encodeURIComponent(tag)}`}
-                            className="tag rounded-2xl px-5 py-2 font-bold hover:bg-primary hover:text-white transition-all"
-                        >
-                            {tag}
-                        </Link>
-                    ))}
-                </motion.div>
             </div>
         </section>
     );
