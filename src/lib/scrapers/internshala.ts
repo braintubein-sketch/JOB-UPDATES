@@ -23,9 +23,10 @@ export async function scrapeInternshala() {
 
         // Optimized & Stealthy
         await page.setUserAgent('Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/121.0.0.0 Safari/537.36');
+        // Relaxed resource blocking
         await page.setRequestInterception(true);
         page.on('request', (req) => {
-            if (['image', 'stylesheet', 'font', 'media'].includes(req.resourceType())) {
+            if (['image', 'media', 'font'].includes(req.resourceType())) {
                 req.abort();
             } else {
                 req.continue();

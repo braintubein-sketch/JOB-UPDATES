@@ -189,22 +189,41 @@ import { scrapeUnstopJobs } from './scrapers/unstop';
 import { scrapeInternshala } from './scrapers/internshala';
 
 export async function triggerScraping() {
-    console.log('[Automation] Starting multi-source scraping...');
+    console.log('[Automation] Starting scraping sequence...');
 
-    // Run scrapers sequentially to save memory on Render
-    const offCampusResult = await scrapeOffCampusJobs();
-    const freshersNowResult = await scrapeFreshersNow();
-    const apnaResult = await scrapeApnaJobs();
-    const unstopResult = await scrapeUnstopJobs();
-    const internshalaResult = await scrapeInternshala();
+    const scrapers = [
+        { name: 'offCampus', fn: scrapeOffCampusJobs },
+        { name: 'freshersNow', fn: scrapeFreshersNow },
+        { name: 'apna', fn: scrapeApnaJobs },
+        { name: 'unstop', fn: scrapeUnstopJobs },
+        { name: 'internshala', fn: scrapeInternshala }
+    ];
+
+    // Shuffle and pick 2 to avoid timeouts on serverless functions
+    const shuffled = scrapers.sort(() => 0.5 - Math.random());
+    const selected = shuffled.slice(0, 2);
+
+    console.log(`[Automation] Selected scrapers for this run: ${selected.map(s => s.name).join(', ')}`);
+
+    const results: Record<string, any> = {};
+    let totalCount = 0;
+
+    for (const scraper of selected) {
+        try {
+            console.log(`[Automation] Running ${scraper.name}...`);
+            const result = await scraper.fn();
+            results[scraper.name] = result;
+            totalCount += result.count;
+        } catch (e: any) {
+            console.error(`[Automation] Error running ${scraper.name}:`, e);
+            results[scraper.name] = { count: 0, success: false, error: e.message };
+        }
+    }
 
     return {
-        offCampus: offCampusResult,
-        freshersNow: freshersNowResult,
-        apna: apnaResult,
-        unstop: unstopResult,
-        internshala: internshalaResult,
-        total: offCampusResult.count + freshersNowResult.count + apnaResult.count + unstopResult.count + internshalaResult.count
+        ...results,
+        selected: selected.map(s => s.name),
+        total: totalCount
     };
 }
 
