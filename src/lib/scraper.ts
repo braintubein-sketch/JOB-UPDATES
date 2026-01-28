@@ -173,6 +173,42 @@ export function extractLocationsFromText(text: string): string[] {
     return foundLocations.length > 0 ? foundLocations : ['India'];
 }
 
+export function extractQualificationFromText(text: string): string {
+    const qualifications = [
+        'B.E', 'B.Tech', 'M.E', 'M.Tech', 'MCA', 'BCA', 'B.Sc', 'M.Sc',
+        'MBA', 'Any Graduate', 'MBBS', 'MD', 'Ph.D', 'Diploma', 'B.Com', 'M.Com'
+    ];
+
+    const found: string[] = [];
+    const textUpper = text.toUpperCase();
+
+    // Check for common combinations like B.E/B.Tech
+    if (textUpper.includes('B.E') || textUpper.includes('B.TECH')) {
+        found.push('B.E/B.Tech');
+    }
+    if (textUpper.includes('M.E') || textUpper.includes('M.TECH')) {
+        found.push('M.E/M.Tech');
+    }
+
+    for (const q of qualifications) {
+        if (q.includes('/')) continue; // Handled above
+        if (q === 'B.E' || q === 'B.Tech' || q === 'M.E' || q === 'M.Tech') continue; // Handled above
+
+        // Use word boundary to avoid matching "MD" in "Mumbai-Delhi"
+        const regex = new RegExp(`\\b${q.replace('.', '\\.')}\\b`, 'i');
+        if (regex.test(text)) {
+            found.push(q);
+        }
+    }
+
+    if (found.length > 0) {
+        // Remove duplicates and join
+        return [...new Set(found)].join(', ');
+    }
+
+    return 'Any Graduate';
+}
+
 export function validateApplyLink(url: string): boolean {
     if (!url) return false;
 
