@@ -185,19 +185,26 @@ export async function triggerTelegramPostManual() {
 
 import { scrapeApnaJobs } from './scrapers/apna';
 
+import { scrapeUnstopJobs } from './scrapers/unstop';
+import { scrapeInternshala } from './scrapers/internshala';
+
 export async function triggerScraping() {
     console.log('[Automation] Starting multi-source scraping...');
 
-    // Run scrapers in parallel or sequence? Sequence is safer for memory.
+    // Run scrapers sequentially to save memory on Render
     const offCampusResult = await scrapeOffCampusJobs();
     const freshersNowResult = await scrapeFreshersNow();
     const apnaResult = await scrapeApnaJobs();
+    const unstopResult = await scrapeUnstopJobs();
+    const internshalaResult = await scrapeInternshala();
 
     return {
         offCampus: offCampusResult,
         freshersNow: freshersNowResult,
         apna: apnaResult,
-        total: offCampusResult.count + freshersNowResult.count + apnaResult.count
+        unstop: unstopResult,
+        internshala: internshalaResult,
+        total: offCampusResult.count + freshersNowResult.count + apnaResult.count + unstopResult.count + internshalaResult.count
     };
 }
 
