@@ -455,6 +455,111 @@ async function scrapeJSearch(): Promise<ScraperResult> {
     }
 }
 
+// FoundTheJob Scraper - Uses RSS feed for reliability
+async function scrapeFoundTheJob(): Promise<ScraperResult> {
+    console.log('[Scraper] Fetching from FoundTheJob RSS...');
+    try {
+        const { data } = await axios.get('https://foundthejob.com/feed/', {
+            headers: {
+                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/121.0.0.0 Safari/537.36',
+                'Accept': 'application/xml'
+            },
+            timeout: 15000
+        });
+
+        const $ = cheerio.load(data, { xmlMode: true });
+        let newJobsCount = 0;
+        await connectDB();
+
+        const items = $('item').toArray();
+
+        for (const el of items) {
+            try {
+                const title = $(el).find('title').text();
+                const sourceUrl = $(el).find('link').text();
+                const content = $(el).find('content\\:encoded').text();
+                const pubDate = new Date($(el).find('pubDate').text());
+
+                const existing = await Job.findOne({ sourceUrl });
+                if (existing) continue;
+
+                // Basic filtering
+                if (!isITJob(title + ' ' + content)) continue;
+
+                // Extract company from title
+                // Example: "Springer Nature Hiring 2026", "Paytm Internship Hiring"
+                let company = 'Unknown';
+                const companyMatch = title.match(/^(.*?)\s+(?:Hiring|Careers|Jobs|Internship)/i);
+                if (companyMatch) {
+                    company = normalizeCompanyName(companyMatch[1]);
+                } else {
+                    company = normalizeCompanyName(title.split(' ')[0]);
+                }
+
+                // Find external apply link in content
+                let applyLink = sourceUrl;
+                const inner$ = cheerio.load(content);
+                const externalLinks: string[] = [];
+                inner$('a').each((_, a) => {
+                    const href = inner$(a).attr('href');
+                    if (href &&
+                        !href.includes('foundthejob.com') &&
+                        !href.includes('telegram') &&
+                        !href.includes('instagram') &&
+                        !href.includes('youtube') &&
+                        !href.includes('addtoany') &&
+                        !href.startsWith('#')
+                    ) {
+                        externalLinks.push(href);
+                    }
+                });
+
+                if (externalLinks.length > 0) {
+                    applyLink = externalLinks[0];
+                }
+
+                // Generate slug
+                const slug = `${company}-${title}`.toLowerCase()
+                    .replace(/[^a-z0-9]+/g, '-')
+                    .replace(/-+/g, '-')
+                    .replace(/^-|-$/g, '')
+                    .substring(0, 100) + '-' + Date.now();
+
+                const newJob = new Job({
+                    company,
+                    title,
+                    slug,
+                    roles: [title],
+                    qualification: 'Any Graduate',
+                    locations: extractLocationsFromText(content) || ['India'],
+                    experience: { min: 0, max: 2, label: 'Entry Level' },
+                    employmentType: title.toLowerCase().includes('intern') ? 'Internship' : 'Full-time',
+                    description: content.replace(/<[^>]*>?/gm, '').substring(0, 1000),
+                    skills: extractSkillsFromText(content),
+                    applyLink,
+                    category: detectCategory(title, []),
+                    isVerified: true,
+                    isActive: true,
+                    source: 'automated',
+                    sourceUrl,
+                    postedDate: pubDate
+                });
+
+                await newJob.save();
+                newJobsCount++;
+                console.log(`[Scraper] Saved (FoundTheJob): ${company} - ${title}`);
+            } catch (err) {
+                console.error('[Scraper] Error saving FoundTheJob item:', err);
+            }
+        }
+
+        return { count: newJobsCount, success: true };
+    } catch (error: any) {
+        console.error('[Scraper] FoundTheJob error:', error.message);
+        return { count: 0, success: false, error: error.message };
+    }
+}
+
 // Main trigger function
 export async function triggerLightweightScraping() {
     console.log('[Automation] Starting lightweight API-based scraping...');
@@ -506,6 +611,14 @@ export async function triggerLightweightScraping() {
         totalCount += results.jsearch.count;
     } catch (e: any) {
         results.jsearch = { count: 0, success: false, error: e.message };
+    }
+
+    // FoundTheJob
+    try {
+        results.foundthejob = await scrapeFoundTheJob();
+        totalCount += results.foundthejob.count;
+    } catch (e: any) {
+        results.foundthejob = { count: 0, success: false, error: e.message };
     }
 
     return {
