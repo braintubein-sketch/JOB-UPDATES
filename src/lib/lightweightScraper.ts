@@ -497,7 +497,6 @@ async function scrapeFoundTheJob(): Promise<ScraperResult> {
                 }
 
                 // Find external apply link in content
-                let applyLink = sourceUrl;
                 const inner$ = cheerio.load(content);
                 const externalLinks: string[] = [];
                 inner$('a').each((_, a) => {
@@ -514,9 +513,13 @@ async function scrapeFoundTheJob(): Promise<ScraperResult> {
                     }
                 });
 
-                if (externalLinks.length > 0) {
-                    applyLink = externalLinks[0];
+                // If no external link is found, skip this job entirely
+                if (externalLinks.length === 0) {
+                    console.log(`[Scraper] Skipping ${title} - No direct apply link found.`);
+                    continue;
                 }
+
+                const applyLink = externalLinks[0];
 
                 // Generate slug
                 const slug = `${company}-${title}`.toLowerCase()
