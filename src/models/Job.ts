@@ -188,7 +188,7 @@ const JobSchema = new Schema<IJob>(
 JobSchema.index({ title: 'text', company: 'text', description: 'text', skills: 'text' });
 
 // Pre-save middleware to generate slug
-JobSchema.pre('save', function (next: any) {
+JobSchema.pre('save', async function () {
     // Only generate slug if not already provided
     if (!this.slug && (this.isNew || this.isModified('title') || this.isModified('company'))) {
         const baseSlug = `${this.company}-${this.title}`
@@ -202,8 +202,6 @@ JobSchema.pre('save', function (next: any) {
     const sevenDaysAgo = new Date();
     sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
     this.isRecent = this.postedDate >= sevenDaysAgo;
-
-    next();
 });
 
 // Static method to find similar jobs (for deduplication)
