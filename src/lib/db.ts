@@ -20,11 +20,13 @@ if (!global.mongoose) {
 export async function connectDB(): Promise<typeof mongoose> {
   if (!MONGODB_URI) {
     throw new Error(
-      'MongoDB URI not configured. Please set MONGODB_URI in your .env file.\n' +
-      'Example: MONGODB_URI=mongodb://localhost:27017/itjobs\n' +
-      'Or use MongoDB Atlas: MONGODB_URI=mongodb+srv://user:password@cluster.mongodb.net/itjobs'
+      'MongoDB URI not configured. Please set MONGODB_URI in your .env file.'
     );
   }
+
+  // Debug log (masked for security)
+  const maskedUri = MONGODB_URI.replace(/:([^@]+)@/, ':****@');
+  console.log(`[DB] Attempting connection to: ${maskedUri}`);
 
   if (cached.conn) {
     return cached.conn;
