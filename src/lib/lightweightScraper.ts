@@ -54,9 +54,17 @@ async function scrapeRemoteOK(): Promise<ScraperResult> {
                 const company = normalizeCompanyName(job.company || 'Unknown');
                 const skills = job.tags || [];
 
+                // Generate slug
+                const slug = `${company}-${job.position}`.toLowerCase()
+                    .replace(/[^a-z0-9]+/g, '-')
+                    .replace(/-+/g, '-')
+                    .replace(/^-|-$/g, '')
+                    .substring(0, 100);
+
                 const newJob = new Job({
                     company,
                     title: job.position,
+                    slug,
                     qualification: 'Any Graduate',
                     locations: ['Remote'],
                     experience: { min: 0, max: 5, label: 'Entry-Mid Level' },
@@ -116,9 +124,17 @@ async function scrapeAdzuna(): Promise<ScraperResult> {
 
                 const company = normalizeCompanyName(job.company?.display_name || 'Unknown');
 
+                // Generate slug
+                const slug = `${company}-${job.title}`.toLowerCase()
+                    .replace(/[^a-z0-9]+/g, '-')
+                    .replace(/-+/g, '-')
+                    .replace(/^-|-$/g, '')
+                    .substring(0, 100);
+
                 const newJob = new Job({
                     company,
                     title: job.title,
+                    slug,
                     qualification: 'Any Graduate',
                     locations: [job.location?.display_name || 'India'],
                     experience: { min: 0, max: 5, label: 'Entry Level' },
@@ -182,9 +198,17 @@ async function scrapeArbeitnow(): Promise<ScraperResult> {
 
                 const company = normalizeCompanyName(job.company_name || 'Unknown');
 
+                // Generate slug
+                const slug = `${company}-${job.title}`.toLowerCase()
+                    .replace(/[^a-z0-9]+/g, '-')
+                    .replace(/-+/g, '-')
+                    .replace(/^-|-$/g, '')
+                    .substring(0, 100);
+
                 const newJob = new Job({
                     company,
                     title: job.title,
+                    slug,
                     qualification: 'Any Graduate',
                     locations: [job.location || 'Remote'],
                     experience: { min: 0, max: 5, label: 'Entry Level' },
@@ -244,12 +268,25 @@ async function scrapeSimpleSource(): Promise<ScraperResult> {
 
                 const company = normalizeCompanyName(job.companyName || 'Unknown');
 
+                // Generate slug from title and company
+                const slug = `${company}-${job.title}`.toLowerCase()
+                    .replace(/[^a-z0-9]+/g, '-')
+                    .replace(/-+/g, '-')
+                    .replace(/^-|-$/g, '')
+                    .substring(0, 100);
+
+                // Handle seniority - could be string or array
+                const seniorityLabel = Array.isArray(job.seniority)
+                    ? job.seniority[0] || 'Entry Level'
+                    : job.seniority || 'Entry Level';
+
                 const newJob = new Job({
                     company,
                     title: job.title,
+                    slug,
                     qualification: 'Any Graduate',
                     locations: [job.locationRestrictions?.[0] || 'Remote'],
-                    experience: { min: 0, max: 5, label: job.seniority || 'Entry Level' },
+                    experience: { min: 0, max: 5, label: seniorityLabel },
                     employmentType: 'Full-time',
                     description: (job.description || '').substring(0, 1000),
                     skills: job.categories || [],
@@ -305,9 +342,17 @@ async function scrapeFindWork(): Promise<ScraperResult> {
 
                 const company = normalizeCompanyName(job.company_name || 'Unknown');
 
+                // Generate slug
+                const slug = `${company}-${job.role}`.toLowerCase()
+                    .replace(/[^a-z0-9]+/g, '-')
+                    .replace(/-+/g, '-')
+                    .replace(/^-|-$/g, '')
+                    .substring(0, 100);
+
                 const newJob = new Job({
                     company,
                     title: job.role,
+                    slug,
                     qualification: 'Any Graduate',
                     locations: [job.location || 'Remote'],
                     experience: { min: 0, max: 5, label: 'Entry Level' },
@@ -376,9 +421,17 @@ async function scrapeJSearch(): Promise<ScraperResult> {
 
                 const company = normalizeCompanyName(job.employer_name || 'Unknown');
 
+                // Generate slug
+                const slug = `${company}-${job.job_title}`.toLowerCase()
+                    .replace(/[^a-z0-9]+/g, '-')
+                    .replace(/-+/g, '-')
+                    .replace(/^-|-$/g, '')
+                    .substring(0, 100);
+
                 const newJob = new Job({
                     company,
                     title: job.job_title,
+                    slug,
                     qualification: 'Any Graduate',
                     locations: [job.job_city || job.job_country || 'India'],
                     experience: { min: 0, max: 5, label: 'Entry Level' },
