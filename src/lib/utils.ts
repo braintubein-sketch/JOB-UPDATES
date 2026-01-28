@@ -120,3 +120,30 @@ export function getExperienceLabel(min: number, max: number): string {
     if (min <= 7 && max <= 12) return 'Senior';
     return 'Lead/Principal';
 }
+
+export function getCompanyLogo(companyName: string): string {
+    const formattedName = companyName.toLowerCase().replace(/[^a-z0-9]/g, '');
+
+    // High quality logos for major companies (Manual overrides)
+    const manualLogos: Record<string, string> = {
+        'google': 'https://upload.wikimedia.org/wikipedia/commons/c/c1/Google_\"G\"_Logo.svg',
+        'microsoft': 'https://upload.wikimedia.org/wikipedia/commons/4/44/Microsoft_logo.svg',
+        'amazon': 'https://upload.wikimedia.org/wikipedia/commons/a/a9/Amazon_logo.svg',
+        'meta': 'https://upload.wikimedia.org/wikipedia/commons/7/7b/Meta_Platforms_Inc._logo.svg',
+        'apple': 'https://upload.wikimedia.org/wikipedia/commons/f/fa/Apple_logo_black.svg',
+        'netflix': 'https://upload.wikimedia.org/wikipedia/commons/0/08/Netflix_2015_logo.svg',
+        'infosys': 'https://upload.wikimedia.org/wikipedia/commons/9/95/Infosys_logo.svg',
+        'tcs': 'https://upload.wikimedia.org/wikipedia/commons/b/b1/Tata_Consultancy_Services_Logo.svg',
+        'wipro': 'https://upload.wikimedia.org/wikipedia/commons/1/12/Wipro_Logo.svg',
+        'accenture': 'https://upload.wikimedia.org/wikipedia/commons/c/cd/Accenture.svg',
+        'flipkart': 'https://upload.wikimedia.org/wikipedia/commons/7/7a/Flipkart_logo.svg',
+        'swiggy': 'https://upload.wikimedia.org/wikipedia/en/1/12/Swiggy_logo.png',
+        'zomato': 'https://upload.wikimedia.org/wikipedia/commons/7/75/Zomato_logo.svg',
+    };
+
+    if (manualLogos[formattedName]) return manualLogos[formattedName];
+
+    // Fallback using Clearbit or Google Favicon API (guessing domain)
+    const domain = `${formattedName}.com`;
+    return `https://logo.clearbit.com/${domain}?size=128&fallback=https://www.google.com/s2/favicons?domain=${domain}&sz=128`;
+}

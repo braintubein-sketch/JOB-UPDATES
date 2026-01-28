@@ -11,10 +11,12 @@
     "seed": "npx ts-node --compiler-options '{\"module\":\"CommonJS\"}' scripts/seed.ts"
   },
   "dependencies": {
+    "@tailwindcss/postcss": "^4",
     "axios": "^1.13.3",
     "bcryptjs": "^3.0.3",
     "cheerio": "^1.2.0",
     "date-fns": "^4.1.0",
+    "dotenv": "^17.2.3",
     "framer-motion": "^12.29.2",
     "jsonwebtoken": "^9.0.3",
     "lucide-react": "^0.563.0",
@@ -26,8 +28,7 @@
     "react": "19.2.3",
     "react-dom": "19.2.3",
     "tailwindcss": "^4",
-    "typescript": "^5",
-    "@tailwindcss/postcss": "^4"
+    "typescript": "^5"
   },
   "devDependencies": {
     "@types/bcryptjs": "^2.4.6",

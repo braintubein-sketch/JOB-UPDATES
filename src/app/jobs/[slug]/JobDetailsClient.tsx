@@ -21,7 +21,7 @@ import {
     X,
 } from 'lucide-react';
 import { Job } from '@/types';
-import { formatDate, formatRelativeDate, formatExperience, formatSalary } from '@/lib/utils';
+import { formatDate, formatRelativeDate, formatExperience, formatSalary, getCompanyLogo } from '@/lib/utils';
 
 export default function JobDetailsClient({ slug }: { slug: string }) {
     const router = useRouter();
@@ -115,7 +115,7 @@ export default function JobDetailsClient({ slug }: { slug: string }) {
                                 {job.companyLogo ? (
                                     <img src={job.companyLogo} alt={job.company} className="w-full h-full object-contain" />
                                 ) : (
-                                    <Building2 className="w-10 h-10 text-muted-foreground" />
+                                    <img src={getCompanyLogo(job.company)} alt={job.company} className="w-full h-full object-contain" />
                                 )}
                             </div>
                             <div>
@@ -218,7 +218,7 @@ export default function JobDetailsClient({ slug }: { slug: string }) {
                                     {job.companyLogo ? (
                                         <img src={job.companyLogo} alt={job.company} className="w-full h-full object-contain" />
                                     ) : (
-                                        <Building2 className="w-10 h-10 text-muted-foreground" />
+                                        <img src={getCompanyLogo(job.company)} alt={job.company} className="w-full h-full object-contain" />
                                     )}
                                 </div>
                                 <h3 className="text-2xl font-black tracking-tight">{job.company}</h3>

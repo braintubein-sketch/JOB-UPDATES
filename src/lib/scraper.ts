@@ -223,10 +223,24 @@ export function normalizeCompanyName(name: string): string {
         'infosys limited': 'Infosys',
         'tata consultancy services': 'TCS',
         'wipro limited': 'Wipro',
+        'accenture solutions': 'Accenture',
+        'capgemini technology services': 'Capgemini',
+        'cognizant technology solutions': 'Cognizant',
+        'hcl technologies': 'HCL',
+        'tech mahindra limited': 'Tech Mahindra',
     };
 
-    const lower = name.toLowerCase().trim();
-    return normalizations[lower] || name.trim();
+    const lower = name.toLowerCase().trim()
+        .replace(/ recruitment.*$/, '')
+        .replace(/ hiring.*$/, '')
+        .replace(/ off campus.*$/, '')
+        .replace(/ drive.*$/, '');
+
+    for (const [key, value] of Object.entries(normalizations)) {
+        if (lower.includes(key)) return value;
+    }
+
+    return name.split(/ (?:Recruitment|Hiring|Off Campus)/)[0].trim();
 }
 
 // Rate limiting helper

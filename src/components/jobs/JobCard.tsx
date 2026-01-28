@@ -14,7 +14,7 @@ import {
     ChevronRight,
 } from 'lucide-react';
 import { Job } from '@/types';
-import { formatRelativeDate, formatExperience, formatLocations } from '@/lib/utils';
+import { formatRelativeDate, formatExperience, formatLocations, getCompanyLogo } from '@/lib/utils';
 
 interface JobCardProps {
     job: Job;
@@ -45,7 +45,11 @@ export default function JobCard({ job, index = 0, featured = false }: JobCardPro
                                 className="w-full h-full object-contain"
                             />
                         ) : (
-                            <Building2 className="w-8 h-8 text-muted-foreground group-hover:text-primary transition-colors" />
+                            <img
+                                src={getCompanyLogo(job.company)}
+                                alt={job.company}
+                                className="w-full h-full object-contain"
+                            />
                         )}
                     </div>
                     <div className="min-w-0 flex-1">

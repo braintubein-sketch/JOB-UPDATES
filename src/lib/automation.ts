@@ -5,6 +5,7 @@ import cron from 'node-cron';
 import connectDB from './db';
 import Job from '@/models/Job';
 import { postJobToTelegram } from './telegram';
+import { scrapeOffCampusJobs } from './scrapers/offCampus';
 
 // Check if we're in a Node.js environment (not edge)
 const isNodeEnv = typeof process !== 'undefined' && process.versions?.node;
@@ -17,6 +18,12 @@ export function initializeCronJobs() {
     }
 
     console.log('Initializing cron jobs...');
+
+    // Scrape new jobs every 2 hours
+    cron.schedule('0 */2 * * *', async () => {
+        console.log('[Cron] Starting automated scraping...');
+        await scrapeOffCampusJobs();
+    });
 
     // Post unpublished jobs to Telegram every 30 minutes
     cron.schedule('*/30 * * * *', async () => {
@@ -173,6 +180,10 @@ async function cleanupDuplicateJobs() {
 // Manual trigger functions for admin actions
 export async function triggerTelegramPost() {
     await postPendingJobsToTelegram();
+}
+
+export async function triggerScraping() {
+    await scrapeOffCampusJobs();
 }
 
 export async function triggerStatusUpdate() {
