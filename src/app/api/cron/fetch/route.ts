@@ -15,6 +15,17 @@ export async function GET(request: NextRequest) {
 
         console.log('[Cron] Execution started...');
 
+        // 0. Test DB Connection
+        let dbStatus = 'unknown';
+        try {
+            const { connectDB } = await import('@/lib/db');
+            await connectDB();
+            dbStatus = 'connected';
+        } catch (dbError: any) {
+            console.error('[Cron] DB Connection Failed:', dbError);
+            dbStatus = `failed: ${dbError.message}`;
+        }
+
         // 1. Scrape new jobs
         console.log('[Cron] Scraping jobs...');
         const scrapeStats = await triggerScraping();
@@ -32,6 +43,7 @@ export async function GET(request: NextRequest) {
             success: true,
             timestamp: new Date().toISOString(),
             message: 'Cron tasks completed successfully',
+            dbStatus,
             stats: {
                 scraped: scrapeStats,
                 postedToTelegram: telegramStats

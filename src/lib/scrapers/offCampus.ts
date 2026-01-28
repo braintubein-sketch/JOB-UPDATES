@@ -138,9 +138,9 @@ export async function scrapeOffCampusJobs() {
         }
 
         console.log(`[Scraper] Finished. Added ${newJobsCount} new jobs.`);
-        return newJobsCount;
-    } catch (error) {
+        return { count: newJobsCount, success: true };
+    } catch (error: any) {
         console.error('[Scraper] Fatal error:', error);
-        return 0;
+        return { count: 0, success: false, error: error.message || 'Unknown error' };
     }
 }

@@ -185,12 +185,13 @@ export async function triggerTelegramPostManual() {
 
 export async function triggerScraping() {
     console.log('[Automation] Starting multi-source scraping...');
-    const offCampusCount = await scrapeOffCampusJobs();
-    const freshersNowCount = await scrapeFreshersNow();
+    const offCampusResult = await scrapeOffCampusJobs();
+    const freshersNowResult = await scrapeFreshersNow();
+
     return {
-        offCampus: offCampusCount,
-        freshersNow: freshersNowCount,
-        total: offCampusCount + freshersNowCount
+        offCampus: offCampusResult,
+        freshersNow: freshersNowResult,
+        total: offCampusResult.count + freshersNowResult.count
     };
 }
 

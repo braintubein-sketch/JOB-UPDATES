@@ -113,9 +113,9 @@ export async function scrapeFreshersNow() {
             }
         }
 
-        return newJobsCount;
-    } catch (error) {
+        return { count: newJobsCount, success: true };
+    } catch (error: any) {
         console.error('[Scraper] FreshersNow Fatal error:', error);
-        return 0;
+        return { count: 0, success: false, error: error.message || 'Unknown error' };
     }
 }
