@@ -6,6 +6,7 @@ import connectDB from './db';
 import Job from '@/models/Job';
 import { postJobToTelegram } from './telegram';
 import { scrapeOffCampusJobs } from './scrapers/offCampus';
+import { scrapeFreshersNow } from './scrapers/freshersNow';
 
 // Check if we're in a Node.js environment (not edge)
 const isNodeEnv = typeof process !== 'undefined' && process.versions?.node;
@@ -183,7 +184,10 @@ export async function triggerTelegramPost() {
 }
 
 export async function triggerScraping() {
-    await scrapeOffCampusJobs();
+    console.log('[Automation] Starting multi-source scraping...');
+    const offCampusCount = await scrapeOffCampusJobs();
+    const freshersNowCount = await scrapeFreshersNow();
+    console.log(`[Automation] Scraping complete. Total new: ${offCampusCount + freshersNowCount}`);
 }
 
 export async function triggerStatusUpdate() {
