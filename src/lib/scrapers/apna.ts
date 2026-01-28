@@ -39,9 +39,10 @@ export async function scrapeApnaJobs() {
 
         await page.goto(url, { waitUntil: 'domcontentloaded', timeout: 60000 });
 
-        // Wait for job cards to load (client-side rendered)
+        // Wait for job cards (client-side rendered)
         try {
-            await page.waitForSelector('.JobCard', { timeout: 10000 });
+            // Try standard card class and generic fallback
+            await page.waitForSelector('.JobCard, a[href^="/jobs/"], div[class*="Card"]', { timeout: 15000 });
         } catch (e) {
             console.log('[Scraper] No job cards found on Apna immediately.');
         }
@@ -49,8 +50,12 @@ export async function scrapeApnaJobs() {
         const content = await page.content();
         const $ = cheerio.load(content);
 
-        // Select job cards
-        const jobElements = $('.JobCard').toArray().slice(0, 5); // Limit to top 5
+        // Select job cards - robust selection
+        const jobElements = [
+            ...$('.JobCard').toArray(),
+            ...$('div[class*="JobCard"]').toArray(),
+            ...$('a[href^="/jobs/"]').parents('div').filter((i, el) => $(el).text().includes('Apply')).toArray()
+        ].slice(0, 5); // Limit to top 5
         console.log(`[Scraper] Found ${jobElements.length} candidate jobs on Apna`);
 
         let newJobsCount = 0;

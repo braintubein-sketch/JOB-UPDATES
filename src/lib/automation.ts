@@ -199,16 +199,19 @@ export async function triggerScraping() {
         { name: 'internshala', fn: scrapeInternshala }
     ];
 
-    // Shuffle and pick 2 to avoid timeouts on serverless functions
+    // Shuffle and pick ONLY 1 to strictly limit RAM usage on Render free tier
     const shuffled = scrapers.sort(() => 0.5 - Math.random());
-    const selected = shuffled.slice(0, 2);
+    const selected = shuffled.slice(0, 1);
 
-    console.log(`[Automation] Selected scrapers for this run: ${selected.map(s => s.name).join(', ')}`);
+    console.log(`[Automation] Selected scraper for this run: ${selected.map(s => s.name).join(', ')}`);
 
     const results: Record<string, any> = {};
     let totalCount = 0;
 
     for (const scraper of selected) {
+        // Force garbage collection hint
+        if (global.gc) { global.gc(); }
+
         try {
             console.log(`[Automation] Running ${scraper.name}...`);
             const result = await scraper.fn();
