@@ -20,79 +20,75 @@ interface ScraperResult {
     error?: string;
 }
 
-// RemoteOK API - Free, no browser needed
-async function scrapeRemoteOK(): Promise<ScraperResult> {
-    console.log('[Scraper] Fetching from RemoteOK API...');
+// Jobicy API - Reliable and open
+async function scrapeJobicy(): Promise<ScraperResult> {
+    console.log('[Scraper] Fetching from Jobicy API...');
     try {
-        const { data } = await axios.get('https://remoteok.com/api', {
+        const { data } = await axios.get('https://jobicy.com/api/v2/remote-jobs?count=10', {
             headers: {
-                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
-                'Accept': 'application/json',
-                'Accept-Language': 'en-US,en;q=0.9'
+                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/121.0.0.0 Safari/537.36',
+                'Accept': 'application/json'
             },
             timeout: 15000
         });
 
-        // First element is metadata, skip it
-        const jobs = data.slice(1, 11); // Get top 10 jobs
+        const jobs = data.jobs || [];
         let newJobsCount = 0;
 
         await connectDB();
 
         for (const job of jobs) {
             try {
-                const sourceUrl = `https://remoteok.com/remote-jobs/${job.id}`;
+                const sourceUrl = job.url;
 
                 // Check if already exists
                 const existing = await Job.findOne({ sourceUrl });
                 if (existing) continue;
 
                 // Filter for IT jobs
-                const tags = (job.tags || []).join(' ');
-                if (!isITJob(job.position + ' ' + tags)) continue;
+                if (!isITJob(job.jobTitle + ' ' + (job.jobCategories || []).join(' '))) continue;
 
-                const company = normalizeCompanyName(job.company || 'Unknown');
-                const skills = job.tags || [];
+                const company = normalizeCompanyName(job.companyName || 'Unknown');
+                const skills = job.jobCategories || [];
 
                 // Generate slug
-                const slug = `${company}-${job.position}`.toLowerCase()
+                const baseSlug = `${company}-${job.jobTitle}`.toLowerCase()
                     .replace(/[^a-z0-9]+/g, '-')
-                    .replace(/-+/g, '-')
-                    .replace(/^-|-$/g, '')
-                    .substring(0, 100);
+                    .replace(/^-+|-+$/g, '');
+                const slug = `${baseSlug}-${Date.now()}`;
 
                 const newJob = new Job({
                     company,
-                    title: job.position,
+                    title: job.jobTitle,
                     slug,
-                    roles: [job.position],
+                    roles: [job.jobTitle],
                     qualification: 'Any Graduate',
-                    locations: ['Remote'],
+                    locations: [job.jobGeo || 'Remote'],
                     experience: { min: 0, max: 5, label: 'Entry-Mid Level' },
                     employmentType: 'Full-time',
-                    description: (job.description || '').substring(0, 1000),
+                    description: (job.jobDescription || '').substring(0, 1000),
                     skills,
-                    applyLink: job.url || sourceUrl,
-                    category: detectCategory(job.position, skills),
+                    applyLink: sourceUrl,
+                    category: detectCategory(job.jobTitle, skills),
                     isVerified: true,
                     isActive: true,
                     source: 'automated',
                     sourceUrl,
-                    companyLogo: job.company_logo || getCompanyLogo(company),
-                    postedDate: new Date(job.date || Date.now())
+                    companyLogo: job.companyLogo || getCompanyLogo(company),
+                    postedDate: new Date(job.pubDate || Date.now())
                 });
 
                 await newJob.save();
                 newJobsCount++;
-                console.log(`[Scraper] Saved (RemoteOK): ${company} - ${job.position}`);
+                console.log(`[Scraper] Saved (Jobicy): ${company} - ${job.jobTitle}`);
             } catch (err) {
-                console.error('[Scraper] Error saving RemoteOK job:', err);
+                console.error('[Scraper] Error saving Jobicy job:', err);
             }
         }
 
         return { count: newJobsCount, success: true };
     } catch (error: any) {
-        console.error('[Scraper] RemoteOK error:', error.message);
+        console.error('[Scraper] Jobicy error:', error.message);
         return { count: 0, success: false, error: error.message };
     }
 }
@@ -317,12 +313,13 @@ async function scrapeSimpleSource(): Promise<ScraperResult> {
 }
 
 // FindWork.dev - Very open API, no auth needed
-async function scrapeFindWork(): Promise<ScraperResult> {
-    console.log('[Scraper] Fetching from FindWork.dev...');
+// Remotive API - Open and reliable
+async function scrapeRemotive(): Promise<ScraperResult> {
+    console.log('[Scraper] Fetching from Remotive...');
     try {
-        const { data } = await axios.get('https://findwork.dev/api/jobs/?search=developer', {
+        const { data } = await axios.get('https://remotive.com/api/remote-jobs?category=software-dev&limit=10', {
             headers: {
-                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
+                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/121.0.0.0 Safari/537.36',
                 'Accept': 'application/json'
             },
             timeout: 15000
@@ -331,56 +328,55 @@ async function scrapeFindWork(): Promise<ScraperResult> {
         let newJobsCount = 0;
         await connectDB();
 
-        for (const job of (data.results || []).slice(0, 10)) {
+        for (const job of (data.jobs || [])) {
             try {
-                const sourceUrl = job.url || `https://findwork.dev/job/${job.id}`;
+                const sourceUrl = job.url;
 
                 const existing = await Job.findOne({ sourceUrl });
                 if (existing) continue;
 
-                if (!isITJob(job.role + ' ' + (job.keywords || []).join(' '))) continue;
+                if (!isITJob(job.title + ' ' + (job.tags || []).join(' '))) continue;
 
                 const company = normalizeCompanyName(job.company_name || 'Unknown');
 
                 // Generate slug
-                const slug = `${company}-${job.role}`.toLowerCase()
+                const baseSlug = `${company}-${job.title}`.toLowerCase()
                     .replace(/[^a-z0-9]+/g, '-')
-                    .replace(/-+/g, '-')
-                    .replace(/^-|-$/g, '')
-                    .substring(0, 100);
+                    .replace(/^-+|-+$/g, '');
+                const slug = `${baseSlug}-${Date.now()}`;
 
                 const newJob = new Job({
                     company,
-                    title: job.role,
+                    title: job.title,
                     slug,
-                    roles: [job.role],
+                    roles: [job.title],
                     qualification: 'Any Graduate',
-                    locations: job.remote ? ['Remote'] : [job.location || 'Remote'],
+                    locations: [job.candidate_required_location || 'Remote'],
                     experience: { min: 0, max: 5, label: 'Entry Level' },
-                    employmentType: job.employment_type || 'Full-time',
-                    description: (job.text || '').substring(0, 1000),
-                    skills: job.keywords || [],
+                    employmentType: job.job_type || 'Full-time',
+                    description: (job.description || '').substring(0, 1000),
+                    skills: job.tags || [],
                     applyLink: job.url || sourceUrl,
-                    category: detectCategory(job.role, job.keywords || []),
+                    category: detectCategory(job.title, job.tags || []),
                     isVerified: true,
                     isActive: true,
                     source: 'automated',
                     sourceUrl,
                     companyLogo: job.company_logo || getCompanyLogo(company),
-                    postedDate: new Date(job.date_posted || Date.now())
+                    postedDate: new Date(job.publication_date || Date.now())
                 });
 
                 await newJob.save();
                 newJobsCount++;
-                console.log(`[Scraper] Saved (FindWork): ${company} - ${job.role}`);
+                console.log(`[Scraper] Saved (Remotive): ${company} - ${job.title}`);
             } catch (err) {
-                console.error('[Scraper] Error saving FindWork job:', err);
+                console.error('[Scraper] Error saving Remotive job:', err);
             }
         }
 
         return { count: newJobsCount, success: true };
     } catch (error: any) {
-        console.error('[Scraper] FindWork error:', error.message);
+        console.error('[Scraper] Remotive error:', error.message);
         return { count: 0, success: false, error: error.message };
     }
 }
@@ -473,10 +469,10 @@ export async function triggerLightweightScraping() {
 
     // Run all lightweight scrapers - they're fast and don't use much memory
     try {
-        results.remoteOK = await scrapeRemoteOK();
-        totalCount += results.remoteOK.count;
+        results.jobicy = await scrapeJobicy();
+        totalCount += results.jobicy.count;
     } catch (e: any) {
-        results.remoteOK = { count: 0, success: false, error: e.message };
+        results.jobicy = { count: 0, success: false, error: e.message };
     }
 
     try {
@@ -501,12 +497,12 @@ export async function triggerLightweightScraping() {
         results.adzuna = { count: 0, success: false, error: e.message };
     }
 
-    // FindWork.dev
+    // Remotive
     try {
-        results.findwork = await scrapeFindWork();
-        totalCount += results.findwork.count;
+        results.remotive = await scrapeRemotive();
+        totalCount += results.remotive.count;
     } catch (e: any) {
-        results.findwork = { count: 0, success: false, error: e.message };
+        results.remotive = { count: 0, success: false, error: e.message };
     }
 
     // JSearch (RapidAPI) - only if configured
