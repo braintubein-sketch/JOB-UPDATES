@@ -128,9 +128,9 @@ export function getCompanyLogo(companyName: string): string {
 
     // High quality logos for major companies (Manual overrides)
     const manualLogos: Record<string, string> = {
-        'google': 'https://upload.wikimedia.org/wikipedia/commons/c/c1/Google_\"G\"_Logo.svg',
+        'google': 'https://www.gstatic.com/images/branding/googleg/1x/googleg_standard_color_128dp.png',
         'microsoft': 'https://upload.wikimedia.org/wikipedia/commons/4/44/Microsoft_logo.svg',
-        'amazon': 'https://upload.wikimedia.org/wikipedia/commons/a/5c/Amazon_alphabet_logo.svg',
+        'amazon': 'https://upload.wikimedia.org/wikipedia/commons/4/4a/Amazon_icon.svg',
         'meta': 'https://upload.wikimedia.org/wikipedia/commons/7/7b/Meta_Platforms_Inc._logo.svg',
         'apple': 'https://upload.wikimedia.org/wikipedia/commons/f/fa/Apple_logo_black.svg',
         'netflix': 'https://upload.wikimedia.org/wikipedia/commons/0/08/Netflix_2015_logo.svg',
@@ -138,7 +138,7 @@ export function getCompanyLogo(companyName: string): string {
         'tcs': 'https://upload.wikimedia.org/wikipedia/commons/b/b1/Tata_Consultancy_Services_Logo.svg',
         'wipro': 'https://upload.wikimedia.org/wikipedia/commons/1/12/Wipro_Logo.svg',
         'accenture': 'https://upload.wikimedia.org/wikipedia/commons/c/cd/Accenture.svg',
-        'flipkart': 'https://upload.wikimedia.org/wikipedia/commons/7/7a/Flipkart_logo.svg',
+        'flipkart': 'https://static-assets-web.flixcart.com/batman-returns/batman-returns/p/images/fk_header_logo_dot-05622a.svg',
         'swiggy': 'https://upload.wikimedia.org/wikipedia/en/1/12/Swiggy_logo.png',
         'zomato': 'https://upload.wikimedia.org/wikipedia/commons/7/75/Zomato_logo.svg',
         'capgemini': 'https://upload.wikimedia.org/wikipedia/commons/9/94/Capgemini_logo.svg',
