@@ -188,7 +188,7 @@ const JobSchema = new Schema<IJob>(
 JobSchema.index({ title: 'text', company: 'text', description: 'text', skills: 'text' });
 
 // Pre-save middleware to generate slug
-JobSchema.pre('save', function (next) {
+JobSchema.pre('save', function (next: any) {
     // Only generate slug if not already provided
     if (!this.slug && (this.isNew || this.isModified('title') || this.isModified('company'))) {
         const baseSlug = `${this.company}-${this.title}`
