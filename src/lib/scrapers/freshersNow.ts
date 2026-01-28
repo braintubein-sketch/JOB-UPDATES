@@ -45,6 +45,7 @@ export async function scrapeFreshersNow() {
 
         // Select rows - skip header
         const jobElements = $('.wp-block-table tr').toArray().slice(1, 6); // Limit to 5
+        console.log(`[Scraper] Found ${jobElements.length} candidate rows on FreshersNow`);
         let newJobsCount = 0;
 
         await connectDB();

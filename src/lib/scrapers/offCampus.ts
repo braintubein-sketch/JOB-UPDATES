@@ -52,6 +52,7 @@ export async function scrapeOffCampusJobs() {
             ...$('article').toArray()
         ].slice(0, 5); // Limit to top 5 for performance
 
+        console.log(`[Scraper] Found ${jobElements.length} candidate elements on OffCampusJobs4u`);
         let newJobsCount = 0;
         await connectDB();
 
