@@ -29,7 +29,7 @@ export function initializeCronJobs() {
     // Post unpublished jobs to Telegram every 30 minutes
     cron.schedule('*/30 * * * *', async () => {
         console.log('[Cron] Posting jobs to Telegram...');
-        await postPendingJobsToTelegram();
+        await triggerTelegramPost();
     });
 
     // Mark old jobs as not new (runs daily at midnight)
@@ -54,7 +54,8 @@ export function initializeCronJobs() {
 }
 
 // Post pending jobs to Telegram
-async function postPendingJobsToTelegram() {
+export async function triggerTelegramPost() {
+    let postedCount = 0;
     try {
         await connectDB();
 
@@ -69,22 +70,21 @@ async function postPendingJobsToTelegram() {
         const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://jobupdate.site';
 
         for (const job of pendingJobs) {
-            // Cast to any to bypass Mongoose document vs plain object type mismatch in build
             const messageId = await postJobToTelegram(job.toObject() as any, siteUrl);
 
             if (messageId) {
                 job.telegramPosted = true;
                 job.telegramMessageId = messageId;
                 await job.save();
+                postedCount++;
                 console.log(`[Telegram] Posted: ${job.company} - ${job.title}`);
-
-                // Wait 5 seconds between posts to avoid rate limiting
                 await new Promise(resolve => setTimeout(resolve, 5000));
             }
         }
     } catch (error) {
         console.error('[Cron] Error posting to Telegram:', error);
     }
+    return postedCount;
 }
 
 // Update job statuses
@@ -179,15 +179,19 @@ async function cleanupDuplicateJobs() {
 }
 
 // Manual trigger functions for admin actions
-export async function triggerTelegramPost() {
-    await postPendingJobsToTelegram();
+export async function triggerTelegramPostManual() {
+    return await triggerTelegramPost();
 }
 
 export async function triggerScraping() {
     console.log('[Automation] Starting multi-source scraping...');
     const offCampusCount = await scrapeOffCampusJobs();
     const freshersNowCount = await scrapeFreshersNow();
-    console.log(`[Automation] Scraping complete. Total new: ${offCampusCount + freshersNowCount}`);
+    return {
+        offCampus: offCampusCount,
+        freshersNow: freshersNowCount,
+        total: offCampusCount + freshersNowCount
+    };
 }
 
 export async function triggerStatusUpdate() {

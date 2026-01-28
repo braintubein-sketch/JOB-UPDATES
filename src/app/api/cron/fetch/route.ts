@@ -17,11 +17,11 @@ export async function GET(request: NextRequest) {
 
         // 1. Scrape new jobs
         console.log('[Cron] Scraping jobs...');
-        await triggerScraping();
+        const scrapeStats = await triggerScraping();
 
         // 2. Post to Telegram
         console.log('[Cron] Posting to Telegram...');
-        await triggerTelegramPost();
+        const telegramStats = await triggerTelegramPost();
 
         // 3. Maintenance tasks
         console.log('[Cron] Running maintenance...');
@@ -31,7 +31,11 @@ export async function GET(request: NextRequest) {
         return NextResponse.json({
             success: true,
             timestamp: new Date().toISOString(),
-            message: 'Cron tasks completed successfully'
+            message: 'Cron tasks completed successfully',
+            stats: {
+                scraped: scrapeStats,
+                postedToTelegram: telegramStats
+            }
         });
     } catch (error: any) {
         console.error('[Cron] Error:', error);
