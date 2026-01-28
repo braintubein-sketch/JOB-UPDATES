@@ -7,7 +7,9 @@ import {
     extractSkillsFromText,
     extractLocationsFromText,
     normalizeCompanyName,
-    extractQualificationFromText
+    extractQualificationFromText,
+    extractRolesFromTitle,
+    generateJobSlug
 } from './scraper';
 import { getCompanyLogo } from './utils';
 import connectDB from './db';
@@ -50,19 +52,17 @@ async function scrapeJobicy(): Promise<ScraperResult> {
                 if (!isITJob(job.jobTitle + ' ' + (job.jobCategories || []).join(' '))) continue;
 
                 const company = normalizeCompanyName(job.companyName || 'Unknown');
+                const jobTitle = job.jobTitle || 'Unknown Role';
                 const skills = job.jobCategories || [];
 
                 // Generate slug
-                const baseSlug = `${company}-${job.jobTitle}`.toLowerCase()
-                    .replace(/[^a-z0-9]+/g, '-')
-                    .replace(/^-+|-+$/g, '');
-                const slug = `${baseSlug}-${Date.now()}`;
+                const slug = generateJobSlug(company, jobTitle);
 
                 const newJob = new Job({
                     company,
-                    title: job.jobTitle,
+                    title: jobTitle,
                     slug,
-                    roles: [job.jobTitle],
+                    roles: extractRolesFromTitle(jobTitle),
                     qualification: extractQualificationFromText(job.jobDescription || ''),
                     locations: [job.jobGeo || 'Remote'],
                     experience: parseExperienceFromText(job.jobDescription || ''),
@@ -119,19 +119,16 @@ async function scrapeAdzuna(): Promise<ScraperResult> {
                 if (existing) continue;
 
                 const company = normalizeCompanyName(job.company?.display_name || 'Unknown');
+                const jobTitle = job.title || 'Unknown Role';
 
                 // Generate slug
-                const slug = `${company}-${job.title}`.toLowerCase()
-                    .replace(/[^a-z0-9]+/g, '-')
-                    .replace(/-+/g, '-')
-                    .replace(/^-|-$/g, '')
-                    .substring(0, 100);
+                const slug = generateJobSlug(company, jobTitle);
 
                 const newJob = new Job({
                     company,
-                    title: job.title,
+                    title: jobTitle,
                     slug,
-                    roles: [job.title],
+                    roles: extractRolesFromTitle(jobTitle),
                     qualification: extractQualificationFromText(job.description || ''),
                     locations: [job.location?.display_name || 'India'],
                     experience: parseExperienceFromText(job.description || ''),
@@ -162,76 +159,79 @@ async function scrapeAdzuna(): Promise<ScraperResult> {
     }
 }
 
-// GitHub Jobs alternative - Arbeitnow (free API)
-async function scrapeArbeitnow(): Promise<ScraperResult> {
-    console.log('[Scraper] Fetching from Arbeitnow...');
+// WeWorkRemotely Scraper
+async function scrapeWWR(): Promise<ScraperResult> {
+    console.log('[Scraper] Fetching from We Work Remotely...');
     try {
-        const { data } = await axios.get('https://www.arbeitnow.com/api/job-board-api', {
+        const { data } = await axios.get('https://weworkremotely.com/categories/remote-programming-jobs.rss', {
             headers: {
-                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
-                'Accept': 'application/json',
-                'Accept-Language': 'en-US,en;q=0.9',
-                'Referer': 'https://www.arbeitnow.com/'
+                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/121.0.0.0 Safari/537.36',
+                'Accept': 'application/xml'
             },
             timeout: 15000
         });
 
+        const $ = cheerio.load(data, { xmlMode: true });
         let newJobsCount = 0;
         await connectDB();
 
-        const jobs = (data.data || []).slice(0, 10);
+        const items = $('item').toArray();
 
-        for (const job of jobs) {
+        for (const el of items) {
             try {
-                const sourceUrl = job.url;
+                const title = $(el).find('title').text();
+                const sourceUrl = $(el).find('link').text();
+                const content = $(el).find('description').text();
+                const pubDate = new Date($(el).find('pubDate').text());
 
                 const existing = await Job.findOne({ sourceUrl });
                 if (existing) continue;
 
-                // Filter for IT/Tech jobs
-                const tags = (job.tags || []).join(' ');
-                if (!isITJob(job.title + ' ' + tags)) continue;
+                if (!isITJob(title + ' ' + content)) continue;
 
-                const company = normalizeCompanyName(job.company_name || 'Unknown');
+                // Title format is usually "Company: Role"
+                let company = 'Unknown';
+                let jobTitle = title;
+                if (title.includes(':')) {
+                    const parts = title.split(':');
+                    company = normalizeCompanyName(parts[0]);
+                    jobTitle = parts.slice(1).join(':').trim();
+                } else {
+                    company = normalizeCompanyName(title.split(' ')[0]);
+                }
 
-                // Generate slug
-                const slug = `${company}-${job.title}`.toLowerCase()
-                    .replace(/[^a-z0-9]+/g, '-')
-                    .replace(/-+/g, '-')
-                    .replace(/^-|-$/g, '')
-                    .substring(0, 100);
+                const slug = generateJobSlug(company, jobTitle);
 
                 const newJob = new Job({
                     company,
-                    title: job.title,
+                    title: jobTitle,
                     slug,
-                    roles: [job.title],
-                    qualification: extractQualificationFromText(job.description || ''),
-                    locations: job.remote ? ['Remote'] : [job.location || 'Remote'],
-                    experience: parseExperienceFromText(job.description || ''),
-                    employmentType: job.job_types?.includes('full_time') ? 'Full-time' : 'Contract',
-                    description: (job.description || '').substring(0, 1000),
-                    skills: job.tags || [],
+                    roles: extractRolesFromTitle(jobTitle),
+                    qualification: extractQualificationFromText(content),
+                    locations: ['Remote'],
+                    experience: parseExperienceFromText(content),
+                    employmentType: 'Full-time',
+                    description: content.substring(0, 1000),
+                    skills: extractSkillsFromText(content),
                     applyLink: sourceUrl,
-                    category: detectCategory(job.title, job.tags || []),
+                    category: detectCategory(jobTitle, []),
                     isVerified: true,
                     isActive: true,
                     source: 'automated',
                     sourceUrl,
-                    postedDate: new Date(job.created_at || Date.now())
+                    postedDate: pubDate
                 });
 
                 await newJob.save();
                 newJobsCount++;
-                console.log(`[Scraper] Saved (Arbeitnow): ${company} - ${job.title}`);
             } catch (err) {
-                console.error('[Scraper] Error saving Arbeitnow job:', err);
+                console.error('[Scraper] Error saving WWR item:', err);
             }
         }
 
         return { count: newJobsCount, success: true };
     } catch (error: any) {
-        console.error('[Scraper] Arbeitnow error:', error.message);
+        console.error('[Scraper] WWR error:', error.message);
         return { count: 0, success: false, error: error.message };
     }
 }
@@ -262,13 +262,10 @@ async function scrapeSimpleSource(): Promise<ScraperResult> {
                 if (!isITJob(job.title + ' ' + (job.categories || []).join(' '))) continue;
 
                 const company = normalizeCompanyName(job.companyName || 'Unknown');
+                const jobTitle = job.title || 'Unknown Role';
 
-                // Generate slug from title and company
-                const slug = `${company}-${job.title}`.toLowerCase()
-                    .replace(/[^a-z0-9]+/g, '-')
-                    .replace(/-+/g, '-')
-                    .replace(/^-|-$/g, '')
-                    .substring(0, 100);
+                // Generate slug
+                const slug = generateJobSlug(company, jobTitle);
 
                 // Handle seniority - could be string or array
                 const seniorityLabel = Array.isArray(job.seniority)
@@ -277,9 +274,9 @@ async function scrapeSimpleSource(): Promise<ScraperResult> {
 
                 const newJob = new Job({
                     company,
-                    title: job.title,
+                    title: jobTitle,
                     slug,
-                    roles: [job.title],
+                    roles: extractRolesFromTitle(jobTitle),
                     qualification: extractQualificationFromText(job.description || ''),
                     locations: [job.locationRestrictions?.[0] || 'Remote'],
                     experience: { min: 0, max: 5, label: seniorityLabel },
@@ -336,18 +333,16 @@ async function scrapeRemotive(): Promise<ScraperResult> {
                 if (!isITJob(job.title + ' ' + (job.tags || []).join(' '))) continue;
 
                 const company = normalizeCompanyName(job.company_name || 'Unknown');
+                const jobTitle = job.title || 'Unknown Role';
 
                 // Generate slug
-                const baseSlug = `${company}-${job.title}`.toLowerCase()
-                    .replace(/[^a-z0-9]+/g, '-')
-                    .replace(/^-+|-+$/g, '');
-                const slug = `${baseSlug}-${Date.now()}`;
+                const slug = generateJobSlug(company, jobTitle);
 
                 const newJob = new Job({
                     company,
-                    title: job.title,
+                    title: jobTitle,
                     slug,
-                    roles: [job.title],
+                    roles: extractRolesFromTitle(jobTitle),
                     qualification: extractQualificationFromText(job.description || ''),
                     locations: [job.candidate_required_location || 'Remote'],
                     experience: parseExperienceFromText(job.description || ''),
@@ -523,17 +518,13 @@ async function scrapeFoundTheJob(): Promise<ScraperResult> {
                 const applyLink = externalLinks[0];
 
                 // Generate slug
-                const slug = `${company}-${title}`.toLowerCase()
-                    .replace(/[^a-z0-9]+/g, '-')
-                    .replace(/-+/g, '-')
-                    .replace(/^-|-$/g, '')
-                    .substring(0, 100) + '-' + Date.now();
+                const slug = generateJobSlug(company, title);
 
                 const newJob = new Job({
                     company,
                     title,
                     slug,
-                    roles: [title],
+                    roles: extractRolesFromTitle(title),
                     qualification: extractQualificationFromText(content),
                     locations: extractLocationsFromText(content) || ['India'],
                     experience: parseExperienceFromText(content),
@@ -580,10 +571,10 @@ export async function triggerLightweightScraping() {
     }
 
     try {
-        results.arbeitnow = await scrapeArbeitnow();
-        totalCount += results.arbeitnow.count;
+        results.wwr = await scrapeWWR();
+        totalCount += results.wwr.count;
     } catch (e: any) {
-        results.arbeitnow = { count: 0, success: false, error: e.message };
+        results.wwr = { count: 0, success: false, error: e.message };
     }
 
     try {

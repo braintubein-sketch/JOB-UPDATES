@@ -145,6 +145,36 @@ export function extractSkillsFromText(text: string): string[] {
     return [...new Set(foundSkills)].slice(0, 10);
 }
 
+export function extractRolesFromTitle(title: string): string[] {
+    const roles_list = [
+        'Software Engineer', 'Frontend Developer', 'Backend Developer', 'Full Stack Developer',
+        'Data Scientist', 'Data Engineer', 'DevOps Engineer', 'Cloud Architect',
+        'QA Engineer', 'Mobile Developer', 'UI/UX Designer', 'Product Manager',
+        'System Administrator', 'Network Engineer', 'Security Analyst', 'Cybersecurity Engineer',
+        'Machine Learning Engineer', 'AI Research Scientist', 'Site Reliability Engineer',
+        'Technical Support Engineer', 'Intern', 'Business Analyst', 'Solution Architect'
+    ];
+
+    const foundValues: string[] = [];
+    const lowerTitle = title.toLowerCase();
+
+    for (const role of roles_list) {
+        if (lowerTitle.includes(role.toLowerCase())) {
+            foundValues.push(role);
+        }
+    }
+
+    // Also check for common words like "Developer" or "Engineer" if nothing specific found
+    if (foundValues.length === 0) {
+        if (lowerTitle.includes('developer')) foundValues.push('Developer');
+        if (lowerTitle.includes('engineer')) foundValues.push('Engineer');
+        if (lowerTitle.includes('analyst')) foundValues.push('Analyst');
+        if (lowerTitle.includes('manager')) foundValues.push('Manager');
+    }
+
+    return foundValues.length > 0 ? [...new Set(foundValues)] : [title];
+}
+
 export function extractLocationsFromText(text: string): string[] {
     const indianCities = [
         'Bangalore', 'Bengaluru', 'Hyderabad', 'Chennai', 'Mumbai', 'Pune', 'Delhi',
@@ -250,6 +280,8 @@ export function generateJobSlug(company: string, title: string): string {
 }
 
 export function normalizeCompanyName(name: string): string {
+    if (!name) return 'Unknown';
+
     const normalizations: Record<string, string> = {
         'google llc': 'Google',
         'google inc': 'Google',
@@ -266,19 +298,31 @@ export function normalizeCompanyName(name: string): string {
         'cognizant technology solutions': 'Cognizant',
         'hcl technologies': 'HCL',
         'tech mahindra limited': 'Tech Mahindra',
+        'paytm': 'Paytm',
+        'phonepe': 'PhonePe',
+        'zomato': 'Zomato',
+        'swiggy': 'Swiggy',
+        'ola electric': 'Ola',
+        'razorpay': 'Razorpay',
+        'standard chartered bank': 'Standard Chartered',
+        'jpmorgan chase': 'JPMorgan Chase',
+        'goldman sachs': 'Goldman Sachs'
     };
 
-    const lower = name.toLowerCase().trim()
-        .replace(/ recruitment.*$/, '')
-        .replace(/ hiring.*$/, '')
-        .replace(/ off campus.*$/, '')
-        .replace(/ drive.*$/, '');
+    let cleanedCandidate = name.trim()
+        .replace(/\b(Pvt|Private)\b.*$/i, '')
+        .replace(/\b(Ltd|Limited)\b/gi, '')
+        .replace(/\b(Inc|LLC|Corp|Corporation|Solutions|Technologies|Tech)\b/gi, '')
+        .replace(/[.,]/g, '')
+        .trim();
+
+    const lower = cleanedCandidate.toLowerCase();
 
     for (const [key, value] of Object.entries(normalizations)) {
         if (lower.includes(key)) return value;
     }
 
-    return name.split(/ (?:Recruitment|Hiring|Off Campus)/)[0].trim();
+    return cleanedCandidate || name;
 }
 
 // Rate limiting helper
