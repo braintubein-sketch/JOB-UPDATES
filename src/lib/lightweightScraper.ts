@@ -65,6 +65,7 @@ async function scrapeRemoteOK(): Promise<ScraperResult> {
                     company,
                     title: job.position,
                     slug,
+                    roles: [job.position],
                     qualification: 'Any Graduate',
                     locations: ['Remote'],
                     experience: { min: 0, max: 5, label: 'Entry-Mid Level' },
@@ -78,8 +79,7 @@ async function scrapeRemoteOK(): Promise<ScraperResult> {
                     source: 'automated',
                     sourceUrl,
                     companyLogo: job.company_logo || getCompanyLogo(company),
-                    postedDate: new Date(job.date || Date.now()),
-                    salary: job.salary || ''
+                    postedDate: new Date(job.date || Date.now())
                 });
 
                 await newJob.save();
@@ -135,6 +135,7 @@ async function scrapeAdzuna(): Promise<ScraperResult> {
                     company,
                     title: job.title,
                     slug,
+                    roles: [job.title],
                     qualification: 'Any Graduate',
                     locations: [job.location?.display_name || 'India'],
                     experience: { min: 0, max: 5, label: 'Entry Level' },
@@ -148,8 +149,7 @@ async function scrapeAdzuna(): Promise<ScraperResult> {
                     source: 'automated',
                     sourceUrl,
                     companyLogo: getCompanyLogo(company),
-                    postedDate: new Date(job.created || Date.now()),
-                    salary: job.salary_min ? `₹${job.salary_min} - ₹${job.salary_max}` : ''
+                    postedDate: new Date(job.created || Date.now())
                 });
 
                 await newJob.save();
@@ -209,8 +209,9 @@ async function scrapeArbeitnow(): Promise<ScraperResult> {
                     company,
                     title: job.title,
                     slug,
+                    roles: [job.title],
                     qualification: 'Any Graduate',
-                    locations: [job.location || 'Remote'],
+                    locations: job.remote ? ['Remote'] : [job.location || 'Remote'],
                     experience: { min: 0, max: 5, label: 'Entry Level' },
                     employmentType: job.job_types?.includes('full_time') ? 'Full-time' : 'Contract',
                     description: (job.description || '').substring(0, 1000),
@@ -222,8 +223,7 @@ async function scrapeArbeitnow(): Promise<ScraperResult> {
                     source: 'automated',
                     sourceUrl,
                     companyLogo: getCompanyLogo(company),
-                    postedDate: new Date(job.created_at || Date.now()),
-                    isRemote: job.remote || false
+                    postedDate: new Date(job.created_at || Date.now())
                 });
 
                 await newJob.save();
@@ -284,6 +284,7 @@ async function scrapeSimpleSource(): Promise<ScraperResult> {
                     company,
                     title: job.title,
                     slug,
+                    roles: [job.title],
                     qualification: 'Any Graduate',
                     locations: [job.locationRestrictions?.[0] || 'Remote'],
                     experience: { min: 0, max: 5, label: seniorityLabel },
@@ -297,8 +298,7 @@ async function scrapeSimpleSource(): Promise<ScraperResult> {
                     source: 'automated',
                     sourceUrl,
                     companyLogo: job.companyLogo || getCompanyLogo(company),
-                    postedDate: new Date(job.pubDate || Date.now()),
-                    salary: job.minSalary ? `$${job.minSalary} - $${job.maxSalary}` : ''
+                    postedDate: new Date(job.pubDate || Date.now())
                 });
 
                 await newJob.save();
@@ -353,8 +353,9 @@ async function scrapeFindWork(): Promise<ScraperResult> {
                     company,
                     title: job.role,
                     slug,
+                    roles: [job.role],
                     qualification: 'Any Graduate',
-                    locations: [job.location || 'Remote'],
+                    locations: job.remote ? ['Remote'] : [job.location || 'Remote'],
                     experience: { min: 0, max: 5, label: 'Entry Level' },
                     employmentType: job.employment_type || 'Full-time',
                     description: (job.text || '').substring(0, 1000),
@@ -366,8 +367,7 @@ async function scrapeFindWork(): Promise<ScraperResult> {
                     source: 'automated',
                     sourceUrl,
                     companyLogo: job.company_logo || getCompanyLogo(company),
-                    postedDate: new Date(job.date_posted || Date.now()),
-                    isRemote: job.remote || false
+                    postedDate: new Date(job.date_posted || Date.now())
                 });
 
                 await newJob.save();
@@ -432,6 +432,7 @@ async function scrapeJSearch(): Promise<ScraperResult> {
                     company,
                     title: job.job_title,
                     slug,
+                    roles: [job.job_title],
                     qualification: 'Any Graduate',
                     locations: [job.job_city || job.job_country || 'India'],
                     experience: { min: 0, max: 5, label: 'Entry Level' },
