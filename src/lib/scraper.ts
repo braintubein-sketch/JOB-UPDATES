@@ -279,6 +279,18 @@ export function generateJobSlug(company: string, title: string): string {
     return `${base}-${Date.now()}`;
 }
 
+export function normalizeEmploymentType(type: string): 'Full-time' | 'Part-time' | 'Internship' | 'Contract' | 'Freelance' {
+    const lower = (type || '').toLowerCase();
+
+    if (lower.includes('full') || lower.includes('full_time')) return 'Full-time';
+    if (lower.includes('part')) return 'Part-time';
+    if (lower.includes('intern')) return 'Internship';
+    if (lower.includes('contract')) return 'Contract';
+    if (lower.includes('freelance')) return 'Freelance';
+
+    return 'Full-time'; // Default
+}
+
 export function normalizeCompanyName(name: string): string {
     if (!name) return 'Unknown';
 

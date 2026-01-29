@@ -9,7 +9,8 @@ import {
     normalizeCompanyName,
     extractQualificationFromText,
     extractRolesFromTitle,
-    generateJobSlug
+    generateJobSlug,
+    normalizeEmploymentType
 } from './scraper';
 import { getCompanyLogo } from './utils';
 import connectDB from './db';
@@ -132,7 +133,7 @@ async function scrapeAdzuna(): Promise<ScraperResult> {
                     qualification: extractQualificationFromText(job.description || ''),
                     locations: [job.location?.display_name || 'India'],
                     experience: parseExperienceFromText(job.description || ''),
-                    employmentType: job.contract_type || 'Full-time',
+                    employmentType: normalizeEmploymentType(job.contract_type || 'Full-time'),
                     description: (job.description || '').substring(0, 1000),
                     skills: extractSkillsFromText(job.description || ''),
                     applyLink: sourceUrl,
@@ -349,7 +350,7 @@ async function scrapeRemotive(): Promise<ScraperResult> {
                     qualification: extractQualificationFromText(job.description || ''),
                     locations: [job.candidate_required_location || 'Remote'],
                     experience: parseExperienceFromText(job.description || ''),
-                    employmentType: job.job_type || 'Full-time',
+                    employmentType: normalizeEmploymentType(job.job_type || 'Full-time'),
                     description: (job.description || '').substring(0, 1000),
                     skills: job.tags || [],
                     applyLink: job.url || sourceUrl,
@@ -427,7 +428,7 @@ async function scrapeJSearch(): Promise<ScraperResult> {
                     qualification: extractQualificationFromText(job.job_description || ''),
                     locations: [job.job_city || job.job_country || 'India'],
                     experience: parseExperienceFromText(job.job_description || ''),
-                    employmentType: job.job_employment_type || 'Full-time',
+                    employmentType: normalizeEmploymentType(job.job_employment_type || 'Full-time'),
                     description: (job.job_description || '').substring(0, 1000),
                     skills: job.job_required_skills || [],
                     applyLink: sourceUrl,
@@ -531,7 +532,7 @@ async function scrapeFoundTheJob(): Promise<ScraperResult> {
                     qualification: extractQualificationFromText(content),
                     locations: extractLocationsFromText(content) || ['India'],
                     experience: parseExperienceFromText(content),
-                    employmentType: title.toLowerCase().includes('intern') ? 'Internship' : 'Full-time',
+                    employmentType: normalizeEmploymentType(title.toLowerCase().includes('intern') ? 'Internship' : 'Full-time'),
                     description: content.replace(/<[^>]*>?/gm, '').substring(0, 1000),
                     skills: extractSkillsFromText(content),
                     applyLink,
