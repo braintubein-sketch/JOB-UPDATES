@@ -46,12 +46,19 @@ async function scrapeJobicy(): Promise<ScraperResult> {
             try {
                 const sourceUrl = job.url;
 
-                // Check if already exists
-                const existing = await Job.findOne({ sourceUrl });
-                if (existing) continue;
+                // Check if already exists by URL
+                const existingUrl = await Job.findOne({ sourceUrl });
+                if (existingUrl) continue;
+
+                // Check if similar job exists (same company/title recently)
+                const existingSimilar = await (Job as any).findSimilar({
+                    company: normalizeCompanyName(job.companyName || 'Unknown'),
+                    title: job.jobTitle || 'Unknown Role'
+                });
+                if (existingSimilar) continue;
 
                 // Filter for IT jobs
-                if (!isITJob(job.jobTitle + ' ' + (job.jobCategories || []).join(' '))) continue;
+                if (!isITJob(job.jobTitle + ' ' + (job.jobDescription || ''))) continue;
 
                 const company = normalizeCompanyName(job.companyName || 'Unknown');
                 const jobTitle = job.jobTitle || 'Unknown Role';
@@ -117,11 +124,16 @@ async function scrapeAdzuna(): Promise<ScraperResult> {
             try {
                 const sourceUrl = job.redirect_url;
 
-                const existing = await Job.findOne({ sourceUrl });
-                if (existing) continue;
+                const existingUrl = await Job.findOne({ sourceUrl });
+                if (existingUrl) continue;
 
                 const company = normalizeCompanyName(job.company?.display_name || 'Unknown');
                 const jobTitle = job.title || 'Unknown Role';
+
+                const existingSimilar = await (Job as any).findSimilar({ company, title: jobTitle });
+                if (existingSimilar) continue;
+
+                if (!isITJob(jobTitle + ' ' + (job.description || ''))) continue;
 
                 // Generate slug
                 const slug = generateJobSlug(company, jobTitle);
@@ -186,10 +198,8 @@ async function scrapeWWR(): Promise<ScraperResult> {
                 const content = $(el).find('description').text();
                 const pubDate = new Date($(el).find('pubDate').text());
 
-                const existing = await Job.findOne({ sourceUrl });
-                if (existing) continue;
-
-                if (!isITJob(title + ' ' + content)) continue;
+                const existingUrl = await Job.findOne({ sourceUrl });
+                if (existingUrl) continue;
 
                 // Title format is usually "Company: Role"
                 let company = 'Unknown';
@@ -409,10 +419,15 @@ async function scrapeJSearch(): Promise<ScraperResult> {
             try {
                 const sourceUrl = job.job_apply_link || job.job_google_link;
 
-                const existing = await Job.findOne({ sourceUrl });
-                if (existing) continue;
+                const existingUrl = await Job.findOne({ sourceUrl });
+                if (existingUrl) continue;
 
                 const company = normalizeCompanyName(job.employer_name || 'Unknown');
+
+                const existingSimilar = await (Job as any).findSimilar({ company, title: job.job_title });
+                if (existingSimilar) continue;
+
+                if (!isITJob(job.job_title + ' ' + (job.job_description || ''))) continue;
 
                 // Generate slug
                 const slug = `${company}-${job.job_title}`.toLowerCase()
@@ -481,14 +496,13 @@ async function scrapeFoundTheJob(): Promise<ScraperResult> {
                 const content = $(el).find('content\\:encoded').text();
                 const pubDate = new Date($(el).find('pubDate').text());
 
-                const existing = await Job.findOne({ sourceUrl });
-                if (existing) continue;
+                const existingUrl = await Job.findOne({ sourceUrl });
+                if (existingUrl) continue;
 
                 // Basic filtering
                 if (!isITJob(title + ' ' + content)) continue;
 
                 // Extract company from title
-                // Example: "Springer Nature Hiring 2026", "Paytm Internship Hiring"
                 let company = 'Unknown';
                 const companyMatch = title.match(/^(.*?)\s+(?:Hiring|Careers|Jobs|Internship)/i);
                 if (companyMatch) {
@@ -496,6 +510,9 @@ async function scrapeFoundTheJob(): Promise<ScraperResult> {
                 } else {
                     company = normalizeCompanyName(title.split(' ')[0]);
                 }
+
+                const existingSimilar = await (Job as any).findSimilar({ company, title });
+                if (existingSimilar) continue;
 
                 // Find external apply link in content
                 const inner$ = cheerio.load(content);

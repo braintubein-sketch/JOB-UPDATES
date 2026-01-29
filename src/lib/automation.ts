@@ -68,8 +68,18 @@ export async function triggerTelegramPost() {
             .limit(5);
 
         const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://jobupdate.site';
+        const processedBatch = new Set<string>();
 
         for (const job of pendingJobs) {
+            // Deduplicate within the batch (company + title)
+            const jobKey = `${job.company.toLowerCase()}-${job.title.toLowerCase()}`;
+            if (processedBatch.has(jobKey)) {
+                console.log(`[Telegram] Skipping duplicate in batch: ${job.company} - ${job.title}`);
+                job.telegramPosted = true; // Mark as "posted" (skipped) so it's not picked up again
+                await job.save();
+                continue;
+            }
+
             const messageId = await postJobToTelegram(job.toObject() as any, siteUrl);
 
             if (messageId) {
@@ -77,6 +87,7 @@ export async function triggerTelegramPost() {
                 job.telegramMessageId = messageId;
                 await job.save();
                 postedCount++;
+                processedBatch.add(jobKey);
                 console.log(`[Telegram] Posted: ${job.company} - ${job.title}`);
                 await new Promise(resolve => setTimeout(resolve, 5000));
             }
