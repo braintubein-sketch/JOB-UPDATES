@@ -99,8 +99,8 @@ async function scrapeJobicy(): Promise<ScraperResult> {
 async function scrapeAdzuna(): Promise<ScraperResult> {
     console.log('[Scraper] Fetching from Adzuna...');
     try {
-        const appId = process.env.ADZUNA_APP_ID || '';
-        const appKey = process.env.ADZUNA_APP_KEY || '';
+        const appId = (process.env.ADZUNA_APP_ID || '').trim();
+        const appKey = (process.env.ADZUNA_APP_KEY || '').trim();
 
         if (!appId || !appKey) {
             console.log('[Scraper] Adzuna credentials not configured, skipping...');
@@ -381,7 +381,7 @@ async function scrapeRemotive(): Promise<ScraperResult> {
 // JSearch API (RapidAPI) - if configured
 async function scrapeJSearch(): Promise<ScraperResult> {
     console.log('[Scraper] Checking JSearch...');
-    const rapidApiKey = process.env.RAPIDAPI_KEY;
+    const rapidApiKey = (process.env.RAPIDAPI_KEY || '').trim();
 
     if (!rapidApiKey) {
         console.log('[Scraper] RapidAPI key not configured, skipping JSearch...');
