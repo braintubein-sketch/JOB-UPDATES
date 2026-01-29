@@ -10,7 +10,8 @@ import {
     extractQualificationFromText,
     extractRolesFromTitle,
     generateJobSlug,
-    normalizeEmploymentType
+    normalizeEmploymentType,
+    normalizeUrl
 } from './scraper';
 import { getCompanyLogo } from './utils';
 import connectDB from './db';
@@ -136,7 +137,7 @@ async function scrapeAdzuna(): Promise<ScraperResult> {
                     employmentType: normalizeEmploymentType(job.contract_type || 'Full-time'),
                     description: (job.description || '').substring(0, 1000),
                     skills: extractSkillsFromText(job.description || ''),
-                    applyLink: sourceUrl,
+                    applyLink: normalizeUrl(sourceUrl),
                     category: detectCategory(job.title, []),
                     isVerified: true,
                     isActive: true,
@@ -353,7 +354,7 @@ async function scrapeRemotive(): Promise<ScraperResult> {
                     employmentType: normalizeEmploymentType(job.job_type || 'Full-time'),
                     description: (job.description || '').substring(0, 1000),
                     skills: job.tags || [],
-                    applyLink: job.url || sourceUrl,
+                    applyLink: normalizeUrl(job.url || sourceUrl),
                     category: detectCategory(job.title, job.tags || []),
                     isVerified: true,
                     isActive: true,
@@ -431,7 +432,7 @@ async function scrapeJSearch(): Promise<ScraperResult> {
                     employmentType: normalizeEmploymentType(job.job_employment_type || 'Full-time'),
                     description: (job.job_description || '').substring(0, 1000),
                     skills: job.job_required_skills || [],
-                    applyLink: sourceUrl,
+                    applyLink: normalizeUrl(sourceUrl),
                     category: detectCategory(job.job_title, []),
                     isVerified: true,
                     isActive: true,
@@ -535,7 +536,7 @@ async function scrapeFoundTheJob(): Promise<ScraperResult> {
                     employmentType: normalizeEmploymentType(title.toLowerCase().includes('intern') ? 'Internship' : 'Full-time'),
                     description: content.replace(/<[^>]*>?/gm, '').substring(0, 1000),
                     skills: extractSkillsFromText(content),
-                    applyLink,
+                    applyLink: normalizeUrl(applyLink),
                     category: detectCategory(title, []),
                     isVerified: true,
                     isActive: true,

@@ -18,6 +18,8 @@ if (!global.mongoose) {
 }
 
 export async function connectDB(): Promise<typeof mongoose> {
+  const MONGODB_URI = (process.env.MONGODB_URI || '').trim();
+
   if (!MONGODB_URI) {
     throw new Error(
       'MongoDB URI not configured. Please set MONGODB_URI in your .env file.'

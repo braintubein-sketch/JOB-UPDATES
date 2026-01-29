@@ -140,14 +140,22 @@ export default function JobDetailsClient({ slug }: { slug: string }) {
                         </div>
 
                         <div className="flex items-center gap-3 w-full md:w-auto">
-                            <a
-                                href={job.applyLink}
-                                target="_blank"
-                                rel="noreferrer"
-                                className="flex-1 md:flex-none btn-primary !h-16 !px-12 text-lg font-black italic shadow-2xl shadow-primary/30"
-                            >
-                                APPLY NOW
-                            </a>
+                            {(() => {
+                                let applyUrl = job.applyLink || '';
+                                if (applyUrl && !applyUrl.startsWith('http') && !applyUrl.startsWith('mailto')) {
+                                    applyUrl = applyUrl.startsWith('//') ? `https:${applyUrl}` : `https://${applyUrl}`;
+                                }
+                                return (
+                                    <a
+                                        href={applyUrl}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className="flex-1 md:flex-none btn-primary !h-16 !px-12 text-lg font-black italic shadow-2xl shadow-primary/30"
+                                    >
+                                        APPLY NOW
+                                    </a>
+                                );
+                            })()}
                             <button
                                 onClick={handleShare}
                                 className="w-16 h-16 flex items-center justify-center rounded-3xl bg-secondary border border-border hover:border-primary transition-all shadow-xl"
@@ -218,14 +226,22 @@ export default function JobDetailsClient({ slug }: { slug: string }) {
                             </div>
 
                             <div className="space-y-4">
-                                <a
-                                    href={job.applyLink}
-                                    target="_blank"
-                                    rel="noreferrer"
-                                    className="btn-primary w-full h-16 rounded-[2rem] text-lg font-black italic"
-                                >
-                                    DIRECT APPLY
-                                </a>
+                                {(() => {
+                                    let applyUrl = job.applyLink || '';
+                                    if (applyUrl && !applyUrl.startsWith('http') && !applyUrl.startsWith('mailto')) {
+                                        applyUrl = applyUrl.startsWith('//') ? `https:${applyUrl}` : `https://${applyUrl}`;
+                                    }
+                                    return (
+                                        <a
+                                            href={applyUrl}
+                                            target="_blank"
+                                            rel="noopener noreferrer"
+                                            className="btn-primary w-full h-16 rounded-[2rem] text-lg font-black italic"
+                                        >
+                                            DIRECT APPLY
+                                        </a>
+                                    );
+                                })()}
                                 <div className="flex items-center gap-3 p-4 bg-primary/10 border border-primary/20 rounded-2xl">
                                     <ShieldCheck className="w-6 h-6 text-primary" />
                                     <div className="text-xs font-black text-primary leading-tight uppercase">Safeguarded by JOB UPDATES Security</div>
@@ -239,13 +255,22 @@ export default function JobDetailsClient({ slug }: { slug: string }) {
             {/* Floating Mobile Sticky Header (Hidden initially, shown on mobile) */}
             <AnimatePresence>
                 <div className="fixed bottom-0 left-0 right-0 p-4 z-[100] md:hidden">
-                    <a
-                        href={job.applyLink}
-                        target="_blank"
-                        className="btn-primary w-full h-16 rounded-[2rem] text-lg font-black italic shadow-[0_20px_40px_rgba(100,80,255,0.4)]"
-                    >
-                        APPLY ON COMPANY SITE
-                    </a>
+                    {(() => {
+                        let applyUrl = job.applyLink || '';
+                        if (applyUrl && !applyUrl.startsWith('http') && !applyUrl.startsWith('mailto')) {
+                            applyUrl = applyUrl.startsWith('//') ? `https:${applyUrl}` : `https://${applyUrl}`;
+                        }
+                        return (
+                            <a
+                                href={applyUrl}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="btn-primary w-full h-16 rounded-[2rem] text-lg font-black italic shadow-[0_20px_40px_rgba(100,80,255,0.4)]"
+                            >
+                                APPLY ON COMPANY SITE
+                            </a>
+                        );
+                    })()}
                 </div>
             </AnimatePresence>
         </div>

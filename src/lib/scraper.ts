@@ -35,19 +35,51 @@ const IT_KEYWORDS = [
 // Non-IT keywords to filter out
 const EXCLUDE_KEYWORDS = [
     'government', 'ssc', 'upsc', 'railway', 'bank clerk', 'admit card',
-    'result', 'answer key', 'exam date', 'syllabus', 'govt',
+    'result', 'answer key', 'exam date', 'syllabus', 'govt', 'politics',
+    'political', 'cricket', 'bollywood', 'entertainment', 'crime',
 ];
+
+export function normalizeUrl(url: string, baseUrl?: string): string {
+    if (!url) return '';
+    let cleaned = url.trim();
+
+    // Handle mailto links
+    if (cleaned.startsWith('mailto:')) return cleaned;
+
+    // Handle protocol relative links
+    if (cleaned.startsWith('//')) cleaned = 'https:' + cleaned;
+
+    // Handle relative links if baseUrl is provided
+    if (cleaned.startsWith('/') && baseUrl) {
+        try {
+            const base = new URL(baseUrl);
+            return `${base.protocol}//${base.host}${cleaned}`;
+        } catch (e) {
+            return cleaned;
+        }
+    }
+
+    // Add https if protocol is missing (e.g. "www.google.com")
+    if (!cleaned.startsWith('http') && cleaned.includes('.')) {
+        cleaned = 'https://' + cleaned;
+    }
+
+    return cleaned;
+}
 
 export function isITJob(title: string, description: string = ''): boolean {
     const text = `${title} ${description}`.toLowerCase();
 
     // Check if it contains any exclusion keywords
-    if (EXCLUDE_KEYWORDS.some(keyword => text.includes(keyword))) {
+    if (EXCLUDE_KEYWORDS.some(keyword => text.includes(keyword.toLowerCase()))) {
         return false;
     }
 
-    // Check if it contains IT keywords
-    return IT_KEYWORDS.some(keyword => text.includes(keyword));
+    // Check if it contains IT keywords as whole words
+    return IT_KEYWORDS.some(keyword => {
+        const regex = new RegExp(`\\b${keyword.toLowerCase()}\\b`, 'i');
+        return regex.test(text);
+    });
 }
 
 export function detectCategory(title: string, skills: string[] = []): string {
