@@ -10,6 +10,7 @@ import MobileBottomNav from '@/components/layout/MobileBottomNav';
 const pjs = Plus_Jakarta_Sans({ subsets: ['latin'], variable: '--font-pjs' });
 
 export const metadata: Metadata = {
+    metadataBase: new URL('https://jobupdate.site'),
     title: {
         default: 'JOB UPDATES - Premium IT Jobs Portal | India\'s #1 Tech Career Hub',
         template: '%s | JOB UPDATES',
