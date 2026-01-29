@@ -241,12 +241,14 @@ async function scrapeSimpleSource(): Promise<ScraperResult> {
     console.log('[Scraper] Fetching from Himalayas...');
     try {
         // Use a simple, reliable job board
-        const { data } = await axios.get('https://himalayas.app/jobs/api?limit=10', {
+        const { data } = await axios.get('https://himalayas.app/jobs/api?limit=20', {
             headers: {
-                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
-                'Accept': 'application/json'
+                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/121.0.0.0 Safari/537.36',
+                'Accept': 'application/json',
+                'Accept-Language': 'en-US,en;q=0.9',
+                'Referer': 'https://himalayas.app/'
             },
-            timeout: 15000
+            timeout: 25000
         });
 
         let newJobsCount = 0;
@@ -312,12 +314,13 @@ async function scrapeSimpleSource(): Promise<ScraperResult> {
 async function scrapeRemotive(): Promise<ScraperResult> {
     console.log('[Scraper] Fetching from Remotive...');
     try {
-        const { data } = await axios.get('https://remotive.com/api/remote-jobs?category=software-dev&limit=10', {
+        const { data } = await axios.get('https://remotive.com/api/remote-jobs?category=software-dev&limit=20', {
             headers: {
                 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/121.0.0.0 Safari/537.36',
-                'Accept': 'application/json'
+                'Accept': 'application/json',
+                'Referer': 'https://remotive.com/'
             },
-            timeout: 15000
+            timeout: 25000
         });
 
         let newJobsCount = 0;

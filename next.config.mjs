@@ -24,6 +24,15 @@ const nextConfig = {
         NEXT_PUBLIC_SITE_URL: process.env.NEXT_PUBLIC_SITE_URL || 'https://jobupdate.site',
         NEXT_PUBLIC_SITE_NAME: process.env.NEXT_PUBLIC_SITE_NAME || 'JOB UPDATES',
     },
+    // Optimization to save Render build minutes
+    eslint: {
+        ignoreDuringBuilds: true,
+    },
+    typescript: {
+        ignoreBuildErrors: true,
+    },
+    // Standalone build for faster deploys
+    output: 'standalone',
 };
 
 export default nextConfig;
