@@ -207,10 +207,9 @@ JobSchema.pre('save', async function () {
 // Static method to find similar jobs (for deduplication)
 JobSchema.statics.findSimilar = async function (job: Partial<IJob>) {
     return this.findOne({
-        company: job.company,
-        title: job.title,
-        'locations.0': job.locations?.[0],
-        postedDate: { $gte: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000) },
+        company: { $regex: new RegExp(`^${job.company}$`, 'i') },
+        title: { $regex: new RegExp(`^${job.title}$`, 'i') },
+        createdAt: { $gte: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000) },
     });
 };
 

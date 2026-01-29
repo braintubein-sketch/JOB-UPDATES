@@ -75,7 +75,22 @@ export async function triggerTelegramPost() {
             const jobKey = `${job.company.toLowerCase()}-${job.title.toLowerCase()}`;
             if (processedBatch.has(jobKey)) {
                 console.log(`[Telegram] Skipping duplicate in batch: ${job.company} - ${job.title}`);
-                job.telegramPosted = true; // Mark as "posted" (skipped) so it's not picked up again
+                job.telegramPosted = true;
+                await job.save();
+                continue;
+            }
+
+            // Check if ANY similar job was already posted (globally in DB)
+            const alreadyPostedSimilar = await Job.findOne({
+                company: job.company,
+                title: job.title,
+                telegramPosted: true,
+                createdAt: { $gte: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000) } // Check last 7 days
+            });
+
+            if (alreadyPostedSimilar) {
+                console.log(`[Telegram] Skipping already posted similar job: ${job.company} - ${job.title}`);
+                job.telegramPosted = true;
                 await job.save();
                 continue;
             }
