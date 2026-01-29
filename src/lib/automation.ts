@@ -64,7 +64,7 @@ export async function triggerTelegramPost() {
             telegramPosted: false,
             isVerified: true,
         })
-            .sort({ postedDate: -1 })
+            .sort({ createdAt: -1 })
             .limit(5);
 
         const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://jobupdate.site';

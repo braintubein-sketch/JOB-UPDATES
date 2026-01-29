@@ -1,27 +1,20 @@
-import TelegramBot from 'node-telegram-bot-api';
-import * as dotenv from 'dotenv';
+import dotenv from 'dotenv';
 import path from 'path';
+import { fileURLToPath } from 'url';
 
-dotenv.config({ path: path.resolve(process.cwd(), '.env') });
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+dotenv.config({ path: path.join(__dirname, '..', '.env') });
 
-const token = process.env.TELEGRAM_BOT_TOKEN;
-const chatId = process.env.TELEGRAM_CHANNEL_ID;
-
-async function testConnection() {
-    if (!token || !chatId) {
-        console.error('Missing token or chatId in .env');
-        return;
-    }
-
-    const bot = new TelegramBot(token, { polling: false });
-
+async function runTelegramPost() {
     try {
-        console.log('Sending test message...');
-        await bot.sendMessage(chatId, '✅ *Braintube Job Updates* is now connected!\n\nAutomated premium jobs will be posted here regularly.', { parse_mode: 'Markdown' });
-        console.log('Success! Check your channel.');
+        const { triggerTelegramPost } = await import('../src/lib/automation.ts');
+        console.log('Fetching pending jobs for Telegram...');
+        const count = await triggerTelegramPost();
+        console.log(`Successfully posted ${count} jobs to Telegram.`);
     } catch (error) {
-        console.error('Connection failed:', error);
+        console.error('Error:', error);
     }
 }
 
-testConnection();
+runTelegramPost();

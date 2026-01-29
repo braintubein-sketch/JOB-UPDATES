@@ -64,7 +64,7 @@ export interface JobFilters {
     tags?: string[];
     page?: number;
     limit?: number;
-    sortBy?: 'postedDate' | 'views' | 'company';
+    sortBy?: 'postedDate' | 'views' | 'company' | 'createdAt';
     sortOrder?: 'asc' | 'desc';
 }
 

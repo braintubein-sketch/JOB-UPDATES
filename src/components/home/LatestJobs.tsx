@@ -14,7 +14,7 @@ export default function LatestJobs() {
     useEffect(() => {
         const fetchJobs = async () => {
             try {
-                const res = await fetch('/api/jobs?limit=15&sortBy=postedDate&sortOrder=desc');
+                const res = await fetch('/api/jobs?limit=15&sortBy=createdAt&sortOrder=desc');
                 const data = await res.json();
                 if (data.success) {
                     setJobs(data.data);

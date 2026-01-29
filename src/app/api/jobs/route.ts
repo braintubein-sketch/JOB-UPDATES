@@ -39,7 +39,7 @@ export async function GET(request: NextRequest) {
             company: searchParams.get('company') || undefined,
             page: parseInt(searchParams.get('page') || '1'),
             limit: Math.min(parseInt(searchParams.get('limit') || '12'), 50),
-            sortBy: (searchParams.get('sortBy') as 'postedDate' | 'views' | 'company') || 'postedDate',
+            sortBy: (searchParams.get('sortBy') as 'postedDate' | 'views' | 'company' | 'createdAt') || 'createdAt',
             sortOrder: (searchParams.get('sortOrder') as 'asc' | 'desc') || 'desc',
         };
 
