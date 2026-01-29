@@ -23,7 +23,7 @@ export function initializeCronJobs() {
     // Scrape new jobs every 30 minutes
     cron.schedule('*/30 * * * *', async () => {
         console.log('[Cron] Starting automated scraping...');
-        await scrapeOffCampusJobs();
+        await triggerScraping();
     });
 
     // Post unpublished jobs to Telegram every 30 minutes
