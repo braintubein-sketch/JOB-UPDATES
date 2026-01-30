@@ -38,7 +38,9 @@ async function scrapeJobicy(): Promise<ScraperResult> {
         });
 
         const jobs = data.jobs || [];
+        console.log(`[Scraper] Jobicy: Found ${jobs.length} items to process`);
         let newJobsCount = 0;
+        let skipCount = 0;
 
         await connectDB();
 
@@ -48,17 +50,28 @@ async function scrapeJobicy(): Promise<ScraperResult> {
 
                 // Check if already exists by URL
                 const existingUrl = await Job.findOne({ sourceUrl });
-                if (existingUrl) continue;
+                if (existingUrl) {
+                    skipCount++;
+                    continue;
+                }
 
                 // Check if similar job exists (same company/title recently)
                 const existingSimilar = await (Job as any).findSimilar({
                     company: normalizeCompanyName(job.companyName || 'Unknown'),
                     title: job.jobTitle || 'Unknown Role'
                 });
-                if (existingSimilar) continue;
+                if (existingSimilar) {
+                    // console.log(`[Scraper] Jobicy Skip: Similar already exists`);
+                    skipCount++;
+                    continue;
+                }
 
                 // Filter for IT jobs
-                if (!isITJob(job.jobTitle + ' ' + (job.jobDescription || ''))) continue;
+                if (!isITJob(job.jobTitle + ' ' + (job.jobDescription || ''))) {
+                    // console.log(`[Scraper] Jobicy Skip: Non-IT`);
+                    skipCount++;
+                    continue;
+                }
 
                 const company = normalizeCompanyName(job.companyName || 'Unknown');
                 const jobTitle = job.jobTitle || 'Unknown Role';
@@ -484,10 +497,10 @@ async function scrapeFoundTheJob(): Promise<ScraperResult> {
         });
 
         const $ = cheerio.load(data, { xmlMode: true });
+        const items = $('item').toArray();
+        console.log(`[Scraper] FoundTheJob: Found ${items.length} items to process`);
         let newJobsCount = 0;
         await connectDB();
-
-        const items = $('item').toArray();
 
         for (const el of items) {
             try {
@@ -497,14 +510,20 @@ async function scrapeFoundTheJob(): Promise<ScraperResult> {
                 const pubDate = new Date($(el).find('pubDate').text());
 
                 const existingUrl = await Job.findOne({ sourceUrl });
-                if (existingUrl) continue;
+                if (existingUrl) {
+                    // console.log(`[Scraper] Skip ${title.substring(0, 30)}... - URL already exists`);
+                    continue;
+                }
 
                 // Basic filtering
-                if (!isITJob(title + ' ' + content)) continue;
+                if (!isITJob(title + ' ' + content)) {
+                    console.log(`[Scraper] Skip ${title.substring(0, 30)}... - Not an IT job`);
+                    continue;
+                }
 
                 // Extract company from title
                 let company = 'Unknown';
-                const companyMatch = title.match(/^(.*?)\s+(?:Hiring|Careers|Jobs|Internship)/i);
+                const companyMatch = title.match(/^(.*?)\s+(?:Hiring|Careers|Jobs|Internship|Recruitment)/i);
                 if (companyMatch) {
                     company = normalizeCompanyName(companyMatch[1]);
                 } else {
@@ -512,7 +531,10 @@ async function scrapeFoundTheJob(): Promise<ScraperResult> {
                 }
 
                 const existingSimilar = await (Job as any).findSimilar({ company, title });
-                if (existingSimilar) continue;
+                if (existingSimilar) {
+                    console.log(`[Scraper] Skip ${title.substring(0, 30)}... - Similar job exists`);
+                    continue;
+                }
 
                 // Find external apply link in content
                 const inner$ = cheerio.load(content);
@@ -593,7 +615,9 @@ async function scrapeOffCampusRSS(): Promise<ScraperResult> {
 
         const $ = cheerio.load(data, { xmlMode: true });
         const items = $('item').toArray().slice(0, 15);
+        console.log(`[Scraper] OffCampus RSS: Found ${items.length} items to process`);
         let newJobsCount = 0;
+        let skipCount = 0;
         await connectDB();
 
         for (const el of items) {
@@ -603,16 +627,27 @@ async function scrapeOffCampusRSS(): Promise<ScraperResult> {
                 const content = $(el).find('content\\:encoded').text() || $(el).find('description').text();
 
                 if (!title || !sourceUrl) continue;
-                if (!isITJob(title + ' ' + content)) continue;
 
                 const existing = await Job.findOne({ sourceUrl });
-                if (existing) continue;
+                if (existing) {
+                    skipCount++;
+                    continue;
+                }
+
+                if (!isITJob(title + ' ' + content)) {
+                    // console.log(`[Scraper] OffCampus Skip: Not IT`);
+                    skipCount++;
+                    continue;
+                }
 
                 const companyRaw = title.split('Recruitment')[0].split('Hiring')[0].split('Drive')[0].split('Walk')[0].trim();
                 const company = normalizeCompanyName(companyRaw);
 
                 const existingSimilar = await (Job as any).findSimilar({ company, title });
-                if (existingSimilar) continue;
+                if (existingSimilar) {
+                    skipCount++;
+                    continue;
+                }
 
                 const newJob = new Job({
                     company,
@@ -719,11 +754,11 @@ async function scrapeFreshersNowRSS(): Promise<ScraperResult> {
     }
 }
 
-// FreshersGrid RSS Scraper
-async function scrapeFreshersGrid(): Promise<ScraperResult> {
-    console.log('[Scraper] Fetching from FreshersGrid RSS...');
+// FreshersVoice RSS Scraper
+async function scrapeFreshersVoice(): Promise<ScraperResult> {
+    console.log('[Scraper] Fetching from FreshersVoice RSS...');
     try {
-        const { data } = await axios.get('https://www.freshersgrid.com/feed/', {
+        const { data } = await axios.get('https://www.freshersvoice.com/feed/', {
             headers: {
                 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/121.0.0.0 Safari/537.36',
                 'Accept': 'application/rss+xml, application/xml; q=0.9, */*; q=0.8'
@@ -732,7 +767,7 @@ async function scrapeFreshersGrid(): Promise<ScraperResult> {
         });
 
         const $ = cheerio.load(data, { xmlMode: true });
-        const items = $('item').toArray().slice(0, 10);
+        const items = $('item').toArray().slice(0, 15);
         let newJobsCount = 0;
         await connectDB();
 
@@ -776,14 +811,14 @@ async function scrapeFreshersGrid(): Promise<ScraperResult> {
 
                 await newJob.save();
                 newJobsCount++;
-                console.log(`[Scraper] Saved (FreshersGrid): ${company} - ${title}`);
+                console.log(`[Scraper] Saved (FreshersVoice): ${company} - ${title}`);
             } catch (e) {
-                console.error('[Scraper] Error saving FreshersGrid:', e);
+                console.error('[Scraper] Error saving FreshersVoice:', e);
             }
         }
         return { count: newJobsCount, success: true };
     } catch (error: any) {
-        console.error('[Scraper] FreshersGrid error:', error.message);
+        console.error('[Scraper] FreshersVoice RSS error:', error.message);
         return { count: 0, success: false, error: error.message };
     }
 }
@@ -802,7 +837,7 @@ export async function triggerLightweightScraping() {
         foundthejob: scrapeFoundTheJob,
         offcampus: scrapeOffCampusRSS,
         freshersnow: scrapeFreshersNowRSS,
-        freshersgrid: scrapeFreshersGrid
+        freshersvoice: scrapeFreshersVoice
     };
 
     const keys = Object.keys(scraperMap);

@@ -30,6 +30,13 @@ const IT_KEYWORDS = [
     'microservices', 'product', 'tech lead', 'architect',
     'intern', 'graduate', 'trainee', 'fresher', 'associate',
     'it', 'technical', 'support', 'analyst', 'consultant',
+    'sde', 'javascript', 'coding', 'script', 'system', 'embedded',
+    'vlsi', 'java', 'spring', 'springboot', 'angular', 'react',
+    'flutter', 'dart', 'kotlin', 'swift', 'blockchain', 'solidity',
+    'tcs', 'infosys', 'wipro', 'accenture', 'capgemini', 'cognizant', 'hcl',
+    'mphasis', 'hexaware', 'mindtree', 'lti', 'virtusa', 'persistent',
+    'ust global', 'dxc', 'atlassian', 'microsoft', 'google', 'amazon',
+    'ase', 'analyst', 'tech', 'digital', 'c++', 'c#', 'php', 'laravel',
 ];
 
 // Non-IT keywords to filter out
@@ -39,7 +46,7 @@ const EXCLUDE_KEYWORDS = [
     'political', 'cricket', 'bollywood', 'entertainment', 'crime',
     'writer', 'content creator', 'editor', 'sales executive', 'marketing executive',
     'medical', 'nurse', 'doctor', 'hospital', 'receptionist', 'delivery',
-    'telecaller', 'customer service', 'voice process'
+    'telecaller', 'customer service', 'voice process', 'bpo', 'kpo'
 ];
 
 export function normalizeUrl(url: string, baseUrl?: string): string {
