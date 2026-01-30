@@ -20,35 +20,36 @@ export function initializeCronJobs() {
 
     console.log('Initializing cron jobs...');
 
+    // Commented out to prevent double-runs with External Cron / API triggers
     // Scrape new jobs every 30 minutes
-    cron.schedule('*/30 * * * *', async () => {
-        console.log('[Cron] Starting automated scraping...');
-        await triggerScraping();
-    });
+    // cron.schedule('*/30 * * * *', async () => {
+    //     console.log('[Cron] Starting automated scraping...');
+    //     await triggerScraping();
+    // });
 
     // Post unpublished jobs to Telegram every 30 minutes
-    cron.schedule('*/30 * * * *', async () => {
-        console.log('[Cron] Posting jobs to Telegram...');
-        await triggerTelegramPost();
-    });
+    // cron.schedule('*/30 * * * *', async () => {
+    //     console.log('[Cron] Posting jobs to Telegram...');
+    //     await triggerTelegramPost();
+    // });
 
     // Mark old jobs as not new (runs daily at midnight)
-    cron.schedule('0 0 * * *', async () => {
-        console.log('[Cron] Updating job statuses...');
-        await updateJobStatuses();
-    });
+    // cron.schedule('0 0 * * *', async () => {
+    //     console.log('[Cron] Updating job statuses...');
+    //     await updateJobStatuses();
+    // });
 
     // Archive expired jobs (runs daily at 1 AM)
-    cron.schedule('0 1 * * *', async () => {
-        console.log('[Cron] Archiving expired jobs...');
-        await archiveExpiredJobs();
-    });
+    // cron.schedule('0 1 * * *', async () => {
+    //     console.log('[Cron] Archiving expired jobs...');
+    //     await archiveExpiredJobs();
+    // });
 
     // Clean up duplicate jobs (runs weekly on Sunday at 2 AM)
-    cron.schedule('0 2 * * 0', async () => {
-        console.log('[Cron] Cleaning up duplicates...');
-        await cleanupDuplicateJobs();
-    });
+    // cron.schedule('0 2 * * 0', async () => {
+    //     console.log('[Cron] Cleaning up duplicates...');
+    //     await cleanupDuplicateJobs();
+    // });
 
     console.log('Cron jobs initialized successfully');
 }
