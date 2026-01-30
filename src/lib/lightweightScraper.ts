@@ -577,36 +577,31 @@ async function scrapeFoundTheJob(): Promise<ScraperResult> {
     }
 }
 
-// OffCampusJobs4u Lightweight Scraper
-async function scrapeOffCampusLightweight(): Promise<ScraperResult> {
-    console.log('[Scraper] Fetching from OffCampusJobs4u...');
+// OffCampusJobs4u RSS Scraper
+async function scrapeOffCampusRSS(): Promise<ScraperResult> {
+    console.log('[Scraper] Fetching from OffCampusJobs4u RSS...');
     try {
-        const { data } = await axios.get('https://offcampusjobs4u.com/', {
+        const { data } = await axios.get('https://offcampusjobs4u.com/feed/', {
             headers: {
                 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/121.0.0.0 Safari/537.36',
-                'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7',
-                'Accept-Language': 'en-US,en;q=0.9',
-                'Cache-Control': 'no-cache',
-                'Pragma': 'no-cache',
-                'Referer': 'https://www.google.com/',
-                'Upgrade-Insecure-Requests': '1'
+                'Accept': 'application/rss+xml,application/xml;q=0.9,*/*;q=0.8'
             },
             timeout: 20000
         });
 
-        const $ = cheerio.load(data);
-        const jobElements = $('article, .post, .entry-title').toArray().slice(0, 15);
-        console.log(`[Scraper] Found ${jobElements.length} candidate elements on OffCampusJobs4u`);
+        const $ = cheerio.load(data, { xmlMode: true });
+        const items = $('item').toArray().slice(0, 15);
         let newJobsCount = 0;
         await connectDB();
 
-        for (const el of jobElements) {
+        for (const el of items) {
             try {
-                const title = $(el).find('.entry-title, h2, h3').first().text().trim();
-                const sourceUrl = $(el).find('a').first().attr('href');
+                const title = $(el).find('title').text();
+                const sourceUrl = $(el).find('link').text();
+                const content = $(el).find('content\\:encoded').text() || $(el).find('description').text();
 
                 if (!title || !sourceUrl) continue;
-                if (!isITJob(title)) continue;
+                if (!isITJob(title + ' ' + content)) continue;
 
                 const existing = await Job.findOne({ sourceUrl });
                 if (existing) continue;
@@ -622,73 +617,68 @@ async function scrapeOffCampusLightweight(): Promise<ScraperResult> {
                     title,
                     slug: generateJobSlug(company, title),
                     roles: extractRolesFromTitle(title),
-                    qualification: 'Any Graduate',
-                    locations: ['India'],
-                    experience: parseExperienceFromText(title),
+                    qualification: extractQualificationFromText(content) || 'Any Graduate',
+                    locations: extractLocationsFromText(content) || ['India'],
+                    experience: parseExperienceFromText(title + ' ' + content),
                     employmentType: 'Full-time',
-                    description: title,
-                    skills: [],
-                    applyLink: sourceUrl,
+                    description: content.replace(/<[^>]*>?/gm, '').substring(0, 1000),
+                    skills: extractSkillsFromText(content),
+                    applyLink: sourceUrl, // RSS links usually go to the post which contains apply
                     category: detectCategory(title, []),
                     isVerified: true,
                     isActive: true,
                     source: 'automated',
                     sourceUrl,
-                    postedDate: new Date()
+                    postedDate: new Date($(el).find('pubDate').text()) || new Date()
                 });
 
                 await newJob.save();
                 newJobsCount++;
-                console.log(`[Scraper] Saved (OffCampus): ${company} - ${title}`);
+                console.log(`[Scraper] Saved (OffCampus RSS): ${company} - ${title}`);
             } catch (e) {
-                console.error('[Scraper] Error saving OffCampus:', e);
+                console.error('[Scraper] Error saving OffCampus RSS:', e);
             }
         }
         return { count: newJobsCount, success: true };
     } catch (error: any) {
-        console.error('[Scraper] OffCampus error:', error.message);
+        console.error('[Scraper] OffCampus RSS error:', error.message);
         return { count: 0, success: false, error: error.message };
     }
 }
 
-// FreshersNow Lightweight Scraper
-async function scrapeFreshersNowLightweight(): Promise<ScraperResult> {
-    console.log('[Scraper] Fetching from FreshersNow...');
+// FreshersNow RSS Scraper
+async function scrapeFreshersNowRSS(): Promise<ScraperResult> {
+    console.log('[Scraper] Fetching from FreshersNow RSS...');
     try {
-        const { data } = await axios.get('https://www.freshersnow.com/off-campus-drives/', {
+        const { data } = await axios.get('https://www.freshersnow.com/feed/', {
             headers: {
                 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/121.0.0.0 Safari/537.36',
-                'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7',
-                'Accept-Language': 'en-US,en;q=0.9',
-                'Referer': 'https://www.google.com/',
-                'DNT': '1'
+                'Accept': 'application/rss+xml,application/xml;q=0.9,*/*;q=0.8'
             },
             timeout: 20000
         });
 
-        const $ = cheerio.load(data);
-        const rows = $('table tr').toArray().filter(r => $(r).find('td').length >= 2).slice(1, 15);
-        console.log(`[Scraper] Found ${rows.length} candidate rows on FreshersNow`);
+        const $ = cheerio.load(data, { xmlMode: true });
+        const items = $('item').toArray().slice(0, 15);
         let newJobsCount = 0;
         await connectDB();
 
-        for (const row of rows) {
+        for (const el of items) {
             try {
-                const cells = $(row).find('td');
-                if (cells.length < 5) continue; // Row 3 and 4 in debug show at least 6 cells
+                const title = $(el).find('title').text();
+                const sourceUrl = $(el).find('link').text();
+                const content = $(el).find('content\\:encoded').text() || $(el).find('description').text();
 
-                const companyRaw = $(cells[0]).text().trim();
-                const roleRaw = $(cells[1]).text().trim();
-                const title = `${companyRaw} - ${roleRaw}`;
-                const sourceUrl = $(cells[5]).find('a').attr('href') || $(row).find('a').attr('href');
-
-                if (!companyRaw || !sourceUrl) continue;
-                if (!isITJob(title)) continue;
+                if (!title || !sourceUrl) continue;
+                if (!isITJob(title + ' ' + content)) continue;
 
                 const existing = await Job.findOne({ sourceUrl });
                 if (existing) continue;
 
+                // For FreshersNow, company is often first word or split by hyphen
+                const companyRaw = title.split(' - ')[0].split(' Recruitment')[0].split(' Hiring')[0].trim();
                 const company = normalizeCompanyName(companyRaw);
+
                 const existingSimilar = await (Job as any).findSimilar({ company, title });
                 if (existingSimilar) continue;
 
@@ -697,31 +687,31 @@ async function scrapeFreshersNowLightweight(): Promise<ScraperResult> {
                     title,
                     slug: generateJobSlug(company, title),
                     roles: extractRolesFromTitle(title),
-                    qualification: 'BE/B.Tech/MCA/Any Graduate',
-                    locations: ['India'],
-                    experience: parseExperienceFromText(title),
+                    qualification: extractQualificationFromText(content) || 'BE/B.Tech/MCA/Any Graduate',
+                    locations: extractLocationsFromText(content) || ['India'],
+                    experience: parseExperienceFromText(title + ' ' + content),
                     employmentType: 'Full-time',
-                    description: title,
-                    skills: [],
+                    description: content.replace(/<[^>]*>?/gm, '').substring(0, 1000),
+                    skills: extractSkillsFromText(content),
                     applyLink: sourceUrl,
                     category: detectCategory(title, []),
                     isVerified: true,
                     isActive: true,
                     source: 'automated',
                     sourceUrl,
-                    postedDate: new Date()
+                    postedDate: new Date($(el).find('pubDate').text()) || new Date()
                 });
 
                 await newJob.save();
                 newJobsCount++;
-                console.log(`[Scraper] Saved (FreshersNow): ${company} - ${title}`);
+                console.log(`[Scraper] Saved (FreshersNow RSS): ${company} - ${title}`);
             } catch (e) {
-                console.error('[Scraper] Error saving FreshersNow:', e);
+                console.error('[Scraper] Error saving FreshersNow RSS:', e);
             }
         }
         return { count: newJobsCount, success: true };
     } catch (error: any) {
-        console.error('[Scraper] FreshersNow error:', error.message);
+        console.error('[Scraper] FreshersNow RSS error:', error.message);
         return { count: 0, success: false, error: error.message };
     }
 }
@@ -738,8 +728,8 @@ export async function triggerLightweightScraping() {
         remotive: scrapeRemotive,
         jsearch: scrapeJSearch,
         foundthejob: scrapeFoundTheJob,
-        offcampus: scrapeOffCampusLightweight,
-        freshersnow: scrapeFreshersNowLightweight
+        offcampus: scrapeOffCampusRSS,
+        freshersnow: scrapeFreshersNowRSS
     };
 
     const keys = Object.keys(scraperMap);
