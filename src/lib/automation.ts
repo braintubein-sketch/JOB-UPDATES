@@ -81,14 +81,12 @@ export async function triggerTelegramPost() {
             }
 
             // Check if ANY similar job was already posted (globally in DB)
-            const alreadyPostedSimilar = await Job.findOne({
+            const alreadyPostedSimilar = await (Job as any).findSimilar({
                 company: job.company,
-                title: job.title,
-                telegramPosted: true,
-                createdAt: { $gte: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000) } // Check last 7 days
+                title: job.title
             });
 
-            if (alreadyPostedSimilar) {
+            if (alreadyPostedSimilar && alreadyPostedSimilar.telegramPosted) {
                 console.log(`[Telegram] Skipping already posted similar job: ${job.company} - ${job.title}`);
                 job.telegramPosted = true;
                 await job.save();

@@ -206,12 +206,20 @@ JobSchema.pre('save', async function () {
 
 // Static method to find similar jobs (for deduplication)
 JobSchema.statics.findSimilar = async function (job: Partial<IJob>) {
+    if (!job.company || !job.title) return null;
+
+    // Escape special regex characters
+    const escapeRegex = (str: string) => str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+
     return this.findOne({
-        company: { $regex: new RegExp(`^${job.company}$`, 'i') },
-        title: { $regex: new RegExp(`^${job.title}$`, 'i') },
+        company: { $regex: new RegExp(`^${escapeRegex(job.company)}$`, 'i') },
+        title: { $regex: new RegExp(`^${escapeRegex(job.title)}$`, 'i') },
         createdAt: { $gte: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000) },
     });
 };
+
+// Add index for deduplication performance
+JobSchema.index({ createdAt: -1 });
 
 const Job: Model<IJob> = mongoose.models.Job || mongoose.model<IJob>('Job', JobSchema);
 
