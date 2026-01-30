@@ -33,10 +33,6 @@ const nextConfig = {
     },
     // Standalone build for faster deploys
     output: 'standalone',
-    // Enable instrumentation for background cron jobs
-    experimental: {
-        instrumentationHook: true,
-    },
 };
 
 export default nextConfig;

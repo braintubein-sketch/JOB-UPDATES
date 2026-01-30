@@ -2,11 +2,15 @@ import TelegramBot from 'node-telegram-bot-api';
 import { Job } from '@/types';
 import { generateJobHashtags, formatExperience } from './utils';
 
-const bot = process.env.TELEGRAM_BOT_TOKEN
-    ? new TelegramBot(process.env.TELEGRAM_BOT_TOKEN, { polling: false })
-    : null;
+function getBot() {
+    return process.env.TELEGRAM_BOT_TOKEN
+        ? new TelegramBot(process.env.TELEGRAM_BOT_TOKEN, { polling: false })
+        : null;
+}
 
-const CHANNEL_ID = process.env.TELEGRAM_CHANNEL_ID || '';
+function getChannelId() {
+    return process.env.TELEGRAM_CHANNEL_ID || '';
+}
 
 interface TelegramMessage {
     text: string;
@@ -41,6 +45,9 @@ export function formatJobForTelegram(job: Job, siteUrl: string): TelegramMessage
 }
 
 export async function postJobToTelegram(job: Job, siteUrl: string): Promise<number | null> {
+    const bot = getBot();
+    const CHANNEL_ID = getChannelId();
+
     if (!bot || !CHANNEL_ID) {
         console.warn('Telegram bot not configured');
         return null;
@@ -56,7 +63,7 @@ export async function postJobToTelegram(job: Job, siteUrl: string): Promise<numb
 
         return message.message_id;
     } catch (error) {
-        console.error('Failed to post to Telegram:', error);
+        console.error(`Failed to post to Telegram (Channel: ${CHANNEL_ID}):`, error);
         return null;
     }
 }
@@ -65,6 +72,8 @@ export async function editTelegramMessage(
     messageId: number,
     newText: string
 ): Promise<boolean> {
+    const bot = getBot();
+    const CHANNEL_ID = getChannelId();
     if (!bot || !CHANNEL_ID) return false;
 
     try {
@@ -81,6 +90,8 @@ export async function editTelegramMessage(
 }
 
 export async function deleteTelegramMessage(messageId: number): Promise<boolean> {
+    const bot = getBot();
+    const CHANNEL_ID = getChannelId();
     if (!bot || !CHANNEL_ID) return false;
 
     try {
@@ -93,6 +104,8 @@ export async function deleteTelegramMessage(messageId: number): Promise<boolean>
 }
 
 export async function sendTelegramNotification(text: string): Promise<boolean> {
+    const bot = getBot();
+    const CHANNEL_ID = getChannelId();
     if (!bot || !CHANNEL_ID) return false;
 
     try {
