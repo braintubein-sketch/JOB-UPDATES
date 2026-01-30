@@ -477,8 +477,8 @@ async function scrapeFoundTheJob(): Promise<ScraperResult> {
     try {
         const { data } = await axios.get('https://foundthejob.com/feed/', {
             headers: {
-                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/121.0.0.0 Safari/537.36',
-                'Accept': 'application/xml'
+                'User-Agent': 'Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)',
+                'Accept': 'application/rss+xml, application/xml; q=0.9, */*; q=0.8'
             },
             timeout: 15000
         });
@@ -583,8 +583,10 @@ async function scrapeOffCampusRSS(): Promise<ScraperResult> {
     try {
         const { data } = await axios.get('https://offcampusjobs4u.com/feed/', {
             headers: {
-                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/121.0.0.0 Safari/537.36',
-                'Accept': 'application/rss+xml,application/xml;q=0.9,*/*;q=0.8'
+                'User-Agent': 'Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)',
+                'Accept': 'application/rss+xml, application/xml; q=0.9, */*; q=0.8',
+                'Accept-Language': 'en-US,en;q=0.9',
+                'Cache-Control': 'no-cache'
             },
             timeout: 20000
         });
@@ -652,8 +654,9 @@ async function scrapeFreshersNowRSS(): Promise<ScraperResult> {
     try {
         const { data } = await axios.get('https://www.freshersnow.com/feed/', {
             headers: {
-                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/121.0.0.0 Safari/537.36',
-                'Accept': 'application/rss+xml,application/xml;q=0.9,*/*;q=0.8'
+                'User-Agent': 'Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)',
+                'Accept': 'application/rss+xml, application/xml; q=0.9, */*; q=0.8',
+                'Accept-Language': 'en-US,en;q=0.9'
             },
             timeout: 20000
         });
