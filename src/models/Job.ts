@@ -211,9 +211,14 @@ JobSchema.statics.findSimilar = async function (job: Partial<IJob>) {
     // Escape special regex characters
     const escapeRegex = (str: string) => str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 
+    // Broad search for company and exact but flexible search for title
+    // (We allow the title to have common suffixes like - Remote, (Remote) etc)
+    const company = escapeRegex(job.company);
+    const title = escapeRegex(job.title.split(' (')[0].split(' - ')[0]); // Get core title
+
     return this.findOne({
-        company: { $regex: new RegExp(`^${escapeRegex(job.company)}$`, 'i') },
-        title: { $regex: new RegExp(`^${escapeRegex(job.title)}$`, 'i') },
+        company: { $regex: new RegExp(company, 'i') },
+        title: { $regex: new RegExp(title, 'i') },
         createdAt: { $gte: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000) },
     });
 };
