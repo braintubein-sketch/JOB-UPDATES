@@ -257,10 +257,9 @@ async function scrapeSimpleSource(): Promise<ScraperResult> {
             headers: {
                 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/121.0.0.0 Safari/537.36',
                 'Accept': 'application/json',
-                'Accept-Language': 'en-US,en;q=0.9',
                 'Referer': 'https://himalayas.app/'
             },
-            timeout: 25000
+            timeout: 45000
         });
 
         let newJobsCount = 0;
@@ -477,10 +476,11 @@ async function scrapeFoundTheJob(): Promise<ScraperResult> {
     try {
         const { data } = await axios.get('https://foundthejob.com/feed/', {
             headers: {
-                'User-Agent': 'Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)',
-                'Accept': 'application/rss+xml, application/xml; q=0.9, */*; q=0.8'
+                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36',
+                'Accept': 'application/rss+xml, application/xml; q=0.9, */*; q=0.8',
+                'Cache-Control': 'no-cache'
             },
-            timeout: 15000
+            timeout: 20000
         });
 
         const $ = cheerio.load(data, { xmlMode: true });
@@ -583,12 +583,12 @@ async function scrapeOffCampusRSS(): Promise<ScraperResult> {
     try {
         const { data } = await axios.get('https://offcampusjobs4u.com/feed/', {
             headers: {
-                'User-Agent': 'Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)',
+                'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/121.0.0.0 Safari/537.36',
                 'Accept': 'application/rss+xml, application/xml; q=0.9, */*; q=0.8',
                 'Accept-Language': 'en-US,en;q=0.9',
-                'Cache-Control': 'no-cache'
+                'Cache-Control': 'max-age=0'
             },
-            timeout: 20000
+            timeout: 25000
         });
 
         const $ = cheerio.load(data, { xmlMode: true });
@@ -654,11 +654,11 @@ async function scrapeFreshersNowRSS(): Promise<ScraperResult> {
     try {
         const { data } = await axios.get('https://www.freshersnow.com/feed/', {
             headers: {
-                'User-Agent': 'Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)',
+                'User-Agent': 'Mozilla/5.0 (iPhone; CPU iPhone OS 17_2 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.2 Mobile/15E148 Safari/604.1',
                 'Accept': 'application/rss+xml, application/xml; q=0.9, */*; q=0.8',
-                'Accept-Language': 'en-US,en;q=0.9'
+                'Referer': 'https://www.google.com/'
             },
-            timeout: 20000
+            timeout: 25000
         });
 
         const $ = cheerio.load(data, { xmlMode: true });
@@ -719,9 +719,78 @@ async function scrapeFreshersNowRSS(): Promise<ScraperResult> {
     }
 }
 
+// FreshersGrid RSS Scraper
+async function scrapeFreshersGrid(): Promise<ScraperResult> {
+    console.log('[Scraper] Fetching from FreshersGrid RSS...');
+    try {
+        const { data } = await axios.get('https://www.freshersgrid.com/feed/', {
+            headers: {
+                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/121.0.0.0 Safari/537.36',
+                'Accept': 'application/rss+xml, application/xml; q=0.9, */*; q=0.8'
+            },
+            timeout: 20000
+        });
+
+        const $ = cheerio.load(data, { xmlMode: true });
+        const items = $('item').toArray().slice(0, 10);
+        let newJobsCount = 0;
+        await connectDB();
+
+        for (const el of items) {
+            try {
+                const title = $(el).find('title').text();
+                const sourceUrl = $(el).find('link').text();
+                const content = $(el).find('content\\:encoded').text() || $(el).find('description').text();
+
+                if (!title || !sourceUrl) continue;
+                if (!isITJob(title + ' ' + content)) continue;
+
+                const existing = await Job.findOne({ sourceUrl });
+                if (existing) continue;
+
+                const companyRaw = title.split(' Recruitment')[0].split(' Hiring')[0].split(' - ')[0].trim();
+                const company = normalizeCompanyName(companyRaw);
+
+                const existingSimilar = await (Job as any).findSimilar({ company, title });
+                if (existingSimilar) continue;
+
+                const newJob = new Job({
+                    company,
+                    title,
+                    slug: generateJobSlug(company, title),
+                    roles: extractRolesFromTitle(title),
+                    qualification: extractQualificationFromText(content) || 'Any Graduate',
+                    locations: extractLocationsFromText(content) || ['India'],
+                    experience: parseExperienceFromText(title + ' ' + content),
+                    employmentType: 'Full-time',
+                    description: content.replace(/<[^>]*>?/gm, '').substring(0, 1000),
+                    skills: extractSkillsFromText(content),
+                    applyLink: sourceUrl,
+                    category: detectCategory(title, []),
+                    isVerified: true,
+                    isActive: true,
+                    source: 'automated',
+                    sourceUrl,
+                    postedDate: new Date($(el).find('pubDate').text()) || new Date()
+                });
+
+                await newJob.save();
+                newJobsCount++;
+                console.log(`[Scraper] Saved (FreshersGrid): ${company} - ${title}`);
+            } catch (e) {
+                console.error('[Scraper] Error saving FreshersGrid:', e);
+            }
+        }
+        return { count: newJobsCount, success: true };
+    } catch (error: any) {
+        console.error('[Scraper] FreshersGrid error:', error.message);
+        return { count: 0, success: false, error: error.message };
+    }
+}
+
 // Main trigger function
 export async function triggerLightweightScraping() {
-    console.log('[Automation] Starting lightweight API-based scraping in parallel...');
+    console.log('[Automation] Starting lightweight scraping in sequence for reliability...');
 
     const scraperMap: Record<string, () => Promise<ScraperResult>> = {
         jobicy: scrapeJobicy,
@@ -732,27 +801,32 @@ export async function triggerLightweightScraping() {
         jsearch: scrapeJSearch,
         foundthejob: scrapeFoundTheJob,
         offcampus: scrapeOffCampusRSS,
-        freshersnow: scrapeFreshersNowRSS
+        freshersnow: scrapeFreshersNowRSS,
+        freshersgrid: scrapeFreshersGrid
     };
 
     const keys = Object.keys(scraperMap);
-    const promises = keys.map(key => scraperMap[key]());
-
-    const settleResults = await Promise.allSettled(promises);
-
     const results: Record<string, ScraperResult> = {};
     let totalCount = 0;
 
-    settleResults.forEach((result, index) => {
-        const key = keys[index];
-        if (result.status === 'fulfilled') {
-            results[key] = result.value;
-            totalCount += result.value.count;
-        } else {
-            console.error(`[Scraper] ${key} failed:`, result.reason);
-            results[key] = { count: 0, success: false, error: String(result.reason) };
+    for (const key of keys) {
+        try {
+            const start = Date.now();
+            console.log(`[Scraper] Starting ${key}...`);
+            const result = await scraperMap[key]();
+            results[key] = result;
+            totalCount += result.count;
+            console.log(`[Scraper] ${key} finished in ${Date.now() - start}ms (New Jobs: ${result.count})`);
+
+            // Short delay between scrapers to avoid network/IP flagging
+            if (key !== keys[keys.length - 1]) {
+                await new Promise(resolve => setTimeout(resolve, 2000));
+            }
+        } catch (error: any) {
+            console.error(`[Scraper] ${key} execution error:`, error.message);
+            results[key] = { count: 0, success: false, error: error.message };
         }
-    });
+    }
 
     return {
         ...results,
