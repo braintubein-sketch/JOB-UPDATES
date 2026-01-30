@@ -583,13 +583,20 @@ async function scrapeOffCampusLightweight(): Promise<ScraperResult> {
     try {
         const { data } = await axios.get('https://offcampusjobs4u.com/', {
             headers: {
-                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/121.0.0.0 Safari/537.36'
+                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/121.0.0.0 Safari/537.36',
+                'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7',
+                'Accept-Language': 'en-US,en;q=0.9',
+                'Cache-Control': 'no-cache',
+                'Pragma': 'no-cache',
+                'Referer': 'https://www.google.com/',
+                'Upgrade-Insecure-Requests': '1'
             },
-            timeout: 15000
+            timeout: 20000
         });
 
         const $ = cheerio.load(data);
-        const jobElements = $('article, .post').toArray().slice(0, 10);
+        const jobElements = $('article, .post, .entry-title').toArray().slice(0, 15);
+        console.log(`[Scraper] Found ${jobElements.length} candidate elements on OffCampusJobs4u`);
         let newJobsCount = 0;
         await connectDB();
 
@@ -604,7 +611,7 @@ async function scrapeOffCampusLightweight(): Promise<ScraperResult> {
                 const existing = await Job.findOne({ sourceUrl });
                 if (existing) continue;
 
-                const companyRaw = title.split('Recruitment')[0].split('Hiring')[0].trim();
+                const companyRaw = title.split('Recruitment')[0].split('Hiring')[0].split('Drive')[0].split('Walk')[0].trim();
                 const company = normalizeCompanyName(companyRaw);
 
                 const existingSimilar = await (Job as any).findSimilar({ company, title });
@@ -650,22 +657,30 @@ async function scrapeFreshersNowLightweight(): Promise<ScraperResult> {
     try {
         const { data } = await axios.get('https://www.freshersnow.com/off-campus-drives/', {
             headers: {
-                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/121.0.0.0 Safari/537.36'
+                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/121.0.0.0 Safari/537.36',
+                'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7',
+                'Accept-Language': 'en-US,en;q=0.9',
+                'Referer': 'https://www.google.com/',
+                'DNT': '1'
             },
-            timeout: 15000
+            timeout: 20000
         });
 
         const $ = cheerio.load(data);
         const rows = $('table tr').toArray().filter(r => $(r).find('td').length >= 2).slice(1, 15);
+        console.log(`[Scraper] Found ${rows.length} candidate rows on FreshersNow`);
         let newJobsCount = 0;
         await connectDB();
 
         for (const row of rows) {
             try {
                 const cells = $(row).find('td');
+                if (cells.length < 5) continue; // Row 3 and 4 in debug show at least 6 cells
+
                 const companyRaw = $(cells[0]).text().trim();
-                const title = $(cells[1]).text().trim();
-                const sourceUrl = $(cells[1]).find('a').attr('href');
+                const roleRaw = $(cells[1]).text().trim();
+                const title = `${companyRaw} - ${roleRaw}`;
+                const sourceUrl = $(cells[5]).find('a').attr('href') || $(row).find('a').attr('href');
 
                 if (!companyRaw || !sourceUrl) continue;
                 if (!isITJob(title)) continue;
