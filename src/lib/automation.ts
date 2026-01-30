@@ -66,7 +66,7 @@ export async function triggerTelegramPost() {
             isVerified: true,
         })
             .sort({ createdAt: -1 })
-            .limit(5);
+            .limit(10);
 
         const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://jobupdate.site';
         const processedBatch = new Set<string>();

@@ -577,66 +577,174 @@ async function scrapeFoundTheJob(): Promise<ScraperResult> {
     }
 }
 
+// OffCampusJobs4u Lightweight Scraper
+async function scrapeOffCampusLightweight(): Promise<ScraperResult> {
+    console.log('[Scraper] Fetching from OffCampusJobs4u...');
+    try {
+        const { data } = await axios.get('https://offcampusjobs4u.com/', {
+            headers: {
+                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/121.0.0.0 Safari/537.36'
+            },
+            timeout: 15000
+        });
+
+        const $ = cheerio.load(data);
+        const jobElements = $('article, .post').toArray().slice(0, 10);
+        let newJobsCount = 0;
+        await connectDB();
+
+        for (const el of jobElements) {
+            try {
+                const title = $(el).find('.entry-title, h2, h3').first().text().trim();
+                const sourceUrl = $(el).find('a').first().attr('href');
+
+                if (!title || !sourceUrl) continue;
+                if (!isITJob(title)) continue;
+
+                const existing = await Job.findOne({ sourceUrl });
+                if (existing) continue;
+
+                const companyRaw = title.split('Recruitment')[0].split('Hiring')[0].trim();
+                const company = normalizeCompanyName(companyRaw);
+
+                const existingSimilar = await (Job as any).findSimilar({ company, title });
+                if (existingSimilar) continue;
+
+                const newJob = new Job({
+                    company,
+                    title,
+                    slug: generateJobSlug(company, title),
+                    roles: extractRolesFromTitle(title),
+                    qualification: 'Any Graduate',
+                    locations: ['India'],
+                    experience: parseExperienceFromText(title),
+                    employmentType: 'Full-time',
+                    description: title,
+                    skills: [],
+                    applyLink: sourceUrl,
+                    category: detectCategory(title, []),
+                    isVerified: true,
+                    isActive: true,
+                    source: 'automated',
+                    sourceUrl,
+                    postedDate: new Date()
+                });
+
+                await newJob.save();
+                newJobsCount++;
+                console.log(`[Scraper] Saved (OffCampus): ${company} - ${title}`);
+            } catch (e) {
+                console.error('[Scraper] Error saving OffCampus:', e);
+            }
+        }
+        return { count: newJobsCount, success: true };
+    } catch (error: any) {
+        console.error('[Scraper] OffCampus error:', error.message);
+        return { count: 0, success: false, error: error.message };
+    }
+}
+
+// FreshersNow Lightweight Scraper
+async function scrapeFreshersNowLightweight(): Promise<ScraperResult> {
+    console.log('[Scraper] Fetching from FreshersNow...');
+    try {
+        const { data } = await axios.get('https://www.freshersnow.com/off-campus-drives/', {
+            headers: {
+                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/121.0.0.0 Safari/537.36'
+            },
+            timeout: 15000
+        });
+
+        const $ = cheerio.load(data);
+        const rows = $('table tr').toArray().filter(r => $(r).find('td').length >= 2).slice(1, 15);
+        let newJobsCount = 0;
+        await connectDB();
+
+        for (const row of rows) {
+            try {
+                const cells = $(row).find('td');
+                const companyRaw = $(cells[0]).text().trim();
+                const title = $(cells[1]).text().trim();
+                const sourceUrl = $(cells[1]).find('a').attr('href');
+
+                if (!companyRaw || !sourceUrl) continue;
+                if (!isITJob(title)) continue;
+
+                const existing = await Job.findOne({ sourceUrl });
+                if (existing) continue;
+
+                const company = normalizeCompanyName(companyRaw);
+                const existingSimilar = await (Job as any).findSimilar({ company, title });
+                if (existingSimilar) continue;
+
+                const newJob = new Job({
+                    company,
+                    title,
+                    slug: generateJobSlug(company, title),
+                    roles: extractRolesFromTitle(title),
+                    qualification: 'BE/B.Tech/MCA/Any Graduate',
+                    locations: ['India'],
+                    experience: parseExperienceFromText(title),
+                    employmentType: 'Full-time',
+                    description: title,
+                    skills: [],
+                    applyLink: sourceUrl,
+                    category: detectCategory(title, []),
+                    isVerified: true,
+                    isActive: true,
+                    source: 'automated',
+                    sourceUrl,
+                    postedDate: new Date()
+                });
+
+                await newJob.save();
+                newJobsCount++;
+                console.log(`[Scraper] Saved (FreshersNow): ${company} - ${title}`);
+            } catch (e) {
+                console.error('[Scraper] Error saving FreshersNow:', e);
+            }
+        }
+        return { count: newJobsCount, success: true };
+    } catch (error: any) {
+        console.error('[Scraper] FreshersNow error:', error.message);
+        return { count: 0, success: false, error: error.message };
+    }
+}
+
 // Main trigger function
 export async function triggerLightweightScraping() {
-    console.log('[Automation] Starting lightweight API-based scraping...');
+    console.log('[Automation] Starting lightweight API-based scraping in parallel...');
+
+    const scraperMap: Record<string, () => Promise<ScraperResult>> = {
+        jobicy: scrapeJobicy,
+        wwr: scrapeWWR,
+        himalayas: scrapeSimpleSource,
+        adzuna: scrapeAdzuna,
+        remotive: scrapeRemotive,
+        jsearch: scrapeJSearch,
+        foundthejob: scrapeFoundTheJob,
+        offcampus: scrapeOffCampusLightweight,
+        freshersnow: scrapeFreshersNowLightweight
+    };
+
+    const keys = Object.keys(scraperMap);
+    const promises = keys.map(key => scraperMap[key]());
+
+    const settleResults = await Promise.allSettled(promises);
 
     const results: Record<string, ScraperResult> = {};
     let totalCount = 0;
 
-    // Run all lightweight scrapers - they're fast and don't use much memory
-    try {
-        results.jobicy = await scrapeJobicy();
-        totalCount += results.jobicy.count;
-    } catch (e: any) {
-        results.jobicy = { count: 0, success: false, error: e.message };
-    }
-
-    try {
-        results.wwr = await scrapeWWR();
-        totalCount += results.wwr.count;
-    } catch (e: any) {
-        results.wwr = { count: 0, success: false, error: e.message };
-    }
-
-    try {
-        results.himalayas = await scrapeSimpleSource();
-        totalCount += results.himalayas.count;
-    } catch (e: any) {
-        results.himalayas = { count: 0, success: false, error: e.message };
-    }
-
-    // Adzuna only if configured
-    try {
-        results.adzuna = await scrapeAdzuna();
-        totalCount += results.adzuna.count;
-    } catch (e: any) {
-        results.adzuna = { count: 0, success: false, error: e.message };
-    }
-
-    // Remotive
-    try {
-        results.remotive = await scrapeRemotive();
-        totalCount += results.remotive.count;
-    } catch (e: any) {
-        results.remotive = { count: 0, success: false, error: e.message };
-    }
-
-    // JSearch (RapidAPI) - only if configured
-    try {
-        results.jsearch = await scrapeJSearch();
-        totalCount += results.jsearch.count;
-    } catch (e: any) {
-        results.jsearch = { count: 0, success: false, error: e.message };
-    }
-
-    // FoundTheJob
-    try {
-        results.foundthejob = await scrapeFoundTheJob();
-        totalCount += results.foundthejob.count;
-    } catch (e: any) {
-        results.foundthejob = { count: 0, success: false, error: e.message };
-    }
+    settleResults.forEach((result, index) => {
+        const key = keys[index];
+        if (result.status === 'fulfilled') {
+            results[key] = result.value;
+            totalCount += result.value.count;
+        } else {
+            console.error(`[Scraper] ${key} failed:`, result.reason);
+            results[key] = { count: 0, success: false, error: String(result.reason) };
+        }
+    });
 
     return {
         ...results,
