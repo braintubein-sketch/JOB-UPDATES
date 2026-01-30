@@ -1,3 +1,4 @@
+import Script from 'next/script';
 import type { Metadata } from 'next';
 import { Plus_Jakarta_Sans } from 'next/font/google';
 import './globals.css';
@@ -49,6 +50,9 @@ export const metadata: Metadata = {
         index: true,
         follow: true,
     },
+    other: {
+        'google-adsense-account': 'ca-pub-2703338145574896',
+    },
 };
 
 export default function RootLayout({
@@ -64,6 +68,12 @@ export default function RootLayout({
                 <link rel="manifest" href="/manifest.json" />
                 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5" />
                 <meta name="theme-color" content="#0a0a0a" />
+                <Script
+                    async
+                    src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2703338145574896"
+                    crossOrigin="anonymous"
+                    strategy="afterInteractive"
+                />
             </head>
             <body className={`${pjs.variable} font-sans antialiased`}>
                 <AuthProvider>
