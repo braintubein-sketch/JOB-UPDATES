@@ -37,6 +37,9 @@ const EXCLUDE_KEYWORDS = [
     'government', 'ssc', 'upsc', 'railway', 'bank clerk', 'admit card',
     'result', 'answer key', 'exam date', 'syllabus', 'govt', 'politics',
     'political', 'cricket', 'bollywood', 'entertainment', 'crime',
+    'writer', 'content creator', 'editor', 'sales executive', 'marketing executive',
+    'medical', 'nurse', 'doctor', 'hospital', 'receptionist', 'delivery',
+    'telecaller', 'customer service', 'voice process'
 ];
 
 export function normalizeUrl(url: string, baseUrl?: string): string {
@@ -70,8 +73,11 @@ export function normalizeUrl(url: string, baseUrl?: string): string {
 export function isITJob(title: string, description: string = ''): boolean {
     const text = `${title} ${description}`.toLowerCase();
 
-    // Check if it contains any exclusion keywords
-    if (EXCLUDE_KEYWORDS.some(keyword => text.includes(keyword.toLowerCase()))) {
+    // Check if it contains any exclusion keywords as whole words
+    if (EXCLUDE_KEYWORDS.some(keyword => {
+        const regex = new RegExp(`\\b${keyword.toLowerCase()}\\b`, 'i');
+        return regex.test(text);
+    })) {
         return false;
     }
 
