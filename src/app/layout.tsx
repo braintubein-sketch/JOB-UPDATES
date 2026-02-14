@@ -36,7 +36,7 @@ export const metadata: Metadata = {
         url: 'https://jobupdate.site',
         siteName: 'JOB UPDATES',
         title: 'JOB UPDATES - Unlock Your Next Tech Chapter',
-        description: 'Elite IT jobs for the top 1% tech talent. Browse curated opportunities now.',
+        description: 'Discover curated IT job opportunities from top tech companies across India. Updated daily.',
         images: [{ url: '/og-image.png', width: 1200, height: 630, alt: 'JOB UPDATES' }],
     },
     twitter: {

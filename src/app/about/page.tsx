@@ -33,8 +33,8 @@ export default function AboutPage() {
             <section className="py-24 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div className="grid md:grid-cols-3 gap-8">
                     {[
-                        { icon: Shield, title: "100% Verified", desc: "Every single post is hand-verified against official career portals. No bots, no spam." },
-                        { icon: Zap, title: "Speed Matters", desc: "Get real-time alerts via Telegram. Be the first to apply to high-demand roles." },
+                        { icon: Shield, title: "Curated & Verified", desc: "Jobs sourced from official company career pages and trusted job portals, curated by our team for relevance." },
+                        { icon: Zap, title: "Speed Matters", desc: "Get real-time alerts via Telegram. Be among the first to apply to high-demand roles." },
                         { icon: Globe, title: "India Focused", desc: "Dedicated to the Indian tech ecosystem, from Bangalore to remote-first startups." },
                     ].map((val, i) => (
                         <div key={i} className="card-premium !p-10 group">
