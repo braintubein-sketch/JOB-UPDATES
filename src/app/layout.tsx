@@ -1,4 +1,4 @@
-import type { Metadata } from 'next';
+import type { Metadata, Viewport } from 'next';
 import { Plus_Jakarta_Sans } from 'next/font/google';
 import './globals.css';
 import { ThemeProvider } from '@/components/providers/ThemeProvider';
@@ -9,6 +9,13 @@ import MobileBottomNav from '@/components/layout/MobileBottomNav';
 import AIChatbot from '@/components/ai/AIChatbot';
 
 const pjs = Plus_Jakarta_Sans({ subsets: ['latin'], variable: '--font-pjs' });
+
+export const viewport: Viewport = {
+    width: 'device-width',
+    initialScale: 1,
+    maximumScale: 5,
+    themeColor: '#0a0a0a',
+};
 
 export const metadata: Metadata = {
     metadataBase: new URL('https://jobupdate.site'),
@@ -66,8 +73,6 @@ export default function RootLayout({
                 <link rel="icon" href="/favicon.ico" sizes="any" />
                 <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
                 <link rel="manifest" href="/manifest.json" />
-                <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5" />
-                <meta name="theme-color" content="#0a0a0a" />
                 <meta name="google-adsense-account" content="ca-pub-2703338145574896" />
                 <script
                     async
