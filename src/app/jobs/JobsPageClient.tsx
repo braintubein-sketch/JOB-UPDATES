@@ -138,7 +138,7 @@ export default function JobsPageClient() {
                             className={`grid gap-8 ${view === 'grid' ? 'grid-cols-1 md:grid-cols-2 lg:grid-cols-3' : 'grid-cols-1'}`}
                         >
                             {jobs.map((job, index) => (
-                                <JobCard key={job._id} job={job} index={index} />
+                                <JobCard key={job._id} job={job} index={index} view={view} />
                             ))}
                         </motion.div>
                     ) : (

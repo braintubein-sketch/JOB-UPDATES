@@ -20,9 +20,95 @@ interface JobCardProps {
     job: Job;
     index?: number;
     featured?: boolean;
+    view?: 'grid' | 'list';
 }
 
-export default function JobCard({ job, index = 0, featured = false }: JobCardProps) {
+export default function JobCard({ job, index = 0, featured = false, view = 'grid' }: JobCardProps) {
+    if (view === 'list') {
+        return (
+            <motion.div
+                initial={{ opacity: 0, y: 10 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.3, delay: index * 0.05 }}
+                className={`group relative card-premium ${featured ? 'border-primary/50 bg-primary/[0.02]' : ''}`}
+            >
+                <div className="absolute inset-0 bg-gradient-to-br from-primary/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+
+                <div className="relative z-10 flex flex-col md:flex-row md:items-center gap-4 md:gap-6">
+                    {/* Company Logo */}
+                    <div className="shrink-0 w-14 h-14 rounded-2xl bg-primary/10 border border-primary/20 flex items-center justify-center group-hover:scale-110 transition-transform duration-500">
+                        <Building2 className="w-7 h-7 text-primary" />
+                    </div>
+
+                    {/* Main Info */}
+                    <div className="flex-1 min-w-0">
+                        <div className="flex items-center gap-2 mb-1">
+                            <span className="text-sm font-bold text-muted-foreground capitalize">
+                                {job.company}
+                            </span>
+                            {job.isVerified && <Verified className="w-4 h-4 text-primary" />}
+                            {job.isRecent && (
+                                <span className="flex items-center gap-1 px-2 py-0.5 bg-primary text-white text-[10px] font-black uppercase tracking-widest rounded-full">
+                                    <Zap className="w-3 h-3 fill-white" />
+                                    New
+                                </span>
+                            )}
+                        </div>
+                        <Link href={`/jobs/${job.slug}`}>
+                            <h3 className="text-lg md:text-xl font-black tracking-tight leading-tight group-hover:text-primary transition-colors">
+                                {job.title}
+                            </h3>
+                        </Link>
+                    </div>
+
+                    {/* Meta Info */}
+                    <div className="flex flex-wrap md:flex-nowrap items-center gap-x-5 gap-y-2 shrink-0">
+                        <div className="flex items-center gap-1.5 text-sm font-bold text-muted-foreground whitespace-nowrap">
+                            <MapPin className="w-4 h-4 text-primary/60" />
+                            {formatLocations(job.locations)}
+                        </div>
+                        <div className="flex items-center gap-1.5 text-sm font-bold text-muted-foreground whitespace-nowrap">
+                            <Briefcase className="w-4 h-4 text-primary/60" />
+                            {formatExperience(job.experience.min, job.experience.max)}
+                        </div>
+                        <div className="flex items-center gap-1.5 text-sm font-bold text-muted-foreground whitespace-nowrap">
+                            <Clock className="w-4 h-4 text-primary/60" />
+                            {formatRelativeDate(job.postedDate)}
+                        </div>
+                    </div>
+
+                    {/* Skills + Action */}
+                    <div className="flex items-center gap-3 shrink-0">
+                        <div className="hidden lg:flex gap-2">
+                            {job.skills.slice(0, 2).map((skill) => (
+                                <div
+                                    key={skill}
+                                    className="px-3 py-1 bg-secondary border border-border rounded-full text-[11px] font-black text-foreground"
+                                >
+                                    {skill}
+                                </div>
+                            ))}
+                            {job.skills.length > 2 && (
+                                <div className="px-2 py-1 bg-primary/10 border border-primary/20 rounded-full text-[11px] font-black text-primary">
+                                    +{job.skills.length - 2}
+                                </div>
+                            )}
+                        </div>
+                        <Link
+                            href={`/jobs/${job.slug}`}
+                            className="flex items-center gap-1.5 font-black text-sm text-primary hover:gap-3 transition-all whitespace-nowrap"
+                        >
+                            VIEW
+                            <ChevronRight className="w-4 h-4" />
+                        </Link>
+                    </div>
+                </div>
+            </motion.div>
+        );
+    }
+
+    // Grid view (default)
     return (
         <motion.div
             initial={{ opacity: 0, y: 20 }}
