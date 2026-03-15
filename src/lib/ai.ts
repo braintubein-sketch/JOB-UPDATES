@@ -3,29 +3,35 @@ import { GoogleGenerativeAI } from '@google/generative-ai';
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY || '');
 
 export async function getAIResponse(prompt: string, systemPrompt: string): Promise<string> {
-    try {
-        const model = genAI.getGenerativeModel({ model: 'gemini-2.0-flash' });
+    const models = ['gemini-2.0-flash-lite', 'gemini-1.5-flash', 'gemini-pro'];
+    
+    for (const modelName of models) {
+        try {
+            const model = genAI.getGenerativeModel({ model: modelName });
 
-        const result = await model.generateContent({
-            contents: [
-                {
-                    role: 'user',
-                    parts: [{ text: `${systemPrompt}\n\n${prompt}` }],
+            const result = await model.generateContent({
+                contents: [
+                    {
+                        role: 'user',
+                        parts: [{ text: `${systemPrompt}\n\n${prompt}` }],
+                    },
+                ],
+                generationConfig: {
+                    temperature: 0.7,
+                    topP: 0.9,
+                    maxOutputTokens: 1500,
                 },
-            ],
-            generationConfig: {
-                temperature: 0.7,
-                topP: 0.9,
-                maxOutputTokens: 1500,
-            },
-        });
+            });
 
-        const response = result.response;
-        return response.text();
-    } catch (error: any) {
-        console.error('[AI] Error:', error.message);
-        throw new Error('AI service temporarily unavailable. Please try again.');
+            const response = result.response;
+            return response.text();
+        } catch (error: any) {
+            console.error(`[AI] ${modelName} failed:`, error.message?.substring(0, 100));
+            continue;
+        }
     }
+    
+    throw new Error('AI service temporarily unavailable. Please try again in a few minutes.');
 }
 
 export const SYSTEM_PROMPTS = {
