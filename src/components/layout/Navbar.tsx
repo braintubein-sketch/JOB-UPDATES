@@ -21,7 +21,7 @@ import { useAuth } from '@/components/providers/AuthProvider';
 const navLinks = [
     { href: '/jobs', label: 'Browse Jobs', icon: Briefcase },
     { href: '/companies', label: 'Companies', icon: Building2 },
-    { href: '/search', label: 'Search', icon: Search },
+    { href: '/resources', label: 'Resources', icon: Search },
 ];
 
 export default function Navbar() {

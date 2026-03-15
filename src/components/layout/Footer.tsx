@@ -21,6 +21,7 @@ const footerLinks = {
         { label: 'Backend', href: '/jobs?category=Backend' },
     ],
     'Resources': [
+        { label: 'Career Resources', href: '/resources' },
         { label: 'Fresher Jobs', href: '/jobs?expMin=0&expMax=1' },
         { label: 'Internships', href: '/jobs?type=Internship' },
         { label: 'Remote Only', href: '/jobs?location=Remote' },
