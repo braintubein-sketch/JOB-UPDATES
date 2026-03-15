@@ -15,12 +15,14 @@ import {
     Sun,
     Moon,
     LayoutDashboard,
+    Sparkles,
 } from 'lucide-react';
 import { useAuth } from '@/components/providers/AuthProvider';
 
 const navLinks = [
     { href: '/jobs', label: 'Browse Jobs', icon: Briefcase },
     { href: '/companies', label: 'Companies', icon: Building2 },
+    { href: '/ai-tools', label: 'AI Tools', icon: Sparkles },
     { href: '/resources', label: 'Resources', icon: Search },
 ];
 

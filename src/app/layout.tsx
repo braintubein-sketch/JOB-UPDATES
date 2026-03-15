@@ -6,6 +6,7 @@ import { AuthProvider } from '@/components/providers/AuthProvider';
 import Navbar from '@/components/layout/Navbar';
 import Footer from '@/components/layout/Footer';
 import MobileBottomNav from '@/components/layout/MobileBottomNav';
+import AIChatbot from '@/components/ai/AIChatbot';
 
 const pjs = Plus_Jakarta_Sans({ subsets: ['latin'], variable: '--font-pjs' });
 
@@ -82,6 +83,7 @@ export default function RootLayout({
                             <main className="flex-1 relative z-10 pb-28 md:pb-0">{children}</main>
                             <MobileBottomNav />
                             <Footer />
+                            <AIChatbot />
                         </div>
                     </ThemeProvider>
                 </AuthProvider>
