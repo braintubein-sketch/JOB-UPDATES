@@ -1,7 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { triggerScraping, triggerTelegramPost, triggerStatusUpdate, triggerArchive } from '@/lib/automation';
+import { triggerScraping, triggerTelegramPost, triggerStatusUpdate, triggerArchive, triggerDuplicateCleanup } from '@/lib/automation';
 
 export const dynamic = 'force-dynamic';
+export const maxDuration = 300; // 5 minutes max for serverless
 
 export async function GET(request: NextRequest) {
     try {
@@ -13,7 +14,8 @@ export async function GET(request: NextRequest) {
             return NextResponse.json({ success: false, error: 'Unauthorized' }, { status: 401 });
         }
 
-        console.log('[Cron] Execution started...');
+        const startTime = Date.now();
+        console.log('[Cron] ========== Execution started ==========');
 
         // 0. Test DB Connection
         let dbStatus = 'unknown';
@@ -21,30 +23,46 @@ export async function GET(request: NextRequest) {
             const { connectDB } = await import('@/lib/db');
             await connectDB();
             dbStatus = 'connected';
+            console.log('[Cron] DB connected successfully');
         } catch (dbError: any) {
             console.error('[Cron] DB Connection Failed:', dbError);
             dbStatus = `failed: ${dbError.message}`;
         }
 
-        // 1. Scrape new jobs
-        console.log('[Cron] Scraping jobs...');
-        const scrapeStats = await triggerScraping();
+        // 1. Cleanup: Delete expired/old jobs first
+        console.log('[Cron] Step 1: Cleaning up expired jobs...');
+        const cleanupStats = await triggerArchive();
+        console.log(`[Cron] Cleanup done: ${JSON.stringify(cleanupStats)}`);
 
-        // 2. Post to Telegram
-        console.log('[Cron] Posting to Telegram...');
-        const telegramStats = await triggerTelegramPost();
+        // 2. Remove duplicates
+        console.log('[Cron] Step 2: Removing duplicates...');
+        await triggerDuplicateCleanup();
 
-        // 3. Maintenance tasks
-        console.log('[Cron] Running maintenance...');
+        // 3. Update job statuses (mark old ones as not recent)
+        console.log('[Cron] Step 3: Updating job statuses...');
         await triggerStatusUpdate();
-        await triggerArchive();
+
+        // 4. Scrape new jobs from all sources
+        console.log('[Cron] Step 4: Scraping new jobs...');
+        const scrapeStats = await triggerScraping();
+        console.log(`[Cron] Scraping done: ${scrapeStats?.total || 0} new jobs added`);
+
+        // 5. Post new jobs to Telegram
+        console.log('[Cron] Step 5: Posting to Telegram...');
+        const telegramStats = await triggerTelegramPost();
+        console.log(`[Cron] Telegram: ${telegramStats} jobs posted`);
+
+        const duration = ((Date.now() - startTime) / 1000).toFixed(1);
+        console.log(`[Cron] ========== Completed in ${duration}s ==========`);
 
         return NextResponse.json({
             success: true,
             timestamp: new Date().toISOString(),
-            message: 'Cron tasks completed successfully',
+            duration: `${duration}s`,
+            message: 'All cron tasks completed successfully',
             dbStatus,
             stats: {
+                cleanup: cleanupStats,
                 scraped: scrapeStats,
                 postedToTelegram: telegramStats
             }

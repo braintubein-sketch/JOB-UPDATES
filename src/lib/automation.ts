@@ -132,33 +132,39 @@ async function updateJobStatuses() {
     }
 }
 
-// Archive expired jobs
-async function archiveExpiredJobs() {
+// Delete expired and old jobs permanently
+async function deleteExpiredJobs() {
     try {
         await connectDB();
 
         const now = new Date();
+        const thirtyDaysAgo = new Date();
+        thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
 
-        // Deactivate jobs past their expiry date
-        const result = await Job.updateMany(
-            { isActive: true, expiryDate: { $lt: now } },
-            { $set: { isActive: false } }
-        );
+        // 1. Delete jobs with expired expiryDate
+        const expiredResult = await Job.deleteMany({ expiryDate: { $lt: now, $exists: true, $ne: null } });
+        console.log(`[Cleanup] Deleted ${expiredResult.deletedCount} jobs with expired expiryDate`);
 
-        console.log(`[Cron] Archived ${result.modifiedCount} expired jobs`);
+        // 2. Delete jobs older than 30 days
+        const oldResult = await Job.deleteMany({ postedDate: { $lt: thirtyDaysAgo } });
+        console.log(`[Cleanup] Deleted ${oldResult.deletedCount} jobs older than 30 days`);
 
-        // Also deactivate jobs older than 60 days without expiry date
-        const sixtyDaysAgo = new Date();
-        sixtyDaysAgo.setDate(sixtyDaysAgo.getDate() - 60);
+        // 3. Delete inactive jobs
+        const inactiveResult = await Job.deleteMany({ isActive: false });
+        console.log(`[Cleanup] Deleted ${inactiveResult.deletedCount} inactive jobs`);
 
-        const oldResult = await Job.updateMany(
-            { isActive: true, expiryDate: null, postedDate: { $lt: sixtyDaysAgo } },
-            { $set: { isActive: false } }
-        );
+        const remaining = await Job.countDocuments();
+        console.log(`[Cleanup] ${remaining} jobs remaining in database`);
 
-        console.log(`[Cron] Archived ${oldResult.modifiedCount} old jobs`);
+        return {
+            expired: expiredResult.deletedCount,
+            old: oldResult.deletedCount,
+            inactive: inactiveResult.deletedCount,
+            remaining
+        };
     } catch (error) {
-        console.error('[Cron] Error archiving expired jobs:', error);
+        console.error('[Cron] Error deleting expired jobs:', error);
+        return { expired: 0, old: 0, inactive: 0, remaining: 0 };
     }
 }
 
@@ -225,13 +231,9 @@ export async function triggerStatusUpdate() {
 }
 
 export async function triggerArchive() {
-    await archiveExpiredJobs();
+    return await deleteExpiredJobs();
 }
 
 export async function triggerDuplicateCleanup() {
-    await cleanupDuplicateCleanup();
-}
-
-async function cleanupDuplicateCleanup() {
     await cleanupDuplicateJobs();
 }
