@@ -3,7 +3,7 @@ import { GoogleGenerativeAI } from '@google/generative-ai';
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY || '');
 
 export async function getAIResponse(prompt: string, systemPrompt: string): Promise<string> {
-    const models = ['gemini-2.0-flash-lite', 'gemini-1.5-flash', 'gemini-pro'];
+    const models = ['gemini-flash-latest', 'gemini-1.5-flash', 'gemini-pro'];
     
     for (const modelName of models) {
         try {
