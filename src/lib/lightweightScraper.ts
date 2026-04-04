@@ -605,12 +605,20 @@ async function scrapeOffCampusRSS(): Promise<ScraperResult> {
     try {
         const { data } = await axios.get('https://offcampusjobs4u.com/feed/', {
             headers: {
-                'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/121.0.0.0 Safari/537.36',
-                'Accept': 'application/rss+xml, application/xml; q=0.9, */*; q=0.8',
-                'Accept-Language': 'en-US,en;q=0.9',
-                'Cache-Control': 'max-age=0'
+                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36',
+                'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8',
+                'Accept-Language': 'en-US,en;q=0.9,hi;q=0.8',
+                'Accept-Encoding': 'gzip, deflate, br',
+                'Connection': 'keep-alive',
+                'Cache-Control': 'max-age=0',
+                'Referer': 'https://www.google.com/',
+                'Sec-Fetch-Dest': 'document',
+                'Sec-Fetch-Mode': 'navigate',
+                'Sec-Fetch-Site': 'cross-site',
+                'Upgrade-Insecure-Requests': '1'
             },
-            timeout: 25000
+            timeout: 30000,
+            maxRedirects: 5
         });
 
         const $ = cheerio.load(data, { xmlMode: true });
@@ -689,11 +697,19 @@ async function scrapeFreshersNowRSS(): Promise<ScraperResult> {
     try {
         const { data } = await axios.get('https://www.freshersnow.com/feed/', {
             headers: {
-                'User-Agent': 'Mozilla/5.0 (iPhone; CPU iPhone OS 17_2 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.2 Mobile/15E148 Safari/604.1',
-                'Accept': 'application/rss+xml, application/xml; q=0.9, */*; q=0.8',
-                'Referer': 'https://www.google.com/'
+                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36',
+                'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8',
+                'Accept-Language': 'en-US,en;q=0.9,hi;q=0.8',
+                'Accept-Encoding': 'gzip, deflate, br',
+                'Connection': 'keep-alive',
+                'Referer': 'https://www.google.com/',
+                'Sec-Fetch-Dest': 'document',
+                'Sec-Fetch-Mode': 'navigate',
+                'Sec-Fetch-Site': 'cross-site',
+                'Upgrade-Insecure-Requests': '1'
             },
-            timeout: 25000
+            timeout: 30000,
+            maxRedirects: 5
         });
 
         const $ = cheerio.load(data, { xmlMode: true });
@@ -760,10 +776,19 @@ async function scrapeFreshersVoice(): Promise<ScraperResult> {
     try {
         const { data } = await axios.get('https://www.freshersvoice.com/feed/', {
             headers: {
-                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/121.0.0.0 Safari/537.36',
-                'Accept': 'application/rss+xml, application/xml; q=0.9, */*; q=0.8'
+                'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36',
+                'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8',
+                'Accept-Language': 'en-US,en;q=0.9',
+                'Accept-Encoding': 'gzip, deflate, br',
+                'Connection': 'keep-alive',
+                'Referer': 'https://www.google.com/',
+                'Sec-Fetch-Dest': 'document',
+                'Sec-Fetch-Mode': 'navigate',
+                'Sec-Fetch-Site': 'cross-site',
+                'Upgrade-Insecure-Requests': '1'
             },
-            timeout: 20000
+            timeout: 30000,
+            maxRedirects: 5
         });
 
         const $ = cheerio.load(data, { xmlMode: true });

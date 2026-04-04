@@ -7,9 +7,13 @@ import Job from '@/models/Job';
 import { postJobToTelegram } from './telegram';
 import { scrapeOffCampusJobs } from './scrapers/offCampus';
 import { scrapeFreshersNow } from './scrapers/freshersNow';
+import axios from 'axios';
 
 // Check if we're in a Node.js environment (not edge)
 const isNodeEnv = typeof process !== 'undefined' && process.versions?.node;
+
+// Track if cron jobs are already initialized to prevent duplicates
+let cronInitialized = false;
 
 // Initialize cron jobs only in Node.js environment
 export function initializeCronJobs() {
@@ -18,40 +22,77 @@ export function initializeCronJobs() {
         return;
     }
 
+    if (cronInitialized) {
+        console.log('Cron jobs already initialized, skipping...');
+        return;
+    }
+    cronInitialized = true;
+
     console.log('Initializing cron jobs...');
 
-    // Commented out to prevent double-runs with External Cron / API triggers
+    // Self-ping keep-alive every 10 minutes to prevent Render free tier sleep
+    cron.schedule('*/10 * * * *', async () => {
+        try {
+            const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://jobupdate.site';
+            await axios.get(`${siteUrl}/api/jobs?limit=1`, { timeout: 10000 });
+            console.log('[KeepAlive] Ping successful');
+        } catch (error) {
+            console.log('[KeepAlive] Ping failed (server may be waking up)');
+        }
+    });
+
     // Scrape new jobs every 30 minutes
-    // cron.schedule('*/30 * * * *', async () => {
-    //     console.log('[Cron] Starting automated scraping...');
-    //     await triggerScraping();
-    // });
+    cron.schedule('*/30 * * * *', async () => {
+        console.log('[Cron] Starting automated scraping...');
+        try {
+            await triggerScraping();
+        } catch (error) {
+            console.error('[Cron] Scraping error:', error);
+        }
+    });
 
-    // Post unpublished jobs to Telegram every 30 minutes
-    // cron.schedule('*/30 * * * *', async () => {
-    //     console.log('[Cron] Posting jobs to Telegram...');
-    //     await triggerTelegramPost();
-    // });
+    // Post unpublished jobs to Telegram every 30 minutes (offset by 5 min so scraping finishes first)
+    cron.schedule('5,35 * * * *', async () => {
+        console.log('[Cron] Posting jobs to Telegram...');
+        try {
+            await triggerTelegramPost();
+        } catch (error) {
+            console.error('[Cron] Telegram post error:', error);
+        }
+    });
 
-    // Mark old jobs as not new (runs daily at midnight)
-    // cron.schedule('0 0 * * *', async () => {
-    //     console.log('[Cron] Updating job statuses...');
-    //     await updateJobStatuses();
-    // });
+    // Mark old jobs as not new (runs daily at midnight IST = 18:30 UTC)
+    cron.schedule('30 18 * * *', async () => {
+        console.log('[Cron] Updating job statuses...');
+        try {
+            await updateJobStatuses();
+        } catch (error) {
+            console.error('[Cron] Status update error:', error);
+        }
+    });
 
-    // Archive expired jobs (runs daily at 1 AM)
-    // cron.schedule('0 1 * * *', async () => {
-    //     console.log('[Cron] Archiving expired jobs...');
-    //     await archiveExpiredJobs();
-    // });
+    // Delete expired jobs (runs daily at 1 AM IST = 19:30 UTC)
+    cron.schedule('30 19 * * *', async () => {
+        console.log('[Cron] Deleting expired jobs...');
+        try {
+            await deleteExpiredJobs();
+        } catch (error) {
+            console.error('[Cron] Archive error:', error);
+        }
+    });
 
-    // Clean up duplicate jobs (runs weekly on Sunday at 2 AM)
-    // cron.schedule('0 2 * * 0', async () => {
-    //     console.log('[Cron] Cleaning up duplicates...');
-    //     await cleanupDuplicateJobs();
-    // });
+    // Clean up duplicate jobs (runs weekly on Sunday at 2 AM IST = 20:30 UTC Saturday)
+    cron.schedule('30 20 * * 6', async () => {
+        console.log('[Cron] Cleaning up duplicates...');
+        try {
+            await cleanupDuplicateJobs();
+        } catch (error) {
+            console.error('[Cron] Duplicate cleanup error:', error);
+        }
+    });
 
     console.log('Cron jobs initialized successfully');
+    console.log('Schedule: Scrape @*/30min | Telegram @5,35min | Status @midnight IST | Cleanup @1AM IST | Dedup @Sun 2AM IST');
 }
 
 // Post pending jobs to Telegram
